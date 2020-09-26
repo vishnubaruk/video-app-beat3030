@@ -1,25 +1,24 @@
 package com.example.tiktok_analog.ui.login
 
 import android.app.Activity
-import android.graphics.Color
-import android.opengl.Visibility
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
-import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.example.tiktok_analog.R
+import com.example.tiktok_analog.SmsActivity
+import kotlinx.android.synthetic.main.authorize.*
 
 class LoginActivity : AppCompatActivity() {
 
@@ -28,9 +27,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.sms)
-
-        return
+        setContentView(R.layout.activity_login)
 
         val username = findViewById<EditText>(R.id.email)
         val password = findViewById<EditText>(R.id.password)
@@ -40,6 +37,45 @@ class LoginActivity : AppCompatActivity() {
         val registerPanel = findViewById<ConstraintLayout>(R.id.register_panel)
         val authorizePanel = findViewById<ConstraintLayout>(R.id.authorize_panel)
         // val loading = findViewById<ProgressBar>(R.id.loading)
+
+        registerButton.setOnClickListener {
+            registerPanel.visibility = View.VISIBLE
+            authorizePanel.visibility = View.GONE
+
+            registerButton.setBackgroundResource(R.drawable.bg_btn_outline)
+            authorizeButton.setBackgroundResource(R.drawable.bg_bth_no_outline)
+        }
+
+        authorizeButton.setOnClickListener {
+            registerPanel.visibility = View.GONE
+            authorizePanel.visibility = View.VISIBLE
+
+            registerButton.setBackgroundResource(R.drawable.bg_bth_no_outline)
+            authorizeButton.setBackgroundResource(R.drawable.bg_btn_outline)
+        }
+
+
+        // TODO: enable buttons only when all data is correct
+
+        login.isEnabled = true
+        // login button in register panel
+        login.setOnClickListener {
+            startActivity(Intent(this, SmsActivity::class.java))
+            Log.d("DEBUG", "login button pressed")
+        }
+
+
+        enter.isEnabled = true
+        // enter button in authorize panel
+        enter.setOnClickListener {
+            startActivity(Intent(this, SmsActivity::class.java))
+            Log.d("DEBUG", "enter button pressed")
+        }
+
+
+        // TODO: refactor with authorization / registration
+        return
+
 
         loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory())
             .get(LoginViewModel::class.java)
@@ -100,32 +136,18 @@ class LoginActivity : AppCompatActivity() {
                 false
             }
 
-            login.setOnClickListener {
-                // loading.visibility = View.VISIBLE
-                loginViewModel.login(username.text.toString(), password.text.toString())
-            }
-        }
 
-        registerButton.setOnClickListener {
-            registerPanel.visibility = View.VISIBLE
-            authorizePanel.visibility = View.GONE
-
-            registerButton.setBackgroundResource(R.drawable.bg_btn_outline)
-            authorizeButton.setBackgroundResource(R.drawable.bg_bth_no_outline)
-        }
-
-        authorizeButton.setOnClickListener {
-            registerPanel.visibility = View.GONE
-            authorizePanel.visibility = View.VISIBLE
-
-            registerButton.setBackgroundResource(R.drawable.bg_bth_no_outline)
-            authorizeButton.setBackgroundResource(R.drawable.bg_btn_outline)
+            // TODO: make load of the next scene with login viewModel
+//            login.setOnClickListener {
+//                // loading.visibility = View.VISIBLE
+//                loginViewModel.login(username.text.toString(), password.text.toString())
+//            }
         }
     }
 
 //    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
 //        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.sms)
+//        setContentView(R.layout.actovity_sms)
 //    }
 
     private fun updateUiWithUser(model: LoggedInUserView) {
