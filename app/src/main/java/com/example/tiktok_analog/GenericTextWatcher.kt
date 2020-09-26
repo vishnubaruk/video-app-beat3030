@@ -4,19 +4,33 @@ package com.example.tiktok_analog
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.widget.EditText
 
 // TODO: add textWatcher functionality
 // https://stackoverflow.com/questions/38872546/edit-text-for-otp-with-each-letter-in-separate-positions
 
-class GenericTextWatcher private constructor(private val view: View) : TextWatcher {
+class GenericTextWatcher(private val rootView: View, private val editText: EditText) : TextWatcher {
+
     override fun afterTextChanged(editable: Editable) {
-        // TODO Auto-generated method stub
+
         val text = editable.toString()
-        when (view.id) {
-//            R.id.editText1 -> if (text.length == 1) et2.requestFocus()
-//            R.id.editText2 -> if (text.length == 1) et3.requestFocus() else if (text.isEmpty()) et1.requestFocus()
-//            R.id.editText3 -> if (text.length == 1) et4.requestFocus() else if (text.isEmpty()) et2.requestFocus()
-//            R.id.editText4 -> if (text.isEmpty()) et3.requestFocus()
+        when (editText.id) {
+            R.id.et1 -> if (text.length == 1) {
+                rootView.findViewById<EditText>(R.id.et2).requestFocus()
+            }
+            R.id.et2 -> if (text.length == 1) {
+                rootView.findViewById<EditText>(R.id.et3).requestFocus()
+            } else if (text.isEmpty()) {
+                rootView.findViewById<EditText>(R.id.et1).requestFocus()
+            }
+            R.id.et3 -> if (text.length == 1) {
+                rootView.findViewById<EditText>(R.id.et4).requestFocus()
+            } else if (text.isEmpty()) {
+                rootView.findViewById<EditText>(R.id.et2).requestFocus()
+            }
+            R.id.et4 -> if (text.isEmpty()) {
+                rootView.findViewById<EditText>(R.id.et3).requestFocus()
+            }
         }
     }
 

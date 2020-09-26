@@ -54,7 +54,6 @@ class LoginActivity : AppCompatActivity() {
             authorizeButton.setBackgroundResource(R.drawable.bg_btn_outline)
         }
 
-
         // TODO: enable buttons only when all data is correct
 
         login.isEnabled = true

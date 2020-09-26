@@ -76,8 +76,9 @@
                         android:layout_height="wrap_content"
 
                         android:layout_marginTop="320dp"
-
                         android:backgroundTint="#FFF"
+                        android:maxLength="1"
+
                         android:fontFamily="@font/monsterrat_bold"
                         android:numeric="signed|integer"
                         android:selectAllOnFocus="true"
@@ -96,6 +97,7 @@
 
                         android:layout_marginTop="320dp"
                         android:backgroundTint="#FFF"
+                        android:maxLength="1"
 
                         android:fontFamily="@font/monsterrat_bold"
                         android:numeric="signed|integer"
@@ -111,11 +113,12 @@
                         android:id="@+id/et3"
                         android:layout_width="60dp"
                         android:layout_height="wrap_content"
-
                         android:layout_marginStart="20dp"
-                        android:layout_marginTop="320dp"
 
+                        android:layout_marginTop="320dp"
                         android:backgroundTint="#FFF"
+                        android:maxLength="1"
+
                         android:fontFamily="@font/monsterrat_bold"
                         android:numeric="signed|integer"
                         android:selectAllOnFocus="true"
@@ -130,9 +133,10 @@
                         android:id="@+id/et4"
                         android:layout_width="60dp"
                         android:layout_height="wrap_content"
-
                         android:layout_marginStart="20dp"
+
                         android:layout_marginTop="320dp"
+                        android:maxLength="1"
 
                         android:backgroundTint="#FFF"
                         android:fontFamily="@font/monsterrat_bold"
@@ -149,7 +153,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <Button
-                    android:id="@+id/send_sms"
+                    android:id="@+id/sendSms"
                     android:layout_width="0dp"
                     android:layout_height="63dp"
                     android:layout_gravity="start"
