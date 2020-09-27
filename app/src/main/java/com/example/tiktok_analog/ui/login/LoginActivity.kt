@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.example.tiktok_analog.MainActivity
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.SmsActivity
 import kotlinx.android.synthetic.main.authorize.*
@@ -57,6 +58,9 @@ class LoginActivity : AppCompatActivity() {
         // TODO: enable buttons only when all data is correct
 
         login.isEnabled = true
+        login.backgroundTintList =
+            applicationContext.resources.getColorStateList(R.color.buttonEnabledBg)
+
         // login button in register panel
         login.setOnClickListener {
             startActivity(Intent(this, SmsActivity::class.java))
@@ -65,9 +69,11 @@ class LoginActivity : AppCompatActivity() {
 
 
         enter.isEnabled = true
+        enter.backgroundTintList =
+            applicationContext.resources.getColorStateList(R.color.buttonEnabledBg)
         // enter button in authorize panel
         enter.setOnClickListener {
-            startActivity(Intent(this, SmsActivity::class.java))
+            startActivity(Intent(this, MainActivity::class.java))
             Log.d("DEBUG", "enter button pressed")
         }
 

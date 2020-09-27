@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tiktok_analog.ui.login.afterTextChanged
 import kotlinx.android.synthetic.main.activity_sms.*
@@ -18,20 +19,32 @@ class SmsActivity : AppCompatActivity() {
 
         val rootView = findViewById<View>(android.R.id.content).rootView
 
-        et1.requestFocus()
-
         fun hideKeyboardFrom(context: Context, view: View) {
             val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
+
+        fun showKeyboardFrom(context: Context, ed: EditText) {
+            val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(ed, 0)
+        }
+
+        et1.isFocusableInTouchMode = true
+        et1.requestFocus()
+        showKeyboardFrom(applicationContext, et1)
+
 
         fun checkSmsCode() {
             sendSms.isEnabled =
                 et1.text.length == 1 && et2.text.length == 1 &&
                         et3.text.length == 1 && et4.text.length == 1
 
-            if (sendSms.isEnabled) {
+            sendSms.backgroundTintList =
+                applicationContext.resources.getColorStateList(
+                    if (sendSms.isEnabled) R.color.buttonEnabledBg else R.color.buttonDisabledBg
+                )
 
+            if (sendSms.isEnabled) {
                 hideKeyboardFrom(application.applicationContext, rootView)
                 sendSms.callOnClick()
             }
@@ -50,7 +63,7 @@ class SmsActivity : AppCompatActivity() {
         et4.addTextChangedListener(GenericTextWatcher(rootView, et4))
 
         sendSms.setOnClickListener {
-            // startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, MainActivity::class.java))
         }
     }
 }
