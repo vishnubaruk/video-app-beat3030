@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.filter.*
 
+
 class MainActivity : AppCompatActivity() {
 
     var isMenuOpened = false
@@ -24,11 +25,11 @@ class MainActivity : AppCompatActivity() {
             openFilter()
         }
 
-        closeMenuButton.setOnClickListener{
+        closeMenuButton.setOnClickListener {
             closeMenu()
         }
 
-        closeFilterButton.setOnClickListener{
+        closeFilterButton.setOnClickListener {
             closeFilter()
         }
 
@@ -44,6 +45,8 @@ class MainActivity : AppCompatActivity() {
         openMenuButton.visibility = View.GONE
         closeMenuButton.visibility = View.VISIBLE
 
+        menuLayout.visibility = View.VISIBLE
+
         isMenuOpened = true
 
         sectionTitleText.text = "Меню"
@@ -54,6 +57,8 @@ class MainActivity : AppCompatActivity() {
 
         openMenuButton.visibility = View.VISIBLE
         closeMenuButton.visibility = View.GONE
+
+        menuLayout.visibility = View.GONE
 
         isMenuOpened = false
 
@@ -81,5 +86,17 @@ class MainActivity : AppCompatActivity() {
         filterLayout.visibility = View.GONE
 
         isFilterOpened = false
+    }
+
+    override fun onBackPressed() {
+        // super.onBackPressed()
+
+        if (isMenuOpened) {
+            closeMenu()
+        }
+
+        if(isFilterOpened) {
+            closeFilter()
+        }
     }
 }
