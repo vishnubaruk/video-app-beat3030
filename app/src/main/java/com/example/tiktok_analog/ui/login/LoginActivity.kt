@@ -68,11 +68,11 @@ class LoginActivity : AppCompatActivity() {
         }
 
 
-        enter.isEnabled = true
-        enter.backgroundTintList =
+        applyFilterButton.isEnabled = true
+        applyFilterButton.backgroundTintList =
             applicationContext.resources.getColorStateList(R.color.buttonEnabledBg)
         // enter button in authorize panel
-        enter.setOnClickListener {
+        applyFilterButton.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
             Log.d("DEBUG", "enter button pressed")
         }

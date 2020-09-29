@@ -75,14 +75,21 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    <ScrollView
-        android:background="@color/mainLayoutColor"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+<!--    <ScrollView-->
+<!--        android:background="@color/mainLayoutColor"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_marginTop="80dp"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        tools:layout_editor_absoluteX="0dp">-->
+
+<!--    </ScrollView>-->
+    <include
+        android:id="@+id/filterLayout"
+        layout="@layout/filter"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp">
-
-    </ScrollView>
-
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

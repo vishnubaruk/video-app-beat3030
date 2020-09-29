@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.filter.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,6 +29,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         closeFilterButton.setOnClickListener{
+            closeFilter()
+        }
+
+        applyFilterButton.setOnClickListener {
             closeFilter()
         }
     }
@@ -62,6 +67,8 @@ class MainActivity : AppCompatActivity() {
         openFilterButton.visibility = View.GONE
         closeFilterButton.visibility = View.VISIBLE
 
+        filterLayout.visibility = View.VISIBLE
+
         isFilterOpened = true
     }
 
@@ -70,6 +77,8 @@ class MainActivity : AppCompatActivity() {
 
         openFilterButton.visibility = View.VISIBLE
         closeFilterButton.visibility = View.GONE
+
+        filterLayout.visibility = View.GONE
 
         isFilterOpened = false
     }
