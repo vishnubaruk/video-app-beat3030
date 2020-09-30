@@ -4,7 +4,7 @@ import com.example.tiktok_analog.data.model.LoggedInUser
 import java.io.IOException
 
 /**
- * Class that handles authentication w/ login credentials and retrieves user information.
+ * Class that handles authentication w/ login credentials and retrieves profile information.
  */
 class LoginDataSource {
 

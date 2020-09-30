@@ -16,9 +16,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.example.tiktok_analog.MainActivity
+import com.example.tiktok_analog.ui.main.MainActivity
 import com.example.tiktok_analog.R
-import com.example.tiktok_analog.SmsActivity
 import kotlinx.android.synthetic.main.authorize.*
 
 class LoginActivity : AppCompatActivity() {

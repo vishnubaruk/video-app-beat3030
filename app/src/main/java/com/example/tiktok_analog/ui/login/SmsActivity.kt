@@ -1,4 +1,4 @@
-package com.example.tiktok_analog
+package com.example.tiktok_analog.ui.login
 
 import android.app.Activity
 import android.content.Context
@@ -8,7 +8,9 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import com.example.tiktok_analog.ui.login.afterTextChanged
+import com.example.tiktok_analog.ui.main.MainActivity
+import com.example.tiktok_analog.R
+import com.example.tiktok_analog.util.GenericTextWatcher
 import kotlinx.android.synthetic.main.activity_sms.*
 
 class SmsActivity : AppCompatActivity() {

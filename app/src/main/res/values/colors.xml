@@ -6,4 +6,6 @@
     <color name="buttonEnabledBg">#FF6F22</color>
     <color name="buttonDisabledBg">#F0AB89</color>
     <color name="mainLayoutColor">#E1E7F0</color>
+    <color name="groupUnselected">#CDD5E3</color>
+    <color name="white">#FFF</color>
 </resources>

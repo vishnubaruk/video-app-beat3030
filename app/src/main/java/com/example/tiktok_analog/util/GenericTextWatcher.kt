@@ -1,10 +1,11 @@
-package com.example.tiktok_analog
+package com.example.tiktok_analog.util
 
 
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
+import com.example.tiktok_analog.R
 
 // TODO: add textWatcher functionality
 // https://stackoverflow.com/questions/38872546/edit-text-for-otp-with-each-letter-in-separate-positions
