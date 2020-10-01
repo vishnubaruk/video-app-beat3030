@@ -179,10 +179,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun openNewsLine() {
         newsLineLayout.visibility = View.VISIBLE
+        openFilterButton.visibility = View.VISIBLE
     }
 
     private fun closeNewsLine() {
         newsLineLayout.visibility = View.GONE
+        openFilterButton.visibility = View.GONE
+        closeFilterButton.visibility = View.GONE
     }
 
     private fun openMenu() {
@@ -216,8 +219,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun openFilter() {
         // Toast.makeText(applicationContext, "Filter Opened!", Toast.LENGTH_SHORT).show()
-        closeMenu()
-        closeProfile()
         closeNewsLine()
 
         openFilterButton.visibility = View.GONE
@@ -243,8 +244,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openProfile() {
+        closeMenu()
+        closeNewsLine()
+
         profileLayout.visibility = View.VISIBLE
 
+        openMenuButton.visibility = View.GONE
         closeMenuButton.visibility = View.GONE
         backArrowButton.visibility = View.VISIBLE
 
@@ -254,6 +259,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun closeProfile() {
+        openMenu()
+
         profileLayout.visibility = View.GONE
 
         closeMenuButton.visibility = View.VISIBLE
@@ -265,8 +272,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openAddVideo() {
+        closeMenu()
+        closeNewsLine()
+
         addVideoLayout.visibility = View.VISIBLE
 
+        openMenuButton.visibility = View.GONE
         closeMenuButton.visibility = View.GONE
         backArrowButton.visibility = View.VISIBLE
 
@@ -276,6 +287,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun closeAddVideo() {
+        openMenu()
+
         addVideoLayout.visibility = View.GONE
 
         closeMenuButton.visibility = View.VISIBLE
@@ -317,6 +330,10 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         // super.onBackPressed()
 
+        if (isFilterOpened) {
+            closeFilter()
+        }
+
         if (isProfileOpened) {
             closeProfile()
             return
@@ -325,10 +342,6 @@ class MainActivity : AppCompatActivity() {
         if (isMenuOpened) {
             closeMenu()
             return
-        }
-
-        if (isFilterOpened) {
-            closeFilter()
         }
 
         if (isAddVideoOpened) {
