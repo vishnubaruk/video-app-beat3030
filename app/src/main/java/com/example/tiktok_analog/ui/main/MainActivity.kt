@@ -1,13 +1,20 @@
 package com.example.tiktok_analog.ui.main
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tiktok_analog.R
+import com.example.tiktok_analog.util.ScrollViewExtended
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.filter.*
 import kotlinx.android.synthetic.main.menu.*
 import kotlinx.android.synthetic.main.profile.*
+import kotlin.random.Random
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -68,12 +75,108 @@ class MainActivity : AppCompatActivity() {
             yourProfileBlock.visibility = View.GONE
             yourVideosBlock.visibility = View.VISIBLE
         }
+
+
+        // filter panel
+        oneMinuteButton.setOnClickListener {
+            oneMinuteButton.background =
+                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_selected)
+            threeMinutesButton.background =
+                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_notselected)
+        }
+
+        threeMinutesButton.setOnClickListener {
+            oneMinuteButton.background =
+                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_notselected)
+            threeMinutesButton.background =
+                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_selected)
+        }
+
+        sortByPopularity.setOnClickListener {
+            sortByPopularity.background =
+                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_selected)
+            sortByDate.background =
+                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_notselected)
+            sortByLength.background =
+                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_notselected)
+        }
+
+        sortByDate.setOnClickListener {
+            sortByPopularity.background =
+                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_notselected)
+            sortByDate.background =
+                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_selected)
+            sortByLength.background =
+                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_notselected)
+        }
+
+        sortByLength.setOnClickListener {
+            sortByPopularity.background =
+                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_notselected)
+            sortByDate.background =
+                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_notselected)
+            sortByLength.background =
+                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_selected)
+        }
+
+        backArrowButton.setOnClickListener {
+            onBackPressed()
+        }
+
+        for (i in 1..10) {
+            addViewToNewsLine(
+                "Кухонный стол с пищей и в...",
+                arrayListOf("еда", "кухня", "пища"),
+                Random.nextInt(10, 9000),
+                Random.nextInt(10, 1200),
+                R.drawable.rectangle4
+            )
+        }
+
+        scrollView.viewTreeObserver
+            .addOnScrollChangedListener {
+                if (scrollView.getChildAt(0).bottom
+                    <= scrollView.height + scrollView.scrollY
+                ) {
+                    //scroll view is at bottom
+                    for (i in 1..10) {
+                        addViewToNewsLine(
+                            "Кухонный стол с пищей и в...",
+                            arrayListOf("еда", "кухня", "пища"),
+                            Random.nextInt(10, 9000),
+                            Random.nextInt(10, 1200),
+                            R.drawable.rectangle4
+                        )
+                    }
+                } else {
+                    //scroll view is not at bottom
+                }
+            }
+    }
+
+    interface ScrollViewListener {
+        fun onScrollChanged(
+            scrollView: ScrollViewExtended?,
+            x: Int, y: Int, oldx: Int, oldy: Int
+        ) {
+            for (i in 1..10) {
+
+            }
+        }
+    }
+
+    private fun openNewsLine() {
+        newsLineLayout.visibility = View.VISIBLE
+    }
+
+    private fun closeNewsLine() {
+        newsLineLayout.visibility = View.GONE
     }
 
     private fun openMenu() {
         // Toast.makeText(applicationContext, "Menu Opened!", Toast.LENGTH_SHORT).show()
         closeFilter()
-        closeProfile()
+        closeNewsLine()
 
         openMenuButton.visibility = View.GONE
         closeMenuButton.visibility = View.VISIBLE
@@ -87,6 +190,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun closeMenu() {
         // Toast.makeText(applicationContext, "Menu Closed!", Toast.LENGTH_SHORT).show()
+        openNewsLine()
 
         openMenuButton.visibility = View.VISIBLE
         closeMenuButton.visibility = View.GONE
@@ -102,6 +206,7 @@ class MainActivity : AppCompatActivity() {
         // Toast.makeText(applicationContext, "Filter Opened!", Toast.LENGTH_SHORT).show()
         closeMenu()
         closeProfile()
+        closeNewsLine()
 
         openFilterButton.visibility = View.GONE
         closeFilterButton.visibility = View.VISIBLE
@@ -109,10 +214,13 @@ class MainActivity : AppCompatActivity() {
         filterLayout.visibility = View.VISIBLE
 
         isFilterOpened = true
+
+        sectionTitleText.text = "Главная"
     }
 
     private fun closeFilter() {
         // Toast.makeText(applicationContext, "Filter Closed!", Toast.LENGTH_SHORT).show()
+        openNewsLine()
 
         openFilterButton.visibility = View.VISIBLE
         closeFilterButton.visibility = View.GONE
@@ -123,9 +231,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openProfile() {
-        closeMenu()
-        closeFilter()
-
         profileLayout.visibility = View.VISIBLE
 
         isProfileOpened = true
@@ -138,22 +243,52 @@ class MainActivity : AppCompatActivity() {
 
         isProfileOpened = false
 
-        sectionTitleText.text = "Главная"
+        sectionTitleText.text = "Меню"
+    }
+
+    private fun addViewToNewsLine(
+        title: String,
+        tags: ArrayList<String>,
+        likeCount: Int = 1200,
+        length: Int = 90,
+        imageId: Int
+    ) {
+        // replace with new pattern layout
+        val newView =
+            LayoutInflater.from(applicationContext).inflate(R.layout.video_feed_item, null, false)
+        newView.findViewWithTag<TextView>("title").text = title
+
+        var formattedTags = ""
+        for (i in tags) {
+            formattedTags += "#$i  "
+        }
+        newView.findViewWithTag<TextView>("tags").text = formattedTags
+
+        newView.findViewWithTag<Button>("likeButton").text = "$likeCount  "
+        newView.findViewWithTag<Button>("lengthButton").text =
+            "${length / 60}:${if (length % 60 < 10) "0" else ""}${length % 60}"
+
+        newView.findViewWithTag<ImageView>("previewImage").setImageResource(imageId)
+        newsLineLayout.addView(newView)
+        // newView.findViewWithTag<ProgressBar>("progressBar").progress = progress
+        // properties[id]= newView
     }
 
     override fun onBackPressed() {
         // super.onBackPressed()
 
+        if (isProfileOpened) {
+            closeProfile()
+            return
+        }
+
         if (isMenuOpened) {
             closeMenu()
+            return
         }
 
-        if(isFilterOpened) {
+        if (isFilterOpened) {
             closeFilter()
-        }
-
-        if(isProfileOpened) {
-            closeProfile()
         }
     }
 }
