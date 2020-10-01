@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     var isMenuOpened = false
     var isFilterOpened = false
     var isProfileOpened = false
+    var isAddVideoOpened = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,6 +77,9 @@ class MainActivity : AppCompatActivity() {
             yourVideosBlock.visibility = View.VISIBLE
         }
 
+        addVideoButton.setOnClickListener {
+            openAddVideo()
+        }
 
         // filter panel
         oneMinuteButton.setOnClickListener {
@@ -125,8 +129,12 @@ class MainActivity : AppCompatActivity() {
 
         for (i in 1..10) {
             addViewToNewsLine(
-                "Кухонный стол с пищей и в...",
-                arrayListOf("еда", "кухня", "пища"),
+                "Title${Random.nextInt(10000, 99999999)}",
+                arrayListOf(
+                    "tag${Random.nextInt(100, 999)}",
+                    "tag${Random.nextInt(100, 999)}",
+                    "tag${Random.nextInt(100, 999)}"
+                ),
                 Random.nextInt(10, 9000),
                 Random.nextInt(10, 1200),
                 R.drawable.rectangle4
@@ -141,8 +149,12 @@ class MainActivity : AppCompatActivity() {
                     //scroll view is at bottom
                     for (i in 1..10) {
                         addViewToNewsLine(
-                            "Кухонный стол с пищей и в...",
-                            arrayListOf("еда", "кухня", "пища"),
+                            "Title${Random.nextInt(10000, 99999999)}",
+                            arrayListOf(
+                                "tag${Random.nextInt(100, 999)}",
+                                "tag${Random.nextInt(100, 999)}",
+                                "tag${Random.nextInt(100, 999)}"
+                            ),
                             Random.nextInt(10, 9000),
                             Random.nextInt(10, 1200),
                             R.drawable.rectangle4
@@ -233,6 +245,9 @@ class MainActivity : AppCompatActivity() {
     private fun openProfile() {
         profileLayout.visibility = View.VISIBLE
 
+        closeMenuButton.visibility = View.GONE
+        backArrowButton.visibility = View.VISIBLE
+
         isProfileOpened = true
 
         sectionTitleText.text = "Ваш профиль"
@@ -241,9 +256,34 @@ class MainActivity : AppCompatActivity() {
     private fun closeProfile() {
         profileLayout.visibility = View.GONE
 
+        closeMenuButton.visibility = View.VISIBLE
+        backArrowButton.visibility = View.GONE
+
         isProfileOpened = false
 
         sectionTitleText.text = "Меню"
+    }
+
+    private fun openAddVideo() {
+        addVideoLayout.visibility = View.VISIBLE
+
+        closeMenuButton.visibility = View.GONE
+        backArrowButton.visibility = View.VISIBLE
+
+        isAddVideoOpened = true
+
+        sectionTitleText.text = "Добавить видео"
+    }
+
+    private fun closeAddVideo() {
+        addVideoLayout.visibility = View.GONE
+
+        closeMenuButton.visibility = View.VISIBLE
+        backArrowButton.visibility = View.GONE
+
+        isAddVideoOpened = false
+
+        sectionTitleText.text = "Добавить видео"
     }
 
     private fun addViewToNewsLine(
@@ -289,6 +329,10 @@ class MainActivity : AppCompatActivity() {
 
         if (isFilterOpened) {
             closeFilter()
+        }
+
+        if (isAddVideoOpened) {
+            closeAddVideo()
         }
     }
 }
