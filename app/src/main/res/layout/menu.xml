@@ -68,7 +68,7 @@
         <Button
             android:drawablePadding="20dp"
             android:textAlignment="textStart"
-            android:id="@+id/button4"
+            android:id="@+id/favouriteButton"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="75dp"
@@ -96,7 +96,7 @@
             android:textAllCaps="false"
             android:textColor="#243444"
             android:textSize="15sp"
-            app:layout_constraintTop_toBottomOf="@+id/button4"
+            app:layout_constraintTop_toBottomOf="@+id/favouriteButton"
             tools:layout_editor_absoluteX="-16dp" />
 
         <Button

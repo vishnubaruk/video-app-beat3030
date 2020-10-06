@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tiktok_analog.R
@@ -22,6 +23,7 @@ class MainActivity : AppCompatActivity() {
     var isFilterOpened = false
     var isProfileOpened = false
     var isAddVideoOpened = false
+    var isFavouriteOpened = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +51,10 @@ class MainActivity : AppCompatActivity() {
 
         openProfileButton.setOnClickListener {
             openProfile()
+        }
+
+        favouriteButton.setOnClickListener {
+            openFavourite()
         }
 
         yourProfileTab.setOnClickListener {
@@ -139,6 +145,11 @@ class MainActivity : AppCompatActivity() {
                 Random.nextInt(10, 1200),
                 R.drawable.rectangle4
             )
+
+            addViewToFavourite(
+                Random.nextInt(100000, 999999),
+                R.drawable.rectangle34
+            )
         }
 
         scrollView.viewTreeObserver
@@ -147,34 +158,33 @@ class MainActivity : AppCompatActivity() {
                     <= scrollView.height + scrollView.scrollY
                 ) {
                     //scroll view is at bottom
-                    for (i in 1..10) {
-                        addViewToNewsLine(
-                            "Title${Random.nextInt(10000, 99999999)}",
-                            arrayListOf(
-                                "tag${Random.nextInt(100, 999)}",
-                                "tag${Random.nextInt(100, 999)}",
-                                "tag${Random.nextInt(100, 999)}"
-                            ),
-                            Random.nextInt(10, 9000),
-                            Random.nextInt(10, 1200),
-                            R.drawable.rectangle4
-                        )
+                    // TODO: refactor to stateStack
+                    if (sectionTitleText.text == "Главная") {
+                        for (i in 1..10) {
+                            addViewToNewsLine(
+                                "Title${Random.nextInt(10000, 99999999)}",
+                                arrayListOf(
+                                    "tag${Random.nextInt(100, 999)}",
+                                    "tag${Random.nextInt(100, 999)}",
+                                    "tag${Random.nextInt(100, 999)}"
+                                ),
+                                Random.nextInt(10, 9000),
+                                Random.nextInt(10, 1200),
+                                R.drawable.rectangle4
+                            )
+                        }
+                    } else if (isFavouriteOpened) {
+                        for (i in 1..10) {
+                            addViewToFavourite(
+                                Random.nextInt(100000, 999999),
+                                R.drawable.rectangle34
+                            )
+                        }
                     }
                 } else {
                     //scroll view is not at bottom
                 }
             }
-    }
-
-    interface ScrollViewListener {
-        fun onScrollChanged(
-            scrollView: ScrollViewExtended?,
-            x: Int, y: Int, oldx: Int, oldy: Int
-        ) {
-            for (i in 1..10) {
-
-            }
-        }
     }
 
     private fun openNewsLine() {
@@ -296,7 +306,35 @@ class MainActivity : AppCompatActivity() {
 
         isAddVideoOpened = false
 
-        sectionTitleText.text = "Добавить видео"
+        sectionTitleText.text = "Меню"
+    }
+
+    private fun openFavourite() {
+        closeMenu()
+        closeNewsLine()
+
+        favouriteLayout.visibility = View.VISIBLE
+
+        openMenuButton.visibility = View.GONE
+        closeMenuButton.visibility = View.GONE
+        backArrowButton.visibility = View.VISIBLE
+
+        isFavouriteOpened = true
+
+        sectionTitleText.text = "Избранное"
+    }
+
+    private fun closeFavourite() {
+        openMenu()
+
+        favouriteLayout.visibility = View.GONE
+
+        closeMenuButton.visibility = View.VISIBLE
+        backArrowButton.visibility = View.GONE
+
+        isFavouriteOpened = false
+
+        sectionTitleText.text = "Меню"
     }
 
     private fun addViewToNewsLine(
@@ -327,11 +365,30 @@ class MainActivity : AppCompatActivity() {
         // properties[id]= newView
     }
 
+    private fun addViewToFavourite(viewCount: Int, imageId: Int) {
+        val newViewLine =
+            LayoutInflater.from(applicationContext).inflate(R.layout.fav_line, null, false)
+
+//        for (i in 0..2) {
+//            val newView =
+//                LayoutInflater.from(applicationContext)
+//                    .inflate(R.layout.fav_video_item, null, false)
+//
+//            newView.findViewWithTag<TextView>("viewCount").text = viewCount.toString()
+//
+//            newView.findViewWithTag<ImageView>("previewImage").setImageResource(imageId)
+//            newViewLine.findViewWithTag<LinearLayout>("root").addView(newView)
+//        }
+
+        favouriteLayout.addView(newViewLine)
+    }
+
     override fun onBackPressed() {
         // super.onBackPressed()
 
         if (isFilterOpened) {
             closeFilter()
+            return
         }
 
         if (isProfileOpened) {
@@ -346,6 +403,11 @@ class MainActivity : AppCompatActivity() {
 
         if (isAddVideoOpened) {
             closeAddVideo()
+            return
+        }
+
+        if (isFavouriteOpened) {
+            closeFavourite()
         }
     }
 }
