@@ -38,6 +38,8 @@ class ProfileActivity : AppCompatActivity() {
 
             yourProfileBlock.visibility = View.VISIBLE
             yourVideosBlock.visibility = View.GONE
+
+            sectionTitleText.text = "Ваш профиль"
         }
 
         yourVideosTab.setOnClickListener {
@@ -51,6 +53,8 @@ class ProfileActivity : AppCompatActivity() {
 
             yourProfileBlock.visibility = View.GONE
             yourVideosBlock.visibility = View.VISIBLE
+
+            sectionTitleText.text = "Ваши видео"
         }
     }
 }
