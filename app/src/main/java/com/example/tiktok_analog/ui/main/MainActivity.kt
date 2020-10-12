@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
     var isMenuOpened = false
     var isFilterOpened = false
     var isProfileOpened = false
-    var isAddVideoOpened = false
     var isFavouriteOpened = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -287,32 +286,6 @@ class MainActivity : AppCompatActivity() {
     private fun openAddVideo() {
         startActivity(Intent(this, AddVideoActivity::class.java))
         return
-
-        closeMenu()
-        closeNewsLine()
-
-        addVideoLayout.visibility = View.VISIBLE
-
-        openMenuButton.visibility = View.GONE
-        closeMenuButton.visibility = View.GONE
-        backArrowButton.visibility = View.VISIBLE
-
-        isAddVideoOpened = true
-
-        sectionTitleText.text = "Добавить видео"
-    }
-
-    private fun closeAddVideo() {
-        openMenu()
-
-        addVideoLayout.visibility = View.GONE
-
-        closeMenuButton.visibility = View.VISIBLE
-        backArrowButton.visibility = View.GONE
-
-        isAddVideoOpened = false
-
-        sectionTitleText.text = "Меню"
     }
 
     private fun openFavourite() {
@@ -404,11 +377,6 @@ class MainActivity : AppCompatActivity() {
 
         if (isMenuOpened) {
             closeMenu()
-            return
-        }
-
-        if (isAddVideoOpened) {
-            closeAddVideo()
             return
         }
 
