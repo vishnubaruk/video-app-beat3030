@@ -32,6 +32,10 @@
             android:name=".menu_screens.AddVideoActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".menu_screens.ProfileActivity"
+            android:label="@string/app_name"
+            android:windowSoftInputMode="adjustPan" />
     </application>
 
 </manifest>

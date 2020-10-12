@@ -11,11 +11,11 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.menu_screens.AddVideoActivity
+import com.example.tiktok_analog.menu_screens.ProfileActivity
 import com.example.tiktok_analog.util.ScrollViewExtended
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.filter.*
 import kotlinx.android.synthetic.main.menu.*
-import kotlinx.android.synthetic.main.profile.*
 import kotlin.random.Random
 
 
@@ -56,32 +56,6 @@ class MainActivity : AppCompatActivity() {
 
         favouriteButton.setOnClickListener {
             openFavourite()
-        }
-
-        yourProfileTab.setOnClickListener {
-            yourProfileTab.backgroundTintList =
-                applicationContext.resources.getColorStateList(R.color.buttonEnabledBg)
-            yourProfileTab.setTextColor(resources.getColor(R.color.white))
-
-            yourVideosTab.backgroundTintList =
-                applicationContext.resources.getColorStateList(R.color.groupUnselected)
-            yourVideosTab.setTextColor(resources.getColor(R.color.colorPrimary))
-
-            yourProfileBlock.visibility = View.VISIBLE
-            yourVideosBlock.visibility = View.GONE
-        }
-
-        yourVideosTab.setOnClickListener {
-            yourProfileTab.backgroundTintList =
-                applicationContext.resources.getColorStateList(R.color.groupUnselected)
-            yourProfileTab.setTextColor(resources.getColor(R.color.colorPrimary))
-
-            yourVideosTab.backgroundTintList =
-                applicationContext.resources.getColorStateList(R.color.buttonEnabledBg)
-            yourVideosTab.setTextColor(resources.getColor(R.color.white))
-
-            yourProfileBlock.visibility = View.GONE
-            yourVideosBlock.visibility = View.VISIBLE
         }
 
         addVideoButton.setOnClickListener {
@@ -255,37 +229,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openProfile() {
-        closeMenu()
-        closeNewsLine()
-
-        profileLayout.visibility = View.VISIBLE
-
-        openMenuButton.visibility = View.GONE
-        closeMenuButton.visibility = View.GONE
-        backArrowButton.visibility = View.VISIBLE
-
-        isProfileOpened = true
-
-        sectionTitleText.text = "Ваш профиль"
+        startActivity(Intent(this, ProfileActivity::class.java))
     }
 
     private fun closeProfile() {
         openMenu()
-
-        profileLayout.visibility = View.GONE
-
-        closeMenuButton.visibility = View.VISIBLE
-        backArrowButton.visibility = View.GONE
-
-        isProfileOpened = false
-
-        sectionTitleText.text = "Меню"
     }
 
-    // TODO: fix possible bugs
     private fun openAddVideo() {
         startActivity(Intent(this, AddVideoActivity::class.java))
-        return
     }
 
     private fun openFavourite() {
