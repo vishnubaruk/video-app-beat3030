@@ -1,5 +1,6 @@
 package com.example.tiktok_analog.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tiktok_analog.R
+import com.example.tiktok_analog.menu_screens.AddVideoActivity
 import com.example.tiktok_analog.util.ScrollViewExtended
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.filter.*
@@ -281,7 +283,11 @@ class MainActivity : AppCompatActivity() {
         sectionTitleText.text = "Меню"
     }
 
+    // TODO: fix possible bugs
     private fun openAddVideo() {
+        startActivity(Intent(this, AddVideoActivity::class.java))
+        return
+
         closeMenu()
         closeNewsLine()
 
