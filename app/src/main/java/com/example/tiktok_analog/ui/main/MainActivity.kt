@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.menu_screens.AddVideoActivity
+import com.example.tiktok_analog.menu_screens.FavouriteActivity
 import com.example.tiktok_analog.menu_screens.ProfileActivity
 import com.example.tiktok_analog.util.ScrollViewExtended
 import kotlinx.android.synthetic.main.activity_main.*
@@ -21,10 +22,8 @@ import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
 
-    var isMenuOpened = false
-    var isFilterOpened = false
-    var isProfileOpened = false
-    var isFavouriteOpened = false
+    private var isMenuOpened = false
+    private var isFilterOpened = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -120,11 +119,6 @@ class MainActivity : AppCompatActivity() {
                 Random.nextInt(10, 1200),
                 R.drawable.rectangle4
             )
-
-            addViewToFavourite(
-                Random.nextInt(100000, 999999),
-                R.drawable.rectangle34
-            )
         }
 
         scrollView.viewTreeObserver
@@ -148,16 +142,7 @@ class MainActivity : AppCompatActivity() {
                                 R.drawable.rectangle4
                             )
                         }
-                    } else if (isFavouriteOpened) {
-                        for (i in 1..10) {
-                            addViewToFavourite(
-                                Random.nextInt(100000, 999999),
-                                R.drawable.rectangle34
-                            )
-                        }
                     }
-                } else {
-                    //scroll view is not at bottom
                 }
             }
     }
@@ -232,40 +217,13 @@ class MainActivity : AppCompatActivity() {
         startActivity(Intent(this, ProfileActivity::class.java))
     }
 
-    private fun closeProfile() {
-        openMenu()
-    }
 
     private fun openAddVideo() {
         startActivity(Intent(this, AddVideoActivity::class.java))
     }
 
     private fun openFavourite() {
-        closeMenu()
-        closeNewsLine()
-
-        favouriteLayout.visibility = View.VISIBLE
-
-        openMenuButton.visibility = View.GONE
-        closeMenuButton.visibility = View.GONE
-        backArrowButton.visibility = View.VISIBLE
-
-        isFavouriteOpened = true
-
-        sectionTitleText.text = "Избранное"
-    }
-
-    private fun closeFavourite() {
-        openMenu()
-
-        favouriteLayout.visibility = View.GONE
-
-        closeMenuButton.visibility = View.VISIBLE
-        backArrowButton.visibility = View.GONE
-
-        isFavouriteOpened = false
-
-        sectionTitleText.text = "Меню"
+        startActivity(Intent(this, FavouriteActivity::class.java))
     }
 
     private fun addViewToNewsLine(
@@ -296,24 +254,6 @@ class MainActivity : AppCompatActivity() {
         // properties[id]= newView
     }
 
-    private fun addViewToFavourite(viewCount: Int, imageId: Int) {
-        val newViewLine =
-            LayoutInflater.from(applicationContext).inflate(R.layout.fav_line, null, false)
-
-//        for (i in 0..2) {
-//            val newView =
-//                LayoutInflater.from(applicationContext)
-//                    .inflate(R.layout.fav_video_item, null, false)
-//
-//            newView.findViewWithTag<TextView>("viewCount").text = viewCount.toString()
-//
-//            newView.findViewWithTag<ImageView>("previewImage").setImageResource(imageId)
-//            newViewLine.findViewWithTag<LinearLayout>("root").addView(newView)
-//        }
-
-        favouriteLayout.addView(newViewLine)
-    }
-
     override fun onBackPressed() {
         // super.onBackPressed()
 
@@ -322,18 +262,10 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        if (isProfileOpened) {
-            closeProfile()
-            return
-        }
 
         if (isMenuOpened) {
             closeMenu()
             return
-        }
-
-        if (isFavouriteOpened) {
-            closeFavourite()
         }
     }
 }
