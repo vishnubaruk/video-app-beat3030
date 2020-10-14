@@ -1,5 +1,5 @@
-# Video-Sharing-App
-Development of a mobile application that allows you to record and publish videos
+# What is it? 
+This is an open repository of a new application that allows you to record videos, share them, and also make video broadcasts.
 
 # What has already been implemented
 For now, this app only contains a prototype user interface, but I'll be adding the full functionality of the app here soon.
