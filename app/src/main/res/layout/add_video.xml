@@ -125,6 +125,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/textView46"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="148dp"
@@ -134,6 +135,19 @@
                 android:textColor="#243444"
                 android:textSize="15sp"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/videoLength"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="548dp"
+                android:fontFamily="@font/monsterrat_regular"
+                android:text=""
+                android:textColor="#243444"
+                android:textSize="15sp"
+                app:layout_constraintStart_toEndOf="@+id/textView46"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
@@ -205,7 +219,7 @@
 
 
             <Button
-                android:id="@+id/loadVideo2"
+                android:id="@+id/pickFileButton"
                 android:layout_width="186dp"
                 android:layout_height="50dp"
                 android:layout_gravity="start"
