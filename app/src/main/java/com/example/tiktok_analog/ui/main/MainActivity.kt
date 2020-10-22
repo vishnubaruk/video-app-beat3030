@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.menu_screens.AddVideoActivity
+import com.example.tiktok_analog.menu_screens.BroadcastActivity
 import com.example.tiktok_analog.menu_screens.FavouriteActivity
 import com.example.tiktok_analog.menu_screens.ProfileActivity
 import com.example.tiktok_analog.util.ScrollViewExtended
@@ -59,6 +60,10 @@ class MainActivity : AppCompatActivity() {
 
         addVideoButton.setOnClickListener {
             openAddVideo()
+        }
+
+        broadcastButton.setOnClickListener {
+            openBroadcast()
         }
 
         // filter panel
@@ -224,6 +229,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun openFavourite() {
         startActivity(Intent(this, FavouriteActivity::class.java))
+    }
+
+    private fun openBroadcast() {
+        startActivity(Intent(this, BroadcastActivity::class.java))
     }
 
     private fun addViewToNewsLine(

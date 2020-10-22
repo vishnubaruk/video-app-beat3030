@@ -32,7 +32,7 @@
                 android:id="@+id/register_panel"
                 layout="@layout/register"
                 android:visibility="visible"
-                tools:layout_editor_absoluteX="24dp"
+                tools:layout_editor_absoluteX="0dp"
                 tools:layout_editor_absoluteY="0dp" />
 
             <include

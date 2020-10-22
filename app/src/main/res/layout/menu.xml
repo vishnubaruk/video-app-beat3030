@@ -32,7 +32,7 @@
             tools:layout_editor_absoluteX="0dp" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/broadcastButton"
             android:drawablePadding="20dp"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
@@ -51,18 +51,18 @@
         <Button
             android:drawablePadding="20dp"
             android:textAlignment="textStart"
-            android:id="@+id/button5"
+            android:id="@+id/notificationsButton"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="75dp"
             android:backgroundTint="@color/mainLayoutColor"
             android:drawableStart="@drawable/ic_comments"
             android:fontFamily="@font/monsterrat_semibold"
-            android:text="Комментарии"
+            android:text="Уведомления"
             android:textAllCaps="false"
             android:textColor="#243444"
             android:textSize="15sp"
-            app:layout_constraintTop_toBottomOf="@+id/button3"
+            app:layout_constraintTop_toBottomOf="@+id/broadcastButton"
             tools:layout_editor_absoluteX="0dp" />
 
         <Button
@@ -79,24 +79,7 @@
             android:textAllCaps="false"
             android:textColor="#243444"
             android:textSize="15sp"
-            app:layout_constraintTop_toBottomOf="@+id/button5"
-            tools:layout_editor_absoluteX="-16dp" />
-
-        <Button
-            android:drawablePadding="20dp"
-            android:textAlignment="textStart"
-            android:id="@+id/button6"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="75dp"
-            android:backgroundTint="@color/mainLayoutColor"
-            android:drawableStart="@drawable/ic_options"
-            android:fontFamily="@font/monsterrat_semibold"
-            android:text="Настройки"
-            android:textAllCaps="false"
-            android:textColor="#243444"
-            android:textSize="15sp"
-            app:layout_constraintTop_toBottomOf="@+id/favouriteButton"
+            app:layout_constraintTop_toBottomOf="@+id/notificationsButton"
             tools:layout_editor_absoluteX="-16dp" />
 
         <Button
@@ -113,7 +96,7 @@
             android:textAllCaps="false"
             android:textColor="#243444"
             android:textSize="15sp"
-            app:layout_constraintTop_toBottomOf="@+id/button6"
+            app:layout_constraintTop_toBottomOf="@+id/favouriteButton"
             tools:layout_editor_absoluteX="0dp" />
 
         <Button
