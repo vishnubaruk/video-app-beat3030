@@ -66,9 +66,7 @@ class BroadcastActivity : AppCompatActivity(), SurfaceHolder.Callback {
                     applicationContext.resources.getColorStateList(
                         if (s.isNotBlank()) R.color.buttonEnabledBg else R.color.buttonDisabledBg
                     )
-
             }
-
 
             override fun beforeTextChanged(
                 s: CharSequence, start: Int, count: Int,
@@ -83,6 +81,7 @@ class BroadcastActivity : AppCompatActivity(), SurfaceHolder.Callback {
     private fun startBroadcast() {
         preStartBroadcast.visibility = View.GONE
         broadcastStarted.visibility = View.VISIBLE
+        flipCameraButton2.visibility = View.VISIBLE
     }
 
     private fun flipCamera() {
