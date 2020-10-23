@@ -88,10 +88,10 @@
 
     <Button
         android:id="@+id/flipCameraButton"
-        android:layout_width="40dp"
+        android:layout_width="50dp"
         android:layout_height="40dp"
         android:layout_marginBottom="52dp"
-        android:background="@drawable/ic_baseline_autorenew_24"
+        android:background="@drawable/ic_camera"
         android:backgroundTint="@color/white"
         android:clickable="true"
         android:enabled="true"
