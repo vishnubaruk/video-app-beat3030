@@ -9,6 +9,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.Surface
 import android.view.SurfaceHolder
+import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -56,6 +57,14 @@ class BroadcastActivity : AppCompatActivity(), SurfaceHolder.Callback {
             flipCamera()
         }
 
+        flipCameraButton2.setOnClickListener {
+            flipCamera()
+        }
+
+        startBroadcastButton.setOnClickListener {
+            startBroadcast()
+        }
+
         broadcastTitle.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(
                 s: CharSequence, start: Int, before: Int,
@@ -65,7 +74,7 @@ class BroadcastActivity : AppCompatActivity(), SurfaceHolder.Callback {
 
                 startBroadcastButton.backgroundTintList =
                     applicationContext.resources.getColorStateList(
-                        if ( s.isNotBlank()) R.color.buttonEnabledBg else R.color.buttonDisabledBg
+                        if (s.isNotBlank()) R.color.buttonEnabledBg else R.color.buttonDisabledBg
                     )
 
             }
@@ -79,6 +88,11 @@ class BroadcastActivity : AppCompatActivity(), SurfaceHolder.Callback {
 
             override fun afterTextChanged(s: Editable) {}
         })
+    }
+
+    private fun startBroadcast() {
+        preStartBroadcast.visibility = View.GONE
+        broadcastStarted.visibility = View.VISIBLE
     }
 
     private fun flipCamera() {
