@@ -4,6 +4,8 @@ import android.Manifest
 import android.hardware.Camera
 import android.hardware.Camera.CameraInfo
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.Surface
 import android.view.SurfaceHolder
@@ -11,6 +13,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.tiktok_analog.R
+import kotlinx.android.synthetic.main.activity_sms.*
 import kotlinx.android.synthetic.main.broadcast.*
 import java.io.IOException
 
@@ -52,6 +55,30 @@ class BroadcastActivity : AppCompatActivity(), SurfaceHolder.Callback {
         flipCameraButton.setOnClickListener {
             flipCamera()
         }
+
+        broadcastTitle.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(
+                s: CharSequence, start: Int, before: Int,
+                count: Int
+            ) {
+                startBroadcastButton.isEnabled = s.isNotBlank()
+
+                startBroadcastButton.backgroundTintList =
+                    applicationContext.resources.getColorStateList(
+                        if ( s.isNotBlank()) R.color.buttonEnabledBg else R.color.buttonDisabledBg
+                    )
+
+            }
+
+
+            override fun beforeTextChanged(
+                s: CharSequence, start: Int, count: Int,
+                after: Int
+            ) {
+            }
+
+            override fun afterTextChanged(s: Editable) {}
+        })
     }
 
     private fun flipCamera() {

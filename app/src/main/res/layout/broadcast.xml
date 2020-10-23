@@ -67,14 +67,14 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/startBroadcastButton"
         android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="48dp"
         android:background="@drawable/rounded_button"
-        android:backgroundTint="@color/buttonEnabledBg"
+        android:backgroundTint="@color/buttonDisabledBg"
         android:clickable="true"
-        android:enabled="true"
+        android:enabled="false"
         android:focusable="true"
         android:fontFamily="@font/monsterrat_bold"
         android:foreground="?attr/selectableItemBackground"
@@ -103,7 +103,7 @@
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button3" />
+        app:layout_constraintStart_toEndOf="@+id/startBroadcastButton" />
 
 
     <TextView
@@ -114,12 +114,12 @@
         android:text="Введите название для трансляции"
         android:textColor="@color/white"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/editText3"
+        app:layout_constraintBottom_toTopOf="@+id/broadcastTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/editText3"
+        android:id="@+id/broadcastTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="64dp"

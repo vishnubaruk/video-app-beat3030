@@ -100,7 +100,7 @@
             tools:layout_editor_absoluteX="0dp" />
 
         <Button
-            android:id="@+id/button8"
+            android:id="@+id/closeApp"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="75dp"

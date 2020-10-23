@@ -10,10 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tiktok_analog.R
-import com.example.tiktok_analog.menu_screens.AddVideoActivity
-import com.example.tiktok_analog.menu_screens.BroadcastActivity
-import com.example.tiktok_analog.menu_screens.FavouriteActivity
-import com.example.tiktok_analog.menu_screens.ProfileActivity
+import com.example.tiktok_analog.menu_screens.*
 import com.example.tiktok_analog.util.ScrollViewExtended
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.filter.*
@@ -29,6 +26,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // TODO: add OnClick for all elements
 
         openMenuButton.setOnClickListener {
             openMenu()
@@ -64,6 +63,15 @@ class MainActivity : AppCompatActivity() {
 
         broadcastButton.setOnClickListener {
             openBroadcast()
+        }
+
+        notificationsButton.setOnClickListener {
+            openNotifications()
+        }
+
+        closeApp.setOnClickListener {
+            // TODO: remove from stack previous activities
+            finishAndRemoveTask()
         }
 
         // filter panel
@@ -233,6 +241,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun openBroadcast() {
         startActivity(Intent(this, BroadcastActivity::class.java))
+    }
+
+    private fun openNotifications() {
+        startActivity(Intent(this, NotificationsActivity::class.java))
     }
 
     private fun addViewToNewsLine(
