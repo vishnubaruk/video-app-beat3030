@@ -1,4 +1,4 @@
-package com.example.tiktok_analog.menu_screens
+package com.example.tiktok_analog.ui.menu_screens
 
 import android.os.Bundle
 import android.view.LayoutInflater

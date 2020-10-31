@@ -1,6 +1,7 @@
-package com.example.tiktok_analog.data
+package com.example.tiktok_analog.data.login
 
-import com.example.tiktok_analog.data.model.LoggedInUser
+import com.example.tiktok_analog.data.Result
+import com.example.tiktok_analog.data.login.model.LoggedInUser
 
 /**
  * Class that requests authentication and profile information from the remote data source and

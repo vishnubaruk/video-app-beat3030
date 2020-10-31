@@ -11,8 +11,9 @@
     <string name="action_sign_in">Зарегистрироваться</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"добро\nпожаловать,"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="invalid_username">Невалидное имя</string>
+    <string name="invalid_password">Пароль должен содержать больше 5 символов</string>
+    <string name="passwords_not_match"> Введенные пароли должны совпадать </string>
     <string name="login_failed">"Login failed"</string>
     <string name="dear_user">дорогой пользователь \nк нам в App…</string>
     <string name="registration">Регистрация</string>

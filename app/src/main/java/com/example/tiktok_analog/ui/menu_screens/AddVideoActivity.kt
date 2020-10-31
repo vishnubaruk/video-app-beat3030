@@ -1,11 +1,9 @@
-package com.example.tiktok_analog.menu_screens
+package com.example.tiktok_analog.ui.menu_screens
 
 import android.app.Activity
 import android.content.Intent
-import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tiktok_analog.R

@@ -1,6 +1,5 @@
-package com.example.tiktok_analog.menu_screens
+package com.example.tiktok_analog.ui.menu_screens
 
-import android.Manifest
 import android.hardware.Camera
 import android.hardware.Camera.CameraInfo
 import android.os.Bundle
@@ -12,9 +11,7 @@ import android.view.SurfaceHolder
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import com.example.tiktok_analog.R
-import kotlinx.android.synthetic.main.activity_sms.*
 import kotlinx.android.synthetic.main.broadcast.*
 import java.io.IOException
 

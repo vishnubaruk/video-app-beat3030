@@ -1,24 +1,32 @@
-package com.example.tiktok_analog.ui.login
+package com.example.tiktok_analog.ui
 
 import android.app.Activity
+import android.app.DatePickerDialog
+import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.telephony.PhoneNumberFormattingTextWatcher
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.example.tiktok_analog.ui.main.MainActivity
 import com.example.tiktok_analog.R
-import kotlinx.android.synthetic.main.authorize.*
+import com.example.tiktok_analog.ui.login.LoggedInUserView
+import com.example.tiktok_analog.ui.login.LoginViewModel
+import com.example.tiktok_analog.ui.login.LoginViewModelFactory
+import java.util.*
+
 
 class LoginActivity : AppCompatActivity() {
 
@@ -29,14 +37,11 @@ class LoginActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_login)
 
-        val username = findViewById<EditText>(R.id.email)
-        val password = findViewById<EditText>(R.id.password)
-        val login = findViewById<Button>(R.id.login)
         val registerButton = findViewById<Button>(R.id.register_button)
         val authorizeButton = findViewById<Button>(R.id.authorize_button)
+
         val registerPanel = findViewById<ConstraintLayout>(R.id.register_panel)
         val authorizePanel = findViewById<ConstraintLayout>(R.id.authorize_panel)
-        // val loading = findViewById<ProgressBar>(R.id.loading)
 
         registerButton.setOnClickListener {
             registerPanel.visibility = View.VISIBLE
@@ -53,33 +58,26 @@ class LoginActivity : AppCompatActivity() {
             registerButton.setBackgroundResource(R.drawable.bg_bth_no_outline)
             authorizeButton.setBackgroundResource(R.drawable.bg_btn_outline)
         }
+    }
 
-        // TODO: enable buttons only when all data is correct
+    private fun initRegisterScreen() {
+        val register = findViewById<Button>(R.id.register)
 
-        login.isEnabled = true
-        login.backgroundTintList =
-            applicationContext.resources.getColorStateList(R.color.buttonEnabledBg)
+        val username = findViewById<EditText>(R.id.name)
+        val phone = findViewById<EditText>(R.id.phone)
+        val birthDate = findViewById<TextView>(R.id.birth_date_text)
+        val city = findViewById<EditText>(R.id.city)
+        val email = findViewById<EditText>(R.id.email)
+        val password = findViewById<EditText>(R.id.password)
+        val confirmPassword = findViewById<EditText>(R.id.confirm_password)
 
-        // login button in register panel
-        login.setOnClickListener {
-            startActivity(Intent(this, SmsActivity::class.java))
-            Log.d("DEBUG", "login button pressed")
-        }
+        val mDateSetListener: OnDateSetListener
 
-
-        applyFilterButton.isEnabled = true
-        applyFilterButton.backgroundTintList =
-            applicationContext.resources.getColorStateList(R.color.buttonEnabledBg)
-        // enter button in authorize panel
-        applyFilterButton.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
-            Log.d("DEBUG", "enter button pressed")
-        }
-
+        register.isEnabled = false
+        register.backgroundTintList =
+            applicationContext.resources.getColorStateList(R.color.buttonDisabledBg)
 
         // TODO: refactor with authorization / registration
-        return
-
 
         loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory())
             .get(LoginViewModel::class.java)
@@ -88,13 +86,21 @@ class LoginActivity : AppCompatActivity() {
             val loginState = it ?: return@Observer
 
             // disable login button unless both username / password is valid
-            login.isEnabled = loginState.isDataValid
+            register.isEnabled = loginState.isDataValid
+
+            register.backgroundTintList = applicationContext.resources.getColorStateList(
+                if (loginState.isDataValid)
+                    R.color.buttonEnabledBg else R.color.buttonDisabledBg
+            )
 
             if (loginState.usernameError != null) {
                 username.error = getString(loginState.usernameError)
             }
             if (loginState.passwordError != null) {
                 password.error = getString(loginState.passwordError)
+            }
+            if (loginState.passwordMatchError != null) {
+                confirmPassword.error = getString(loginState.passwordMatchError)
             }
         })
 
@@ -110,22 +116,50 @@ class LoginActivity : AppCompatActivity() {
             }
             setResult(Activity.RESULT_OK)
 
-            //Complete and destroy login activity once successful
-            finish()
+            // Complete and destroy login activity once successful
+            // finish()
+
+            // Instead of destroying activity in case of correct registration we open SmsActivity
+            startActivity(Intent(this, SmsActivity::class.java))
         })
 
         username.afterTextChanged {
             loginViewModel.loginDataChanged(
                 username.text.toString(),
-                password.text.toString()
+                password.text.toString(),
+                confirmPassword.text.toString()
             )
+        }
+
+        phone.addTextChangedListener(PhoneNumberFormattingTextWatcher("RU"))
+
+        mDateSetListener =
+            OnDateSetListener { _, year, month, day ->
+                birthDate.text = "${month + 1}.$day.$year"
+            }
+
+        birthDate.setOnClickListener {
+            val cal: Calendar = Calendar.getInstance();
+            val year: Int = cal.get(Calendar.YEAR);
+            val month: Int = cal.get(Calendar.MONTH);
+            val day: Int = cal.get(Calendar.DAY_OF_MONTH);
+
+            val dialog = DatePickerDialog(
+                this,
+                android.R.style.Theme_Holo_Light_Dialog_MinWidth,
+                mDateSetListener,
+                year, month, day
+            )
+            dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            dialog.show()
         }
 
         password.apply {
             afterTextChanged {
                 loginViewModel.loginDataChanged(
                     username.text.toString(),
-                    password.text.toString()
+                    password.text.toString(),
+                    confirmPassword.text.toString()
                 )
             }
 
@@ -141,28 +175,24 @@ class LoginActivity : AppCompatActivity() {
             }
 
 
-            // TODO: make load of the next scene with login viewModel
-//            login.setOnClickListener {
-//                // loading.visibility = View.VISIBLE
-//                loginViewModel.login(username.text.toString(), password.text.toString())
-//            }
+            register.setOnClickListener {
+                // loading.visibility = View.VISIBLE
+                loginViewModel.login(username.text.toString(), password.text.toString())
+            }
         }
     }
 
-//    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.actovity_sms)
-//    }
+    private fun initLoginScreen() {
+        val login = findViewById<Button>(R.id.login)
+        login.isEnabled = true
+        login.backgroundTintList =
+            applicationContext.resources.getColorStateList(R.color.buttonEnabledBg)
+    }
 
     private fun updateUiWithUser(model: LoggedInUserView) {
         val welcome = getString(R.string.welcome)
         val displayName = model.displayName
         // TODO : initiate successful logged in experience
-        Toast.makeText(
-            applicationContext,
-            "$welcome $displayName",
-            Toast.LENGTH_LONG
-        ).show()
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {

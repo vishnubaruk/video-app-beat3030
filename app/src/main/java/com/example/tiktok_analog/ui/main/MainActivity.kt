@@ -11,7 +11,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.tiktok_analog.R
-import com.example.tiktok_analog.menu_screens.*
+import com.example.tiktok_analog.ui.menu_screens.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.filter.*
 import kotlinx.android.synthetic.main.menu.*
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
             closeFilter()
         }
 
-        applyFilterButton.setOnClickListener {
+        login.setOnClickListener {
             closeFilter()
         }
 
@@ -80,7 +80,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         logout.setOnClickListener {
-            // TODO: remove from stack previous activities
             finishAndRemoveTask()
         }
 

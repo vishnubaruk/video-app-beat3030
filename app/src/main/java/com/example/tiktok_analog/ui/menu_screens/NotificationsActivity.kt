@@ -1,7 +1,6 @@
-package com.example.tiktok_analog.menu_screens
+package com.example.tiktok_analog.ui.menu_screens
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tiktok_analog.R
 import kotlinx.android.synthetic.main.profile.*

@@ -1,21 +1,10 @@
-package com.example.tiktok_analog.menu_screens
+package com.example.tiktok_analog.ui.menu_screens
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tiktok_analog.R
 import kotlinx.android.synthetic.main.profile.*
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import com.example.tiktok_analog.menu_screens.AddVideoActivity
-import com.example.tiktok_analog.menu_screens.ProfileActivity
-import com.example.tiktok_analog.util.ScrollViewExtended
-import kotlinx.android.synthetic.main.filter.*
-import kotlinx.android.synthetic.main.menu.*
-import kotlin.random.Random
 
 
 class ProfileActivity : AppCompatActivity() {

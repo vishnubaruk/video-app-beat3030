@@ -22,11 +22,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
         android:fontFamily="@font/monsterrat_bold"
         android:text="@string/birth_date"
         android:textColor="#FFF"
-        app:layout_constraintBottom_toTopOf="@+id/birth_date"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/phone" />
+
+    <TextView
+        android:id="@+id/birth_date_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/monsterrat_bold"
+        android:text="31.12.2000"
+        android:textColor="#FFF"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
     <TextView
         android:id="@+id/textView6"
@@ -69,7 +83,7 @@
         android:fontFamily="@font/monsterrat_bold"
         android:text="@string/confirm_password"
         android:textColor="#FFF"
-        app:layout_constraintBottom_toTopOf="@+id/password_again"
+        app:layout_constraintBottom_toTopOf="@+id/confirm_password"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
@@ -110,42 +124,23 @@
         app:layout_constraintTop_toBottomOf="@+id/name" />
 
     <EditText
-        android:id="@+id/birth_date"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
-        android:backgroundTint="#FFF"
-        android:inputType="date"
-
-        android:selectAllOnFocus="true"
-        android:textColor="#FFF"
-        android:textCursorDrawable="@null"
-
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/phone" />
-
-    <EditText
         android:id="@+id/city"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="124dp"
         android:layout_marginEnd="24dp"
         android:backgroundTint="#FFF"
-        android:inputType="text"
 
+        android:inputType="text"
         android:selectAllOnFocus="true"
         android:textColor="#FFF"
-        android:textCursorDrawable="@null"
 
+        android:textCursorDrawable="@null"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/birth_date" />
+        app:layout_constraintTop_toBottomOf="@+id/phone" />
 
     <EditText
         android:id="@+id/email"
@@ -186,7 +181,7 @@
         app:layout_constraintTop_toBottomOf="@+id/email" />
 
     <EditText
-        android:id="@+id/password_again"
+        android:id="@+id/confirm_password"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -207,7 +202,7 @@
         app:layout_constraintTop_toBottomOf="@+id/password" />
 
     <Button
-        android:id="@+id/login"
+        android:id="@+id/register"
         android:layout_width="0dp"
         android:layout_height="63dp"
         android:layout_gravity="start"
@@ -230,7 +225,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password_again" />
+        app:layout_constraintTop_toBottomOf="@+id/confirm_password" />
 
     <TextView
         android:id="@+id/textView3"

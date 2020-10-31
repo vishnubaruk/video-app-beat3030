@@ -1,4 +1,4 @@
-package com.example.tiktok_analog.ui.login
+package com.example.tiktok_analog.ui
 
 import android.app.Activity
 import android.content.Context
