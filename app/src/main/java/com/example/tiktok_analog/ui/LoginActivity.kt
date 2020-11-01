@@ -129,19 +129,37 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, SmsActivity::class.java))
         })
 
-        username.afterTextChanged {
+        fun registerDataChanged() {
             registerViewModel.registerDataChanged(
-                username.text.toString(),
-                password.text.toString(),
-                confirmPassword.text.toString()
+                username = username.text.toString(),
+                phone = phone.text.toString(),
+                email = email.text.toString(),
+                password = password.text.toString(),
+                password2 = confirmPassword.text.toString()
             )
+        }
+
+        fun registerModel() {
+            registerViewModel.register(
+                username = username.text.toString(),
+                phone = phone.text.toString(),
+                email = email.text.toString(),
+                birthDate = birthDate.text.toString(),
+                city = city.text.toString(),
+                password = password.text.toString()
+            )
+        }
+
+        username.afterTextChanged {
+            registerDataChanged()
         }
 
         phone.addTextChangedListener(PhoneNumberFormattingTextWatcher("RU"))
 
         mDateSetListener =
             OnDateSetListener { _, year, month, day ->
-                birthDate.text = "${month + 1}.$day.$year"
+                birthDate.text =
+                    "${if (day < 10) "0" else ""}$day.${if (month < 9) "0" else ""}${month + 1}.$year"
             }
 
         birthDate.setOnClickListener {
@@ -162,20 +180,12 @@ class LoginActivity : AppCompatActivity() {
 
         password.apply {
             afterTextChanged {
-                registerViewModel.registerDataChanged(
-                    username.text.toString(),
-                    password.text.toString(),
-                    confirmPassword.text.toString()
-                )
+                registerDataChanged()
             }
 
             setOnEditorActionListener { _, actionId, _ ->
                 when (actionId) {
-                    EditorInfo.IME_ACTION_DONE ->
-                        registerViewModel.register(
-                            username.text.toString(),
-                            password.text.toString()
-                        )
+                    EditorInfo.IME_ACTION_DONE -> registerModel()
                 }
                 false
             }
@@ -183,20 +193,12 @@ class LoginActivity : AppCompatActivity() {
 
         confirmPassword.apply {
             afterTextChanged {
-                registerViewModel.registerDataChanged(
-                    username.text.toString(),
-                    password.text.toString(),
-                    confirmPassword.text.toString()
-                )
+                registerDataChanged()
             }
 
             setOnEditorActionListener { _, actionId, _ ->
                 when (actionId) {
-                    EditorInfo.IME_ACTION_DONE ->
-                        registerViewModel.register(
-                            username.text.toString(),
-                            password.text.toString()
-                        )
+                    EditorInfo.IME_ACTION_DONE -> registerModel()
                 }
                 false
             }
@@ -204,7 +206,7 @@ class LoginActivity : AppCompatActivity() {
 
         register.setOnClickListener {
             // loading.visibility = View.VISIBLE
-            registerViewModel.register(username.text.toString(), password.text.toString())
+            registerModel()
         }
     }
 

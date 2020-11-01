@@ -3,7 +3,8 @@ package com.example.tiktok_analog.ui.register
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.tiktok_analog.data.login.LoginDataSource
-import com.example.tiktok_analog.data.login.RegisterRepository
+import com.example.tiktok_analog.data.login.LoginRepository
+import com.example.tiktok_analog.data.register.RegisterDataSource
 
 /**
  * ViewModel provider factory to instantiate LoginViewModel.
@@ -15,7 +16,7 @@ class RegisterViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RegisterViewModel::class.java)) {
             return RegisterViewModel(
-                registerRepository = RegisterRepository(
+                loginRepository = LoginRepository(
                     dataSource = LoginDataSource()
                 )
             ) as T
