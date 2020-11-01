@@ -163,7 +163,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/login"
+        android:id="@+id/acceptFilter"
         android:layout_width="0dp"
         android:layout_height="63dp"
         android:layout_gravity="start"

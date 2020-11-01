@@ -14,7 +14,7 @@
         android:layout_marginStart="16dp"
         android:fontFamily="@font/monsterrat_bold"
         android:text="@string/e_mail_or_phone"
-        app:layout_constraintBottom_toTopOf="@+id/email"
+        app:layout_constraintBottom_toTopOf="@+id/usernameField"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -25,11 +25,11 @@
         android:layout_marginStart="16dp"
         android:fontFamily="@font/monsterrat_bold"
         android:text="@string/prompt_password"
-        app:layout_constraintBottom_toTopOf="@+id/password"
+        app:layout_constraintBottom_toTopOf="@+id/passwordAuthorization"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/email"
+        android:id="@+id/usernameField"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -47,7 +47,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/password"
+        android:id="@+id/passwordAuthorization"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -64,7 +64,7 @@
         android:selectAllOnFocus="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/email" />
+        app:layout_constraintTop_toBottomOf="@+id/usernameField" />
 
     <Button
         android:id="@+id/login"
@@ -90,6 +90,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password" />
+        app:layout_constraintTop_toBottomOf="@+id/passwordAuthorization" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

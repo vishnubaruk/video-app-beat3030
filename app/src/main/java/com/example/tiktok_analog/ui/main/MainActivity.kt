@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
             closeFilter()
         }
 
-        login.setOnClickListener {
+        acceptFilter.setOnClickListener {
             closeFilter()
         }
 

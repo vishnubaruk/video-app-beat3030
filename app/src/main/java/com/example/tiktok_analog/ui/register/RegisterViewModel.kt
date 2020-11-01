@@ -3,41 +3,42 @@ package com.example.tiktok_analog.ui.register
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.tiktok_analog.data.login.LoginRepository
+import com.example.tiktok_analog.data.login.RegisterRepository
 import com.example.tiktok_analog.data.Result
 
 import com.example.tiktok_analog.R
 
-class RegisterViewModel(private val loginRepository: LoginRepository) : ViewModel() {
+class RegisterViewModel(private val registerRepository: RegisterRepository) : ViewModel() {
 
-    private val _loginForm = MutableLiveData<RegisterFromState>()
-    val loginFormState: LiveData<RegisterFromState> = _loginForm
+    private val _registerForm = MutableLiveData<RegisterFromState>()
+    val registerFormState: LiveData<RegisterFromState> = _registerForm
 
-    private val _loginResult = MutableLiveData<RegisterResult>()
-    val loginResult: LiveData<RegisterResult> = _loginResult
+    private val _registerResult = MutableLiveData<RegisterResult>()
+    val registerResult: LiveData<RegisterResult> = _registerResult
 
-    fun login(username: String, password: String) {
+    fun register(username: String, password: String) {
 
         // can be launched in a separate asynchronous job
-        val result = loginRepository.login(username, password)
+        val result = registerRepository.login(username, password)
 
         if (result is Result.Success) {
-            _loginResult.value =
+            _registerResult.value =
                 RegisterResult(success = RegisteredUserView(displayName = result.data.displayName))
         } else {
-            _loginResult.value = RegisterResult(error = R.string.login_failed)
+            _registerResult.value = RegisterResult(error = R.string.login_failed)
         }
     }
 
-    fun loginDataChanged(username: String, password: String, password2: String) {
+    fun registerDataChanged(username: String, password: String, password2: String) {
         if (!isUserNameValid(username)) {
-            _loginForm.value = RegisterFromState(usernameError = R.string.invalid_username)
+            _registerForm.value = RegisterFromState(usernameError = R.string.invalid_username)
         } else if (!isPasswordValid(password)) {
-            _loginForm.value = RegisterFromState(passwordError = R.string.invalid_password)
+            _registerForm.value = RegisterFromState(passwordError = R.string.invalid_password)
         } else if (!doesPasswordsMatch(password, password2)) {
-            _loginForm.value = RegisterFromState(passwordMatchError = R.string.passwords_not_match)
+            _registerForm.value =
+                RegisterFromState(passwordMatchError = R.string.passwords_not_match)
         } else {
-            _loginForm.value = RegisterFromState(isDataValid = true)
+            _registerForm.value = RegisterFromState(isDataValid = true)
         }
     }
 

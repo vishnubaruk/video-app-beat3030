@@ -22,14 +22,18 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.tiktok_analog.R
-import com.example.tiktok_analog.ui.login.LoggedInUserView
 import com.example.tiktok_analog.ui.login.LoginViewModel
 import com.example.tiktok_analog.ui.login.LoginViewModelFactory
+import com.example.tiktok_analog.ui.main.MainActivity
+import com.example.tiktok_analog.ui.register.RegisterViewModel
+import com.example.tiktok_analog.ui.register.RegisterViewModelFactory
+import com.example.tiktok_analog.ui.register.RegisteredUserView
 import java.util.*
 
 
 class LoginActivity : AppCompatActivity() {
 
+    private lateinit var registerViewModel: RegisterViewModel
     private lateinit var loginViewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,6 +62,9 @@ class LoginActivity : AppCompatActivity() {
             registerButton.setBackgroundResource(R.drawable.bg_bth_no_outline)
             authorizeButton.setBackgroundResource(R.drawable.bg_btn_outline)
         }
+
+        initRegisterScreen()
+        initLoginScreen()
     }
 
     private fun initRegisterScreen() {
@@ -68,51 +75,50 @@ class LoginActivity : AppCompatActivity() {
         val birthDate = findViewById<TextView>(R.id.birth_date_text)
         val city = findViewById<EditText>(R.id.city)
         val email = findViewById<EditText>(R.id.email)
-        val password = findViewById<EditText>(R.id.password)
+        val password = findViewById<EditText>(R.id.passwordRegistration)
         val confirmPassword = findViewById<EditText>(R.id.confirm_password)
 
         val mDateSetListener: OnDateSetListener
 
-        register.isEnabled = false
-        register.backgroundTintList =
-            applicationContext.resources.getColorStateList(R.color.buttonDisabledBg)
-
         // TODO: refactor with authorization / registration
 
-        loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory())
-            .get(LoginViewModel::class.java)
+        registerViewModel = ViewModelProviders.of(this, RegisterViewModelFactory())
+            .get(RegisterViewModel::class.java)
 
-        loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
-            val loginState = it ?: return@Observer
+        registerViewModel.registerFormState.observe(this@LoginActivity, Observer {
+            val registerState = it ?: return@Observer
 
             // disable login button unless both username / password is valid
-            register.isEnabled = loginState.isDataValid
+            register.isEnabled = registerState.isDataValid
 
             register.backgroundTintList = applicationContext.resources.getColorStateList(
-                if (loginState.isDataValid)
-                    R.color.buttonEnabledBg else R.color.buttonDisabledBg
+                if (registerState.isDataValid)
+                    R.color.buttonEnabledBg
+                else
+                    R.color.buttonDisabledBg
             )
 
-            if (loginState.usernameError != null) {
-                username.error = getString(loginState.usernameError)
+            if (registerState.usernameError != null) {
+                username.error = getString(registerState.usernameError)
             }
-            if (loginState.passwordError != null) {
-                password.error = getString(loginState.passwordError)
+            if (registerState.passwordError != null) {
+                password.error = getString(registerState.passwordError)
             }
-            if (loginState.passwordMatchError != null) {
-                confirmPassword.error = getString(loginState.passwordMatchError)
+            if (registerState.passwordMatchError != null) {
+                confirmPassword.error = getString(registerState.passwordMatchError)
             }
         })
 
-        loginViewModel.loginResult.observe(this@LoginActivity, Observer {
-            val loginResult = it ?: return@Observer
+        registerViewModel.registerResult.observe(this@LoginActivity, Observer {
+            val registerResult = it ?: return@Observer
 
             // loading.visibility = View.GONE
-            if (loginResult.error != null) {
-                showLoginFailed(loginResult.error)
+            if (registerResult.error != null) {
+                showLoginFailed(registerResult.error)
             }
-            if (loginResult.success != null) {
-                updateUiWithUser(loginResult.success)
+
+            if (registerResult.success != null) {
+                updateUiWithUser(registerResult.success)
             }
             setResult(Activity.RESULT_OK)
 
@@ -124,7 +130,7 @@ class LoginActivity : AppCompatActivity() {
         })
 
         username.afterTextChanged {
-            loginViewModel.loginDataChanged(
+            registerViewModel.registerDataChanged(
                 username.text.toString(),
                 password.text.toString(),
                 confirmPassword.text.toString()
@@ -156,7 +162,7 @@ class LoginActivity : AppCompatActivity() {
 
         password.apply {
             afterTextChanged {
-                loginViewModel.loginDataChanged(
+                registerViewModel.registerDataChanged(
                     username.text.toString(),
                     password.text.toString(),
                     confirmPassword.text.toString()
@@ -166,30 +172,100 @@ class LoginActivity : AppCompatActivity() {
             setOnEditorActionListener { _, actionId, _ ->
                 when (actionId) {
                     EditorInfo.IME_ACTION_DONE ->
-                        loginViewModel.login(
+                        registerViewModel.register(
                             username.text.toString(),
                             password.text.toString()
                         )
                 }
                 false
             }
+        }
 
-
-            register.setOnClickListener {
-                // loading.visibility = View.VISIBLE
-                loginViewModel.login(username.text.toString(), password.text.toString())
+        confirmPassword.apply {
+            afterTextChanged {
+                registerViewModel.registerDataChanged(
+                    username.text.toString(),
+                    password.text.toString(),
+                    confirmPassword.text.toString()
+                )
             }
+
+            setOnEditorActionListener { _, actionId, _ ->
+                when (actionId) {
+                    EditorInfo.IME_ACTION_DONE ->
+                        registerViewModel.register(
+                            username.text.toString(),
+                            password.text.toString()
+                        )
+                }
+                false
+            }
+        }
+
+        register.setOnClickListener {
+            // loading.visibility = View.VISIBLE
+            registerViewModel.register(username.text.toString(), password.text.toString())
         }
     }
 
     private fun initLoginScreen() {
         val login = findViewById<Button>(R.id.login)
-        login.isEnabled = true
-        login.backgroundTintList =
-            applicationContext.resources.getColorStateList(R.color.buttonEnabledBg)
+
+        val username = findViewById<EditText>(R.id.usernameField)
+        val password = findViewById<EditText>(R.id.passwordAuthorization)
+
+        loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory())
+            .get(LoginViewModel::class.java)
+        loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
+            val loginState = it ?: return@Observer
+
+            // disable login button unless both username / password is valid
+            login.isEnabled = loginState.isDataValid
+
+            login.backgroundTintList = applicationContext.resources.getColorStateList(
+                if (loginState.isDataValid)
+                    R.color.buttonEnabledBg
+                else
+                    R.color.buttonDisabledBg
+            )
+
+            if (loginState.usernameError != null) {
+                username.error = "Некорректное имя пользователя"
+            }
+            if (loginState.passwordError != null) {
+                password.error = "Неправильный пароль"
+            }
+        })
+
+        loginViewModel.loginResult.observe(this@LoginActivity, Observer {
+            val registerResult = it ?: return@Observer
+
+            // here may be errors that i should catch
+
+            startActivity(Intent(this, MainActivity::class.java))
+        })
+
+        username.afterTextChanged {
+            loginViewModel.loginDataChanged(
+                username.text.toString(),
+                password.text.toString()
+            )
+        }
+
+        password.afterTextChanged {
+            loginViewModel.loginDataChanged(
+                username.text.toString(),
+                password.text.toString()
+            )
+        }
+
+        login.setOnClickListener {
+            // loading.visibility = View.VISIBLE
+            loginViewModel.login(username.text.toString(), password.text.toString())
+        }
     }
 
-    private fun updateUiWithUser(model: LoggedInUserView) {
+    private fun updateUiWithUser(model: RegisteredUserView) {
         val welcome = getString(R.string.welcome)
         val displayName = model.displayName
         // TODO : initiate successful logged in experience

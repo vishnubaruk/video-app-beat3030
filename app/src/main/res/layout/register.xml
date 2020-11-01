@@ -72,7 +72,7 @@
         android:fontFamily="@font/monsterrat_bold"
         android:text="@string/prompt_password"
         android:textColor="#FFF"
-        app:layout_constraintBottom_toTopOf="@+id/password"
+        app:layout_constraintBottom_toTopOf="@+id/passwordRegistration"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -161,7 +161,7 @@
         app:layout_constraintTop_toBottomOf="@+id/city" />
 
     <EditText
-        android:id="@+id/password"
+        android:id="@+id/passwordRegistration"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -199,7 +199,7 @@
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password" />
+        app:layout_constraintTop_toBottomOf="@+id/passwordRegistration" />
 
     <Button
         android:id="@+id/register"

@@ -8,7 +8,7 @@ import com.example.tiktok_analog.data.login.model.LoggedInUser
  * maintains an in-memory cache of login status and profile credentials information.
  */
 
-class LoginRepository(val dataSource: LoginDataSource) {
+class RegisterRepository(val dataSource: LoginDataSource) {
 
     // in-memory cache of the loggedInUser object
     var user: LoggedInUser? = null
