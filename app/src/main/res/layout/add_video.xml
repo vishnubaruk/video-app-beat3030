@@ -97,7 +97,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
-                android:id="@+id/editText"
+                android:id="@+id/videoName"
                 android:textCursorDrawable="@null"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -113,6 +113,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView39" />
 
             <TextView
+                android:id="@+id/textView47"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="148dp"
@@ -150,7 +151,21 @@
                 app:layout_constraintStart_toEndOf="@+id/textView46"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <TextView
+                android:id="@+id/videoSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="500dp"
+                android:fontFamily="@font/monsterrat_regular"
+                android:text=""
+                android:textColor="#243444"
+                android:textSize="15sp"
+                app:layout_constraintStart_toEndOf="@+id/textView47"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <ImageView
+                android:id="@+id/videoPreview"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_marginStart="24dp"
@@ -173,6 +188,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
+                android:id="@+id/videoDescription"
                 android:layout_width="0dp"
                 android:textCursorDrawable="@null"
                 android:layout_height="wrap_content"
@@ -188,9 +204,8 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView44" />
 
             <EditText
-                android:id="@+id/editText2"
+                android:id="@+id/videoTags"
                 android:layout_width="0dp"
-                android:textCursorDrawable="@null"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="4dp"
@@ -198,6 +213,7 @@
                 android:backgroundTint="#B7B7B7"
                 android:fontFamily="@font/monsterrat_regular"
                 android:textColor="#243444"
+                android:textCursorDrawable="@null"
                 android:textSize="15sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"

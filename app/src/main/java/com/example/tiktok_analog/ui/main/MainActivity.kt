@@ -37,8 +37,6 @@ class MainActivity : AppCompatActivity() {
             300
         )
 
-        // TODO: add OnClick for all elements
-
         openMenuButton.setOnClickListener {
             openMenu()
         }
