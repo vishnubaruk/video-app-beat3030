@@ -11,8 +11,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.ui.menu_screens.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -39,13 +37,6 @@ class MainActivity : AppCompatActivity() {
             ),
             300
         )
-
-        newsSwipeRefresh.setOnRefreshListener {
-            newsSwipeRefresh.isRefreshing = false
-            Toast.makeText(applicationContext, "News Updated", Toast.LENGTH_SHORT).show()
-        }
-
-
 
         openMenuButton.setOnClickListener {
             openMenu()
@@ -137,44 +128,38 @@ class MainActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-        for (i in 1..10) {
-            addViewToNewsLine(
-                "Title${Random.nextInt(10000, 99999999)}",
-                arrayListOf(
-                    "tag${Random.nextInt(100, 999)}",
-                    "tag${Random.nextInt(100, 999)}",
-                    "tag${Random.nextInt(100, 999)}"
-                ),
-                Random.nextInt(10, 9000),
-                Random.nextInt(10, 1200),
-                R.drawable.rectangle4
-            )
+        fun addPostsToNewsLine(count: Int) {
+            for (i in 1..count) {
+                addViewToNewsLine(
+                    "Title${Random.nextInt(10000, 99999999)}",
+                    arrayListOf(
+                        "tag${Random.nextInt(100, 999)}",
+                        "tag${Random.nextInt(100, 999)}",
+                        "tag${Random.nextInt(100, 999)}"
+                    ),
+                    Random.nextInt(10, 9000),
+                    Random.nextInt(10, 1200),
+                    R.drawable.rectangle4
+                )
+            }
         }
 
-        newsRoot.viewTreeObserver
-            .addOnScrollChangedListener {
-                if (newsRoot.getChildAt(0).bottom
-                    <= newsRoot.height + newsRoot.scrollY
-                ) {
-                    //scroll view is at bottom
-                    // TODO: refactor to stateStack
-                    if (sectionTitleText.text == "Главная") {
-                        for (i in 1..10) {
-                            addViewToNewsLine(
-                                "Title${Random.nextInt(10000, 99999999)}",
-                                arrayListOf(
-                                    "tag${Random.nextInt(100, 999)}",
-                                    "tag${Random.nextInt(100, 999)}",
-                                    "tag${Random.nextInt(100, 999)}"
-                                ),
-                                Random.nextInt(10, 9000),
-                                Random.nextInt(10, 1200),
-                                R.drawable.rectangle4
-                            )
-                        }
-                    }
+        addPostsToNewsLine(10)
+
+        newsRoot.viewTreeObserver.addOnScrollChangedListener {
+            if (newsRoot.getChildAt(0).bottom <= newsRoot.height + newsRoot.scrollY) {
+                if (sectionTitleText.text == "Главная") {
+                    addPostsToNewsLine(10)
                 }
             }
+        }
+
+        newsSwipeRefresh.setOnRefreshListener {
+            newsSwipeRefresh.isRefreshing = false
+            Toast.makeText(applicationContext, "News Updated", Toast.LENGTH_SHORT).show()
+            newsLineLayout.removeAllViews()
+            addPostsToNewsLine(10)
+        }
     }
 
     private fun openNewsLine() {
