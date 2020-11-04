@@ -8,8 +8,11 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.ui.menu_screens.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -36,6 +39,13 @@ class MainActivity : AppCompatActivity() {
             ),
             300
         )
+
+        newsSwipeRefresh.setOnRefreshListener {
+            newsSwipeRefresh.isRefreshing = false
+            Toast.makeText(applicationContext, "News Updated", Toast.LENGTH_SHORT).show()
+        }
+
+
 
         openMenuButton.setOnClickListener {
             openMenu()
