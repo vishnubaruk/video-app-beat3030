@@ -141,10 +141,10 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        scrollView.viewTreeObserver
+        newsRoot.viewTreeObserver
             .addOnScrollChangedListener {
-                if (scrollView.getChildAt(0).bottom
-                    <= scrollView.height + scrollView.scrollY
+                if (newsRoot.getChildAt(0).bottom
+                    <= newsRoot.height + newsRoot.scrollY
                 ) {
                     //scroll view is at bottom
                     // TODO: refactor to stateStack
@@ -168,12 +168,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openNewsLine() {
-        newsLineLayout.visibility = View.VISIBLE
+        newsRoot.visibility = View.VISIBLE
         openFilterButton.visibility = View.VISIBLE
     }
 
     private fun closeNewsLine() {
-        newsLineLayout.visibility = View.GONE
+        newsRoot.visibility = View.GONE
         openFilterButton.visibility = View.GONE
         closeFilterButton.visibility = View.GONE
     }
@@ -186,7 +186,7 @@ class MainActivity : AppCompatActivity() {
         openMenuButton.visibility = View.GONE
         closeMenuButton.visibility = View.VISIBLE
 
-        menuLayout.visibility = View.VISIBLE
+        menuRoot.visibility = View.VISIBLE
 
         isMenuOpened = true
 
@@ -200,7 +200,7 @@ class MainActivity : AppCompatActivity() {
         openMenuButton.visibility = View.VISIBLE
         closeMenuButton.visibility = View.GONE
 
-        menuLayout.visibility = View.GONE
+        menuRoot.visibility = View.GONE
 
         isMenuOpened = false
 
@@ -214,7 +214,7 @@ class MainActivity : AppCompatActivity() {
         openFilterButton.visibility = View.GONE
         closeFilterButton.visibility = View.VISIBLE
 
-        filterLayout.visibility = View.VISIBLE
+        filterRoot.visibility = View.VISIBLE
 
         isFilterOpened = true
 
@@ -228,7 +228,7 @@ class MainActivity : AppCompatActivity() {
         openFilterButton.visibility = View.VISIBLE
         closeFilterButton.visibility = View.GONE
 
-        filterLayout.visibility = View.GONE
+        filterRoot.visibility = View.GONE
 
         isFilterOpened = false
     }
