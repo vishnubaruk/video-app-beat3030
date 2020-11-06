@@ -2,9 +2,12 @@ package com.example.tiktok_analog.ui.menu_screens
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tiktok_analog.R
 import kotlinx.android.synthetic.main.favourite.*
+import kotlinx.android.synthetic.main.favourite.backArrowButton
+import kotlinx.android.synthetic.main.favourite.favouriteSwipeRefresh
 import kotlin.random.Random
 
 class FavouriteActivity : AppCompatActivity() {
@@ -16,23 +19,30 @@ class FavouriteActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-        for (i in 1..10) {
-            addViewToFavourite(
-                Random.nextInt(100000, 999999),
-                R.drawable.rectangle34
-            )
+        fun addPostsToFavourite(count: Int) {
+            for (i in 1..count) {
+                addViewToFavourite(
+                    Random.nextInt(100000, 999999),
+                    R.drawable.rectangle34
+                )
+            }
         }
 
+        addPostsToFavourite(10)
+
         favouriteScrollView.viewTreeObserver.addOnScrollChangedListener {
-            if (favouriteScrollView.getChildAt(0).bottom <= favouriteScrollView.height + favouriteScrollView.scrollY) {
-                //scroll view is at bottom
-                for (i in 1..10) {
-                    addViewToFavourite(
-                        Random.nextInt(100000, 999999),
-                        R.drawable.rectangle34
-                    )
-                }
+            if (favouriteScrollView.getChildAt(0).bottom <=
+                favouriteScrollView.height + favouriteScrollView.scrollY
+            ) {
+                addPostsToFavourite(10)
             }
+        }
+
+        favouriteSwipeRefresh.setOnRefreshListener {
+            favouriteSwipeRefresh.isRefreshing = false
+            Toast.makeText(applicationContext, "Favourite Updated", Toast.LENGTH_SHORT).show()
+            favouriteLayout.removeAllViews()
+            addPostsToFavourite(10)
         }
     }
 
