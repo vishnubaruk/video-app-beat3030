@@ -65,11 +65,7 @@ class BroadcastActivity : AppCompatActivity(), SurfaceHolder.Callback {
                     )
             }
 
-            override fun beforeTextChanged(
-                s: CharSequence, start: Int, count: Int,
-                after: Int
-            ) {
-            }
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
             override fun afterTextChanged(s: Editable) {}
         })

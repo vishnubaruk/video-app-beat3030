@@ -45,7 +45,7 @@
 
         <Button
             android:id="@+id/flipCameraButton2"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_width="40dp"
             android:layout_height="30dp"
             android:layout_marginTop="28dp"
@@ -121,6 +121,7 @@
             android:backgroundTint="@color/white"
             android:clickable="true"
             android:enabled="true"
+            android:visibility="gone"
             android:focusable="true"
             android:fontFamily="@font/monsterrat_bold"
             android:foreground="?attr/selectableItemBackground"

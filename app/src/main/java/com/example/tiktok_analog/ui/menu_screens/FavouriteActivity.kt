@@ -30,9 +30,9 @@ class FavouriteActivity : AppCompatActivity() {
 
         addPostsToFavourite(10)
 
-        favouriteScrollView.viewTreeObserver.addOnScrollChangedListener {
-            if (favouriteScrollView.getChildAt(0).bottom <=
-                favouriteScrollView.height + favouriteScrollView.scrollY
+        notificationsScrollView.viewTreeObserver.addOnScrollChangedListener {
+            if (notificationsScrollView.getChildAt(0).bottom <=
+                notificationsScrollView.height + notificationsScrollView.scrollY
             ) {
                 addPostsToFavourite(10)
             }

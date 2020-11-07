@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.tiktok_analog.R
 import kotlinx.android.synthetic.main.profile.*
 import android.view.View
+import android.widget.Toast
 
 
 class ProfileActivity : AppCompatActivity() {
@@ -29,6 +30,8 @@ class ProfileActivity : AppCompatActivity() {
             yourVideosBlock.visibility = View.GONE
 
             sectionTitleText.text = "Ваш профиль"
+
+            editData.visibility = View.VISIBLE
         }
 
         yourVideosTab.setOnClickListener {
@@ -44,6 +47,16 @@ class ProfileActivity : AppCompatActivity() {
             yourVideosBlock.visibility = View.VISIBLE
 
             sectionTitleText.text = "Ваши видео"
+
+            editData.visibility = View.GONE
         }
+
+        editData.setOnClickListener {
+            Toast.makeText(applicationContext, "Edit data clicked", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun fillProfileData() {
+
     }
 }

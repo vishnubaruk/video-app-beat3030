@@ -19,6 +19,7 @@
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/newsSwipeRefresh"
         android:layout_width="match_parent"
+        android:layout_marginTop="80dp"
         android:layout_height="match_parent">
 
         <androidx.core.widget.NestedScrollView
@@ -35,7 +36,6 @@
                     android:id="@+id/newsLineLayout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="80dp"
                     android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
