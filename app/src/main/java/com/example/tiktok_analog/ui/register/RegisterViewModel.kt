@@ -27,11 +27,11 @@ class RegisterViewModel(private val loginRepository: LoginRepository) : ViewMode
     ) {
 
         // can be launched in a separate asynchronous job
-        val result = loginRepository.register(username, password)
+        val result = loginRepository.login(username, password)
 
         if (result is Result.Success) {
             _registerResult.value =
-                RegisterResult(success = RegisteredUserView(displayName = result.data.displayName))
+                RegisterResult(success = RegisteredUserView(displayName = result.data.username))
         } else {
             _registerResult.value = RegisterResult(error = R.string.login_failed)
         }
@@ -40,6 +40,8 @@ class RegisterViewModel(private val loginRepository: LoginRepository) : ViewMode
     fun registerDataChanged(
         username: String,
         phone: String,
+        city: String,
+        birthDate: String,
         email: String,
         password: String,
         password2: String
@@ -58,6 +60,8 @@ class RegisterViewModel(private val loginRepository: LoginRepository) : ViewMode
         } else {
             _registerForm.value = RegisterFromState(isDataValid = true)
         }
+
+
     }
 
     // A placeholder username validation check

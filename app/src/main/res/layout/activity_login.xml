@@ -11,7 +11,7 @@
     android:paddingRight="0dp"
     android:paddingBottom="0dp"
     android:background="#10273C"
-    tools:context=".ui.LoginActivity">
+    tools:context=".ui.StartActivity">
 
     <ScrollView
         android:layout_width="match_parent"

@@ -1,9 +1,7 @@
 package com.example.tiktok_analog.data.login
 
 import com.example.tiktok_analog.data.Result
-import com.example.tiktok_analog.data.login.model.LoggedInUser
-import com.example.tiktok_analog.data.register.RegisterDataSource
-import com.example.tiktok_analog.data.register.model.RegisteredUser
+import com.example.tiktok_analog.data.model.User
 
 /**
  * Class that requests authentication and profile information from the remote data source and
@@ -13,7 +11,7 @@ import com.example.tiktok_analog.data.register.model.RegisteredUser
 class LoginRepository(val dataSource: LoginDataSource) {
 
     // in-memory cache of the loggedInUser object
-    private var user: LoggedInUser? = null
+    private var user: User? = null
         private set
 
     val isLoggedIn: Boolean
@@ -25,18 +23,18 @@ class LoginRepository(val dataSource: LoginDataSource) {
         user = null
     }
 
-    fun register(username: String, password: String): Result<LoggedInUser> {
+    fun login(username: String, password: String): Result<User> {
         // handle login
         val result = dataSource.login(username, password)
 
         if (result is Result.Success) {
-            setRegisteredInUser(result.data)
+            setLoggedInUser(result.data)
         }
 
         return result
     }
 
-    private fun setRegisteredInUser(loggedInUser: LoggedInUser) {
+    private fun setLoggedInUser(loggedInUser: User) {
         this.user = loggedInUser
         // If profile credentials will be cached in local storage, it is recommended it be encrypted
         // @see https://developer.android.com/training/articles/keystore

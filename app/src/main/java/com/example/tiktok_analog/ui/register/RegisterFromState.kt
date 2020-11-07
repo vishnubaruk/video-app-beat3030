@@ -9,5 +9,5 @@ data class RegisterFromState(
     val emailError: Int? = null,
     val passwordError: Int? = null,
     val passwordMatchError: Int? = null,
-    val isDataValid: Boolean = false
+    val isDataValid: Boolean = false,
 )

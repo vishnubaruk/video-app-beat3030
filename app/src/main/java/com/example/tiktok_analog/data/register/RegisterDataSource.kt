@@ -1,7 +1,7 @@
 package com.example.tiktok_analog.data.register
 
 import com.example.tiktok_analog.data.Result
-import com.example.tiktok_analog.data.register.model.RegisteredUser
+import com.example.tiktok_analog.data.model.User
 import java.io.IOException
 import java.util.*
 
@@ -10,10 +10,10 @@ import java.util.*
  */
 class RegisterDataSource {
 
-    fun register(username: String, password: String): Result<RegisteredUser> {
+    fun register(username: String, password: String): Result<User> {
         return try {
             // TODO: handle registeredUser registration
-            val fakeUser = RegisteredUser(UUID.randomUUID().toString(), "Jane Doe")
+            val fakeUser = User(UUID.randomUUID().toString(), "Jane Doe")
             Result.Success(fakeUser)
         } catch (e: Throwable) {
             Result.Error(IOException("Error logging in", e))

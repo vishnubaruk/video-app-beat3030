@@ -1,6 +1,7 @@
 package com.example.tiktok_analog.ui
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Intent
@@ -10,6 +11,7 @@ import android.os.Bundle
 import android.telephony.PhoneNumberFormattingTextWatcher
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
@@ -22,6 +24,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.tiktok_analog.R
+import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.login.LoginViewModel
 import com.example.tiktok_analog.ui.login.LoginViewModelFactory
 import com.example.tiktok_analog.ui.main.MainActivity
@@ -31,15 +34,21 @@ import com.example.tiktok_analog.ui.register.RegisteredUserView
 import java.util.*
 
 
-class LoginActivity : AppCompatActivity() {
+class StartActivity : AppCompatActivity() {
 
     private lateinit var registerViewModel: RegisterViewModel
     private lateinit var loginViewModel: LoginViewModel
+
+    private lateinit var userData: User
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_login)
+
+//        if(userDataExists) {
+//            startActivity(Intent(this, MainActivity::class.java))
+//        }
 
         val registerButton = findViewById<Button>(R.id.register_button)
         val authorizeButton = findViewById<Button>(R.id.authorize_button)
@@ -85,7 +94,7 @@ class LoginActivity : AppCompatActivity() {
         registerViewModel = ViewModelProviders.of(this, RegisterViewModelFactory())
             .get(RegisterViewModel::class.java)
 
-        registerViewModel.registerFormState.observe(this@LoginActivity, Observer {
+        registerViewModel.registerFormState.observe(this@StartActivity, Observer {
             val registerState = it ?: return@Observer
 
             // disable login button unless both username / password is valid
@@ -101,15 +110,25 @@ class LoginActivity : AppCompatActivity() {
             if (registerState.usernameError != null) {
                 username.error = getString(registerState.usernameError)
             }
+
+            if (registerState.phoneError != null) {
+                phone.error = getString(R.string.invalid_phone_number)
+            }
+
+            if (registerState.emailError != null) {
+                email.error = getString(R.string.invalid_email)
+            }
+
             if (registerState.passwordError != null) {
                 password.error = getString(registerState.passwordError)
             }
+
             if (registerState.passwordMatchError != null) {
                 confirmPassword.error = getString(registerState.passwordMatchError)
             }
         })
 
-        registerViewModel.registerResult.observe(this@LoginActivity, Observer {
+        registerViewModel.registerResult.observe(this@StartActivity, Observer {
             val registerResult = it ?: return@Observer
 
             // loading.visibility = View.GONE
@@ -120,13 +139,37 @@ class LoginActivity : AppCompatActivity() {
             if (registerResult.success != null) {
                 updateUiWithUser(registerResult.success)
             }
+
             setResult(Activity.RESULT_OK)
+
+            userData = User(
+                username = username.text.toString(),
+                phone = phone.text.toString(),
+                email = email.text.toString(),
+                password = password.text.toString(),
+                birthDate = birthDate.text.toString()
+            )
+
+            // TODO: here should be server checker that says if user with this data exist or not
+            if (false) {
+                AlertDialog.Builder(this).setTitle("Ошибка!")
+                    .setMessage("Пользователь с такими данными уже существует")
+                    .setPositiveButton("Понятно") { dialog, _ ->
+                        dialog.cancel()
+                    }.create().show()
+            }
 
             // Complete and destroy login activity once successful
             // finish()
 
             // Instead of destroying activity in case of correct registration we open SmsActivity
-            startActivity(Intent(this, SmsActivity::class.java))
+            else {
+                // SerializeUserData()
+
+                Log.d("DEBUG", userData.toJsonString())
+
+                startActivity(Intent(this, SmsActivity::class.java))
+            }
         })
 
         fun registerDataChanged() {
@@ -134,6 +177,8 @@ class LoginActivity : AppCompatActivity() {
                 username = username.text.toString(),
                 phone = phone.text.toString(),
                 email = email.text.toString(),
+                birthDate = birthDate.text.toString(),
+                city = city.text.toString(),
                 password = password.text.toString(),
                 password2 = confirmPassword.text.toString()
             )
@@ -218,7 +263,7 @@ class LoginActivity : AppCompatActivity() {
 
         loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory())
             .get(LoginViewModel::class.java)
-        loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
+        loginViewModel.loginFormState.observe(this@StartActivity, Observer {
             val loginState = it ?: return@Observer
 
             // disable login button unless both username / password is valid
@@ -239,12 +284,23 @@ class LoginActivity : AppCompatActivity() {
             }
         })
 
-        loginViewModel.loginResult.observe(this@LoginActivity, Observer {
+        loginViewModel.loginResult.observe(this@StartActivity, Observer {
             val registerResult = it ?: return@Observer
 
-            // here may be errors that i should catch
+            // TODO: here should be server checker that says if user with this data exist or not
+            // sendToServer("
 
-            startActivity(Intent(this, MainActivity::class.java))
+            if (false) {
+                AlertDialog.Builder(this).setTitle("Ошибка!")
+                    .setMessage("Пользователя с такими данными не существует")
+                    .setPositiveButton("Понятно") { dialog, _ ->
+                        dialog.cancel()
+                    }.create().show()
+            } else {
+
+                // write data got from server
+                startActivity(Intent(this, MainActivity::class.java))
+            }
         })
 
         username.afterTextChanged {
