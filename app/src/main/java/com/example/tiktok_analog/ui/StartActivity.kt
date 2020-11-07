@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -31,6 +32,7 @@ import com.example.tiktok_analog.ui.main.MainActivity
 import com.example.tiktok_analog.ui.register.RegisterViewModel
 import com.example.tiktok_analog.ui.register.RegisterViewModelFactory
 import com.example.tiktok_analog.ui.register.RegisteredUserView
+import java.io.File
 import java.util.*
 
 
@@ -49,6 +51,11 @@ class StartActivity : AppCompatActivity() {
 //        if(userDataExists) {
 //            startActivity(Intent(this, MainActivity::class.java))
 //        }
+
+        val userDataFile =  applicationContext.getFileStreamPath("userData")
+        if (userDataFile != null && userDataFile.exists()) {
+            startActivity(Intent(this, MainActivity::class.java))
+        }
 
         val registerButton = findViewById<Button>(R.id.register_button)
         val authorizeButton = findViewById<Button>(R.id.authorize_button)
@@ -164,7 +171,10 @@ class StartActivity : AppCompatActivity() {
 
             // Instead of destroying activity in case of correct registration we open SmsActivity
             else {
-                // SerializeUserData()
+
+                // data serialization
+                this.openFileOutput("userData", Context.MODE_PRIVATE)
+                    .write(userData.toString().toByteArray())
 
                 Log.d("DEBUG", userData.toJsonString())
 
