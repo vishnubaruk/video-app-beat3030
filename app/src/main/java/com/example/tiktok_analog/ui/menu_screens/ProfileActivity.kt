@@ -66,6 +66,12 @@ class ProfileActivity : AppCompatActivity() {
         editData.setOnClickListener {
             Toast.makeText(applicationContext, "Edit data clicked", Toast.LENGTH_SHORT).show()
         }
+
+        profileSwipeRefresh.setOnRefreshListener {
+            profileSwipeRefresh.isRefreshing = false
+            Toast.makeText(applicationContext,
+                "Profile page refreshed", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun fillProfileData() {
