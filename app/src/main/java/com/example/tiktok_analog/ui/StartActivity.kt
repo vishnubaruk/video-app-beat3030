@@ -154,7 +154,8 @@ class StartActivity : AppCompatActivity() {
                 phone = phone.text.toString(),
                 email = email.text.toString(),
                 password = password.text.toString(),
-                birthDate = birthDate.text.toString()
+                birthDate = birthDate.text.toString(),
+                city=city.text.toString()
             )
 
             // TODO: here should be server checker that says if user with this data exist or not
@@ -174,7 +175,7 @@ class StartActivity : AppCompatActivity() {
 
                 // data serialization
                 this.openFileOutput("userData", Context.MODE_PRIVATE)
-                    .write(userData.toString().toByteArray())
+                    .write(userData.toJsonString().toByteArray())
 
                 Log.d("DEBUG", userData.toJsonString())
 

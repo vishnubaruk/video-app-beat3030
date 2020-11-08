@@ -3,6 +3,7 @@ package com.example.tiktok_analog.ui.main
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
@@ -12,10 +13,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.tiktok_analog.R
+import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.menu_screens.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.filter.*
 import kotlinx.android.synthetic.main.menu.*
+import org.json.JSONObject
 import kotlin.random.Random
 
 
@@ -24,9 +27,18 @@ class MainActivity : AppCompatActivity() {
     private var isMenuOpened = false
     private var isFilterOpened = false
 
+    private lateinit var userData: User
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
+
+        openFileInput("userData").use {
+            userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
+            nameTextHeader.text = userData.username
+            emailTextHeader.text = userData.email
+        }
 
         ActivityCompat.requestPermissions(
             this,
@@ -155,7 +167,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         newsSwipeRefresh.setOnRefreshListener {
-            // newsSwipeRefresh.isRefreshing = false
+            newsSwipeRefresh.isRefreshing = false
             Toast.makeText(applicationContext, "News Updated", Toast.LENGTH_SHORT).show()
             newsLineLayout.removeAllViews()
             addPostsToNewsLine(10)
@@ -273,6 +285,11 @@ class MainActivity : AppCompatActivity() {
 
         newView.findViewWithTag<ImageView>("previewImage").setImageResource(imageId)
         newsLineLayout.addView(newView)
+
+        newView.setOnClickListener {
+            Toast.makeText(applicationContext, "Opening $title video",
+                Toast.LENGTH_SHORT).show()
+        }
         // newView.findViewWithTag<ProgressBar>("progressBar").progress = progress
         // properties[id]= newView
     }

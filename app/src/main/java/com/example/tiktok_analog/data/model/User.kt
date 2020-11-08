@@ -34,12 +34,12 @@ data class User(
     companion object {
         fun newUser(jsonObject: JSONObject): User {
             return User(
-                username = jsonObject.getString("username"),
-                password = jsonObject.getString("password"),
-                email = jsonObject.getString("email"),
-                phone = jsonObject.getString("phone"),
-                birthDate = jsonObject.getString("birthDate"),
-                city = jsonObject.getString("city")
+                username = jsonObject.getString("username").toString(),
+                password = jsonObject.getString("password").toString(),
+                email = jsonObject.getString("email").toString(),
+                phone = jsonObject.getString("phone").toString(),
+                birthDate = jsonObject.getString("birthDate").toString(),
+                city = jsonObject.getString("city").toString()
             )
         }
     }

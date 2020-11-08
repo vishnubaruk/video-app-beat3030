@@ -104,7 +104,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/monsterrat_bold"
-                        android:text="100"
+                        android:text="0"
                         android:textColor="#243444"
                         android:textSize="18sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -139,7 +139,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/monsterrat_bold"
-                        android:text="123 000"
+                        android:text="0"
                         android:textColor="#243444"
                         android:textSize="18sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -396,7 +396,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/monsterrat_bold"
-                        android:text="100"
+                        android:text="0"
                         android:textColor="#243444"
                         android:textSize="18sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -430,7 +430,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/monsterrat_bold"
-                        android:text="123 000"
+                        android:text="0"
                         android:textColor="#243444"
                         android:textSize="18sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -464,7 +464,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/monsterrat_bold"
-                        android:text="1 100 000"
+                        android:text="0"
                         android:textColor="#243444"
                         android:textSize="18sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -474,7 +474,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
-                android:id="@+id/textView22"
+                android:id="@+id/nameTextHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="188dp"
@@ -487,7 +487,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textView23"
+                android:id="@+id/emailTextHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="218dp"
