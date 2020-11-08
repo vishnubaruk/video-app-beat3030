@@ -1,17 +1,18 @@
 package com.example.tiktok_analog.ui.menu_screens
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface.OnShowListener
 import android.content.Intent
 import android.database.Cursor
+import android.graphics.Color
 import android.media.ThumbnailUtils
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tiktok_analog.R
+import com.example.tiktok_analog.ui.afterTextChanged
 import kotlinx.android.synthetic.main.activity_main.backArrowButton
 import kotlinx.android.synthetic.main.add_video.*
 import wseemann.media.FFmpegMediaMetadataRetriever
@@ -23,6 +24,8 @@ class AddVideoActivity : AppCompatActivity() {
 
     private val pickVideo = 23
 
+    private var selectedVideoPath: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.add_video)
@@ -33,6 +36,18 @@ class AddVideoActivity : AppCompatActivity() {
 
         pickFileButton.setOnClickListener {
             openGalleryForVideo()
+        }
+
+        videoTitle.afterTextChanged {
+            checkIfCanUpload()
+        }
+
+        videoDescription.afterTextChanged {
+            checkIfCanUpload()
+        }
+
+        videoTags.afterTextChanged {
+            checkIfCanUpload()
         }
     }
 
@@ -52,6 +67,8 @@ class AddVideoActivity : AppCompatActivity() {
 
             val videoPath2: String = getPath(videoUri)!!
 
+            selectedVideoPath = videoPath2
+
             val mediaMetadataRetriever = FFmpegMediaMetadataRetriever()
             mediaMetadataRetriever.setDataSource(videoPath2)
             val videoDuration =
@@ -61,10 +78,9 @@ class AddVideoActivity : AppCompatActivity() {
             val videoWeight =
                 mediaMetadataRetriever.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_FILESIZE)
 
-
             // TODO: make this safe
-            if (videoName.text.isBlank()) {
-                videoName.setText(File(videoPath2).name.split(".")[0])
+            if (videoTitle.text.isBlank()) {
+                videoTitle.setText(File(videoPath2).name.split(".")[0])
             }
 
             videoSize.text = formatFileSizeFromBytes(videoWeight.toLong())
@@ -76,6 +92,8 @@ class AddVideoActivity : AppCompatActivity() {
             )
 
             videoPreview.setImageBitmap(thumbnail)
+
+            checkIfCanUpload()
         }
     }
 
@@ -123,5 +141,44 @@ class AddVideoActivity : AppCompatActivity() {
         }
 
         return "$bytes B"
+    }
+
+    private fun checkIfCanUpload(): Unit {
+        var dataContainsErrors = false
+
+        if (videoTitle.text.isBlank()) {
+            videoTitle.error = "Введите название видео"
+            dataContainsErrors = true
+        }
+
+        if (videoDescription.text.isBlank()) {
+            videoDescription.error = "Введите описание видео"
+            dataContainsErrors = true
+        }
+
+        if (selectedVideoPath == null) {
+            dataContainsErrors = true
+        }
+
+        uploadVideoButton.isEnabled = !dataContainsErrors
+        uploadVideoButton.backgroundTintList = applicationContext.resources.getColorStateList(
+            if (dataContainsErrors) R.color.buttonDisabledBg
+            else R.color.buttonEnabledBg
+        )
+    }
+
+    override fun onBackPressed() {
+        val alertDialog: AlertDialog = AlertDialog.Builder(this)
+            .setTitle("Вы уверены, что хотите прервать добавление видео?")
+            .setMessage("Это приведет к удалению введенных вами данных")
+            .setPositiveButton("Да, я уверен") { _, _ ->
+                super.onBackPressed()
+            }.setNegativeButton("Нет, остаться") { dialog, _ ->
+                dialog.cancel()
+            }.create()
+        alertDialog.show()
+
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK)
+        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
     }
 }

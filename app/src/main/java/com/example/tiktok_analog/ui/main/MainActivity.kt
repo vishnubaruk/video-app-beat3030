@@ -3,6 +3,7 @@ package com.example.tiktok_analog.ui.main
 import android.Manifest
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -92,14 +93,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         logout.setOnClickListener {
-            AlertDialog.Builder(this).setTitle("Вы уверены, что хотите выйти из аккаунта?")
-                .setMessage("Это приведет к удалению всех пользовательских данных")
-                .setPositiveButton("Да, я уверен") { _, _ ->
-                    deleteFile("userData")
-                    finishAndRemoveTask()
-                }.setNegativeButton("Нет, отмена") { dialog, _ ->
-                    dialog.cancel()
-                }.create().show()
+            val alertDialog =
+                AlertDialog.Builder(this).setTitle("Вы уверены, что хотите выйти из аккаунта?")
+                    .setMessage("Это приведет к удалению всех пользовательских данных")
+                    .setPositiveButton("Да, я уверен") { _, _ ->
+                        deleteFile("userData")
+                        finishAndRemoveTask()
+                    }.setNegativeButton("Нет, отмена") { dialog, _ ->
+                        dialog.cancel()
+                    }.create()
+            alertDialog.show()
+
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK)
+            alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
         }
 
         // filter panel

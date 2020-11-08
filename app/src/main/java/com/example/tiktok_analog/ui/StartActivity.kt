@@ -52,7 +52,7 @@ class StartActivity : AppCompatActivity() {
 //            startActivity(Intent(this, MainActivity::class.java))
 //        }
 
-        val userDataFile =  applicationContext.getFileStreamPath("userData")
+        val userDataFile = applicationContext.getFileStreamPath("userData")
         if (userDataFile != null && userDataFile.exists()) {
             startActivity(Intent(this, MainActivity::class.java))
         }
@@ -150,12 +150,12 @@ class StartActivity : AppCompatActivity() {
             setResult(Activity.RESULT_OK)
 
             userData = User(
-                username = username.text.toString(),
-                phone = phone.text.toString(),
-                email = email.text.toString(),
-                password = password.text.toString(),
-                birthDate = birthDate.text.toString(),
-                city=city.text.toString()
+                username = username.text.toString().trim(),
+                phone = phone.text.toString().trim(),
+                email = email.text.toString().trim(),
+                password = password.text.toString().trim(),
+                birthDate = birthDate.text.toString().trim(),
+                city = city.text.toString().trim()
             )
 
             // TODO: here should be server checker that says if user with this data exist or not
@@ -281,10 +281,8 @@ class StartActivity : AppCompatActivity() {
             login.isEnabled = loginState.isDataValid
 
             login.backgroundTintList = applicationContext.resources.getColorStateList(
-                if (loginState.isDataValid)
-                    R.color.buttonEnabledBg
-                else
-                    R.color.buttonDisabledBg
+                if (loginState.isDataValid) R.color.buttonEnabledBg
+                else R.color.buttonDisabledBg
             )
 
             if (loginState.usernameError != null) {
@@ -296,12 +294,12 @@ class StartActivity : AppCompatActivity() {
         })
 
         loginViewModel.loginResult.observe(this@StartActivity, Observer {
-            val registerResult = it ?: return@Observer
+            val loginResult = it ?: return@Observer
 
             // TODO: here should be server checker that says if user with this data exist or not
             // sendToServer("
 
-            if (false) {
+            if (true) {
                 AlertDialog.Builder(this).setTitle("Ошибка!")
                     .setMessage("Пользователя с такими данными не существует")
                     .setPositiveButton("Понятно") { dialog, _ ->

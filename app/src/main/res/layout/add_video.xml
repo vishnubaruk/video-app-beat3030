@@ -58,7 +58,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <Button
-                android:id="@+id/loadVideo"
+                android:id="@+id/uploadVideoButton"
                 android:layout_width="0dp"
                 android:layout_height="63dp"
                 android:layout_gravity="start"
@@ -97,7 +97,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
-                android:id="@+id/videoName"
+                android:id="@+id/videoTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -171,7 +171,7 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/load_video"
-                app:layout_constraintBottom_toTopOf="@+id/loadVideo"
+                app:layout_constraintBottom_toTopOf="@+id/uploadVideoButton"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
