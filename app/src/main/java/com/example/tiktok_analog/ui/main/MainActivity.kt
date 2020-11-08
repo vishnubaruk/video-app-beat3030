@@ -1,6 +1,7 @@
 package com.example.tiktok_analog.ui.main
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -91,7 +92,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         logout.setOnClickListener {
-            finishAndRemoveTask()
+            AlertDialog.Builder(this).setTitle("Вы уверены, что хотите выйти из аккаунта?")
+                .setMessage("Это приведет к удалению всех пользовательских данных")
+                .setPositiveButton("Да, я уверен") { _, _ ->
+                    deleteFile("userData")
+                    finishAndRemoveTask()
+                }.setNegativeButton("Нет, отмена") { dialog, _ ->
+                    dialog.cancel()
+                }.create().show()
         }
 
         // filter panel
@@ -287,8 +295,10 @@ class MainActivity : AppCompatActivity() {
         newsLineLayout.addView(newView)
 
         newView.setOnClickListener {
-            Toast.makeText(applicationContext, "Opening $title video",
-                Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                applicationContext, "Opening $title video",
+                Toast.LENGTH_SHORT
+            ).show()
         }
         // newView.findViewWithTag<ProgressBar>("progressBar").progress = progress
         // properties[id]= newView
