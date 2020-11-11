@@ -1,5 +1,6 @@
 package com.example.tiktok_analog.ui
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -9,7 +10,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.os.PatternMatcher
 import android.telephony.PhoneNumberFormattingTextWatcher
 import android.text.Editable
 import android.text.TextWatcher
@@ -24,6 +24,7 @@ import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.android.volley.Request
@@ -37,6 +38,7 @@ import com.example.tiktok_analog.ui.main.MainActivity
 import com.example.tiktok_analog.ui.register.RegisterViewModel
 import com.example.tiktok_analog.ui.register.RegisterViewModelFactory
 import com.example.tiktok_analog.ui.register.RegisteredUserView
+import kotlinx.android.synthetic.main.register.*
 import java.util.*
 
 
@@ -51,6 +53,17 @@ class StartActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_login)
+
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.INTERNET
+            ),
+            300
+        )
 
 //        if(userDataExists) {
 //            startActivity(Intent(this, MainActivity::class.java))
@@ -322,56 +335,75 @@ class StartActivity : AppCompatActivity() {
     }
 
     private fun loginUser(user: User) {
-        val queue = Volley.newRequestQueue(this)
-        queue.start()
+        val loginQueue = Volley.newRequestQueue(this)
+
         val url =
-            "http://kepler88d.pythonanywhere.com//exist?phone=${user.phone}&email=${user.email}"
+            "https://kepler88d.pythonanywhere.com/exist?phone=${user.phone}&email=${user.email}"
+
+        Log.d("DEBUG", user.toJsonString())
+        Log.d("DEBUG", url)
 
         var userExists: Boolean
-        StringRequest(Request.Method.GET, url, { response ->
-            Log.d("DEBUG", response)
-            userExists = response == "true"
+        val existenceRequest = StringRequest(Request.Method.GET, url, { response ->
+            run {
+                Log.d("DEBUG", response)
+                userExists = response == "true"
 
-            if (userExists) {
-                // write data got from server
-                startActivity(Intent(this, MainActivity::class.java))
-            } else {
-                AlertDialog.Builder(this).setTitle("Ошибка!")
-                    .setMessage("Пользователя с такими данными не существует")
-                    .setPositiveButton("Понятно") { dialog, _ ->
-                        dialog.cancel()
-                    }.create().show()
+                if (userExists) {
+                    // write data got from server
+                    startActivity(Intent(this, MainActivity::class.java))
+                } else {
+                    AlertDialog.Builder(this).setTitle("Ошибка!")
+                        .setMessage("Пользователя с такими данными не существует")
+                        .setPositiveButton("Понятно") { dialog, _ ->
+                            dialog.cancel()
+                        }.create().show()
+                }
             }
-        }, { })
+        }, {
+            Log.e("ERROR", "Error at sign in : " + it.message)
+        })
+
+        loginQueue.add(existenceRequest)
     }
 
     private fun registerUser(user: User) {
-        val queue = Volley.newRequestQueue(this)
-        queue.start()
+        val registerQueue = Volley.newRequestQueue(this)
+        registerQueue.start()
+
         val url =
-            "http://kepler88d.pythonanywhere.com//exist?phone=${user.phone}&email=${user.email}"
+            "https://kepler88d.pythonanywhere.com/exist?phone=${user.phone}&email=${user.email}"
+
+        Log.d("DEBUG", user.toJsonString())
+        Log.d("DEBUG", url)
 
         var userExists: Boolean
-        StringRequest(Request.Method.GET, url, { response ->
-            Log.d("DEBUG", response)
-            userExists = response == "true"
+        val existenceRequest = StringRequest(Request.Method.GET, url, { response ->
+            run {
+                Log.d("DEBUG", response)
+                userExists = response == "true"
 
-            if (userExists) {
-                AlertDialog.Builder(this).setTitle("Ошибка!")
-                    .setMessage("Пользователь с такими данными уже существует")
-                    .setPositiveButton("Понятно") { dialog, _ ->
-                        dialog.cancel()
-                    }.create().show()
-            } else {
-                // data serialization
-                this.openFileOutput("userData", Context.MODE_PRIVATE)
-                    .write(userData.toJsonString().toByteArray())
+                if (userExists) {
+                    AlertDialog.Builder(this).setTitle("Ошибка!")
+                        .setMessage("Пользователь с такими данными уже существует")
+                        .setPositiveButton("Понятно") { dialog, _ ->
+                            dialog.cancel()
+                        }.create().show()
+                } else {
+                    // data serialization
+                    this.openFileOutput("userData", Context.MODE_PRIVATE)
+                        .write(userData.toJsonString().toByteArray())
 
-                Log.d("DEBUG", userData.toJsonString())
+                    Log.d("DEBUG", userData.toJsonString())
 
-                startActivity(Intent(this, SmsActivity::class.java))
+                    startActivity(Intent(this, SmsActivity::class.java))
+                }
             }
-        }, { })
+        }, {
+            Log.e("ERROR", "Error at sign in : " + it.message)
+        })
+
+        registerQueue.add(existenceRequest)
     }
 }
 

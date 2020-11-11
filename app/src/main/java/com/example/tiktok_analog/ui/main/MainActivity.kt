@@ -42,16 +42,6 @@ class MainActivity : AppCompatActivity() {
             emailTextHeader.text = userData.email
         }
 
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(
-                Manifest.permission.CAMERA,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ),
-            300
-        )
-
         openMenuButton.setOnClickListener {
             openMenu()
         }
@@ -104,7 +94,7 @@ class MainActivity : AppCompatActivity() {
                     }.create()
             alertDialog.show()
 
-            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK)
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED)
             alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
         }
 
