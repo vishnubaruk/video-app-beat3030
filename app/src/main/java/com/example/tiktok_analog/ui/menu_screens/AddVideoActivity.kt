@@ -2,7 +2,6 @@ package com.example.tiktok_analog.ui.menu_screens
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.DialogInterface.OnShowListener
 import android.content.Intent
 import android.database.Cursor
 import android.graphics.Color
@@ -10,6 +9,7 @@ import android.media.ThumbnailUtils
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.ui.afterTextChanged
@@ -48,6 +48,11 @@ class AddVideoActivity : AppCompatActivity() {
 
         videoTags.afterTextChanged {
             checkIfCanUpload()
+        }
+
+        uploadVideoButton.setOnClickListener {
+            uploadVideoButton.text = "Загрузка видео..."
+            progressBar.visibility = View.VISIBLE
         }
     }
 
@@ -167,6 +172,7 @@ class AddVideoActivity : AppCompatActivity() {
         )
     }
 
+
     override fun onBackPressed() {
         val alertDialog: AlertDialog = AlertDialog.Builder(this)
             .setTitle("Вы уверены, что хотите прервать добавление видео?")
@@ -178,7 +184,7 @@ class AddVideoActivity : AppCompatActivity() {
             }.create()
         alertDialog.show()
 
-        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK)
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED)
         alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
     }
 }

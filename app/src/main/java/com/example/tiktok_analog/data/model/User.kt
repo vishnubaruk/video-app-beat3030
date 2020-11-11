@@ -9,17 +9,17 @@ import org.json.JSONObject
  */
 data class User(
     @SerializedName("username")
-    val username: String,
+    var username: String,
     @SerializedName("password")
-    val password: String,
+    var password: String,
     @SerializedName("email")
-    val email: String = "",
+    var email: String = "",
     @SerializedName("phone")
-    val phone: String = "",
+    var phone: String = "",
     @SerializedName("birthDate")
-    val birthDate: String = "",
+    var birthDate: String = "",
     @SerializedName("city")
-    val city: String = ""
+    var city: String = ""
 ) {
     fun toJson(): JSONObject {
         val builder = GsonBuilder()
@@ -40,6 +40,36 @@ data class User(
                 phone = jsonObject.getString("phone").toString(),
                 birthDate = jsonObject.getString("birthDate").toString(),
                 city = jsonObject.getString("city").toString()
+            )
+        }
+
+        fun newFakeUser(): User {
+            return newFakeUser(JSONObject())
+        }
+
+        private fun newFakeUser(jsonObject: JSONObject): User {
+            return User(
+                username =
+                if (jsonObject.has("username"))
+                    jsonObject.getString("username")
+                else "",
+                password =
+                if (jsonObject.has("password"))
+                    jsonObject.getString("password")
+                else "",
+                email =
+                if (jsonObject.has("email"))
+                    jsonObject.getString("email")
+                else "",
+                phone =
+                if (jsonObject.has("phone")) jsonObject.getString("phone")
+                else "",
+                birthDate =
+                if (jsonObject.has("birthDate")) jsonObject.getString("birthDate")
+                else "",
+                city =
+                if (jsonObject.has("city")) jsonObject.getString("city")
+                else ""
             )
         }
     }

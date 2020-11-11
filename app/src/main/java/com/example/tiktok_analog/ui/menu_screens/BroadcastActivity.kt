@@ -1,5 +1,7 @@
 package com.example.tiktok_analog.ui.menu_screens
 
+import android.app.AlertDialog
+import android.graphics.Color
 import android.hardware.Camera
 import android.hardware.Camera.CameraInfo
 import android.os.Bundle
@@ -26,6 +28,8 @@ class BroadcastActivity : AppCompatActivity(), SurfaceHolder.Callback {
     private var camera: Camera? = null
     private var cameraId = 0
     private var rotation = 0
+
+    private var isBroadcastStarted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -168,4 +172,23 @@ class BroadcastActivity : AppCompatActivity(), SurfaceHolder.Callback {
     }
 
     override fun surfaceDestroyed(p0: SurfaceHolder?) {}
+
+    override fun onBackPressed() {
+        if(!isBroadcastStarted) {
+            super.onBackPressed()
+            return
+        }
+        val alertDialog: AlertDialog = AlertDialog.Builder(this)
+            .setTitle("Вы уверены, что хотите прервать добавление видео?")
+            .setMessage("Это приведет к удалению введенных вами данных")
+            .setPositiveButton("Да, я уверен") { _, _ ->
+                super.onBackPressed()
+            }.setNegativeButton("Нет, остаться") { dialog, _ ->
+                dialog.cancel()
+            }.create()
+        alertDialog.show()
+
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED)
+        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
+    }
 }

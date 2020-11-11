@@ -9,10 +9,12 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.PatternMatcher
 import android.telephony.PhoneNumberFormattingTextWatcher
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.util.Patterns
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
@@ -24,6 +26,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.android.volley.Request
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.login.LoginViewModel
@@ -32,7 +37,6 @@ import com.example.tiktok_analog.ui.main.MainActivity
 import com.example.tiktok_analog.ui.register.RegisterViewModel
 import com.example.tiktok_analog.ui.register.RegisterViewModelFactory
 import com.example.tiktok_analog.ui.register.RegisteredUserView
-import java.io.File
 import java.util.*
 
 
@@ -158,29 +162,9 @@ class StartActivity : AppCompatActivity() {
                 city = city.text.toString().trim()
             )
 
-            // TODO: here should be server checker that says if user with this data exist or not
-            if (false) {
-                AlertDialog.Builder(this).setTitle("Ошибка!")
-                    .setMessage("Пользователь с такими данными уже существует")
-                    .setPositiveButton("Понятно") { dialog, _ ->
-                        dialog.cancel()
-                    }.create().show()
-            }
-
-            // Complete and destroy login activity once successful
-            // finish()
-
             // Instead of destroying activity in case of correct registration we open SmsActivity
-            else {
 
-                // data serialization
-                this.openFileOutput("userData", Context.MODE_PRIVATE)
-                    .write(userData.toJsonString().toByteArray())
-
-                Log.d("DEBUG", userData.toJsonString())
-
-                startActivity(Intent(this, SmsActivity::class.java))
-            }
+            registerUser(userData)
         })
 
         fun registerDataChanged() {
@@ -296,20 +280,15 @@ class StartActivity : AppCompatActivity() {
         loginViewModel.loginResult.observe(this@StartActivity, Observer {
             val loginResult = it ?: return@Observer
 
-            // TODO: here should be server checker that says if user with this data exist or not
-            // sendToServer("
-
-            if (true) {
-                AlertDialog.Builder(this).setTitle("Ошибка!")
-                    .setMessage("Пользователя с такими данными не существует")
-                    .setPositiveButton("Понятно") { dialog, _ ->
-                        dialog.cancel()
-                    }.create().show()
+            val fakeUser = User.newFakeUser()
+            if (Patterns.EMAIL_ADDRESS.matcher(username.text).matches()) {
+                fakeUser.email = username.text.toString()
             } else {
-
-                // write data got from server
-                startActivity(Intent(this, MainActivity::class.java))
+                fakeUser.phone = username.text.toString()
             }
+            fakeUser.password = password.text.toString()
+
+            loginUser(fakeUser)
         })
 
         username.afterTextChanged {
@@ -340,6 +319,59 @@ class StartActivity : AppCompatActivity() {
 
     private fun showLoginFailed(@StringRes errorString: Int) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun loginUser(user: User) {
+        val queue = Volley.newRequestQueue(this)
+        queue.start()
+        val url =
+            "http://kepler88d.pythonanywhere.com//exist?phone=${user.phone}&email=${user.email}"
+
+        var userExists: Boolean
+        StringRequest(Request.Method.GET, url, { response ->
+            Log.d("DEBUG", response)
+            userExists = response == "true"
+
+            if (userExists) {
+                // write data got from server
+                startActivity(Intent(this, MainActivity::class.java))
+            } else {
+                AlertDialog.Builder(this).setTitle("Ошибка!")
+                    .setMessage("Пользователя с такими данными не существует")
+                    .setPositiveButton("Понятно") { dialog, _ ->
+                        dialog.cancel()
+                    }.create().show()
+            }
+        }, { })
+    }
+
+    private fun registerUser(user: User) {
+        val queue = Volley.newRequestQueue(this)
+        queue.start()
+        val url =
+            "http://kepler88d.pythonanywhere.com//exist?phone=${user.phone}&email=${user.email}"
+
+        var userExists: Boolean
+        StringRequest(Request.Method.GET, url, { response ->
+            Log.d("DEBUG", response)
+            userExists = response == "true"
+
+            if (userExists) {
+                AlertDialog.Builder(this).setTitle("Ошибка!")
+                    .setMessage("Пользователь с такими данными уже существует")
+                    .setPositiveButton("Понятно") { dialog, _ ->
+                        dialog.cancel()
+                    }.create().show()
+            } else {
+                // data serialization
+                this.openFileOutput("userData", Context.MODE_PRIVATE)
+                    .write(userData.toJsonString().toByteArray())
+
+                Log.d("DEBUG", userData.toJsonString())
+
+                startActivity(Intent(this, SmsActivity::class.java))
+            }
+        }, { })
     }
 }
 
