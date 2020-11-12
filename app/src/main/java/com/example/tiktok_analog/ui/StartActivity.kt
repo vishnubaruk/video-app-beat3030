@@ -39,6 +39,7 @@ import com.example.tiktok_analog.ui.register.RegisterViewModel
 import com.example.tiktok_analog.ui.register.RegisterViewModelFactory
 import com.example.tiktok_analog.ui.register.RegisteredUserView
 import kotlinx.android.synthetic.main.register.*
+import org.json.JSONObject
 import java.util.*
 
 
@@ -177,7 +178,7 @@ class StartActivity : AppCompatActivity() {
 
             // Instead of destroying activity in case of correct registration we open SmsActivity
 
-            registerUser(userData)
+            checkIfUserIsRegistered(userData)
         })
 
         fun registerDataChanged() {
@@ -301,7 +302,7 @@ class StartActivity : AppCompatActivity() {
             }
             fakeUser.password = password.text.toString()
 
-            loginUser(fakeUser)
+            checkIfUserIsLoggedIn(fakeUser)
         })
 
         username.afterTextChanged {
@@ -334,7 +335,7 @@ class StartActivity : AppCompatActivity() {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
     }
 
-    private fun loginUser(user: User) {
+    private fun checkIfUserIsLoggedIn(user: User) {
         val loginQueue = Volley.newRequestQueue(this)
 
         val url =
@@ -347,11 +348,10 @@ class StartActivity : AppCompatActivity() {
         val existenceRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
                 Log.d("DEBUG", response)
-                userExists = response == "true"
+                userExists = JSONObject(response).getBoolean("ok")
 
                 if (userExists) {
-                    // write data got from server
-                    startActivity(Intent(this, MainActivity::class.java))
+                    loginUser(user)
                 } else {
                     AlertDialog.Builder(this).setTitle("Ошибка!")
                         .setMessage("Пользователя с такими данными не существует")
@@ -367,21 +367,46 @@ class StartActivity : AppCompatActivity() {
         loginQueue.add(existenceRequest)
     }
 
-    private fun registerUser(user: User) {
-        val registerQueue = Volley.newRequestQueue(this)
-        registerQueue.start()
+    private fun loginUser(user: User) {
+        val loginQueue = Volley.newRequestQueue(this)
+
+        val url =
+            "https://kepler88d.pythonanywhere.com/login?phone=${user.phone}&email=${user.email}&password=${user.password}"
+
+        val loginRequest = StringRequest(Request.Method.GET, url, { response ->
+            run {
+                val jsonResponse = JSONObject(response)
+                if (jsonResponse.getBoolean("ok")) {
+                    userData = User.newUser(jsonResponse.getJSONObject("user"))
+                    this.openFileOutput("userData", Context.MODE_PRIVATE)
+                        .write(userData.toJsonString().toByteArray())
+                    startActivity(Intent(this, MainActivity::class.java))
+                } else {
+                    AlertDialog.Builder(this).setTitle("Ошибка!")
+                        .setMessage("Вами был введен неверный пароль")
+                        .setPositiveButton("Понятно") { dialog, _ ->
+                            dialog.cancel()
+                        }.create().show()
+                }
+            }
+        }, {
+            Log.e("ERROR", "Error at sign in : " + it.message)
+        })
+
+        loginQueue.add(loginRequest)
+    }
+
+    private fun checkIfUserIsRegistered(user: User) {
+        val checkRegisterQueue = Volley.newRequestQueue(this)
 
         val url =
             "https://kepler88d.pythonanywhere.com/exist?phone=${user.phone}&email=${user.email}"
-
-        Log.d("DEBUG", user.toJsonString())
-        Log.d("DEBUG", url)
 
         var userExists: Boolean
         val existenceRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
                 Log.d("DEBUG", response)
-                userExists = response == "true"
+                userExists = JSONObject(response).getBoolean("ok")
 
                 if (userExists) {
                     AlertDialog.Builder(this).setTitle("Ошибка!")
@@ -390,6 +415,29 @@ class StartActivity : AppCompatActivity() {
                             dialog.cancel()
                         }.create().show()
                 } else {
+                    registerUser(user)
+                }
+            }
+        }, {
+            Log.e("ERROR", "Error at sign in : " + it.message)
+        })
+
+        checkRegisterQueue.add(existenceRequest)
+    }
+
+    private fun registerUser(user: User) {
+        val registerQueue = Volley.newRequestQueue(this)
+
+        val url =
+            "https://kepler88d.pythonanywhere.com/register?username=${user.username}&" +
+                    "phone=${user.phone}&email=${user.email}&city=${user.city}&" +
+                    "birthDate=${user.birthDate}&password=${user.password}"
+
+        val registerRequest = StringRequest(Request.Method.GET, url, { response ->
+            run {
+                val jsonResponse = JSONObject(response)
+
+                if (jsonResponse.getBoolean("ok")) {
                     // data serialization
                     this.openFileOutput("userData", Context.MODE_PRIVATE)
                         .write(userData.toJsonString().toByteArray())
@@ -397,13 +445,19 @@ class StartActivity : AppCompatActivity() {
                     Log.d("DEBUG", userData.toJsonString())
 
                     startActivity(Intent(this, SmsActivity::class.java))
+                } else {
+                    AlertDialog.Builder(this).setTitle("Произошла непредвиденная ошибка!")
+                        .setMessage("Попробуйте еще раз")
+                        .setPositiveButton("Понятно") { dialog, _ ->
+                            dialog.cancel()
+                        }.create().show()
                 }
             }
         }, {
             Log.e("ERROR", "Error at sign in : " + it.message)
         })
 
-        registerQueue.add(existenceRequest)
+        registerQueue.add(registerRequest)
     }
 }
 
