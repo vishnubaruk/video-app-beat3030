@@ -339,7 +339,8 @@ class StartActivity : AppCompatActivity() {
         val loginQueue = Volley.newRequestQueue(this)
 
         val url =
-            "https://kepler88d.pythonanywhere.com/exist?phone=${user.phone}&email=${user.email}"
+            "https://kepler88d.pythonanywhere.com/exist?"+
+                    "phone=${user.phone}&email=${user.email}"
 
         Log.d("DEBUG", user.toJsonString())
         Log.d("DEBUG", url)

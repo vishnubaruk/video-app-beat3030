@@ -9,12 +9,17 @@ import android.media.ThumbnailUtils
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.android.volley.toolbox.Volley
+import com.android.volley.Request
+import com.android.volley.toolbox.StringRequest
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.ui.afterTextChanged
 import kotlinx.android.synthetic.main.activity_main.backArrowButton
 import kotlinx.android.synthetic.main.add_video.*
+import org.json.JSONObject
 import wseemann.media.FFmpegMediaMetadataRetriever
 import java.io.File
 import kotlin.math.pow
@@ -25,6 +30,8 @@ class AddVideoActivity : AppCompatActivity() {
     private val pickVideo = 23
 
     private var selectedVideoPath: String? = null
+    private var selectedVideoLength: Long = 0
+    private var selectedVideoSize: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,8 +59,64 @@ class AddVideoActivity : AppCompatActivity() {
 
         uploadVideoButton.setOnClickListener {
             uploadVideoButton.text = "Загрузка видео..."
+
+            uploadVideoButton.isEnabled = false
+            pickFileButton.isEnabled = false
+
+            uploadVideoButton.backgroundTintList =
+                applicationContext.resources.getColorStateList(R.color.buttonDisabledBg)
+            pickFileButton.backgroundTintList =
+                applicationContext.resources.getColorStateList(R.color.buttonDisabledBg)
+
             progressBar.visibility = View.VISIBLE
+
+            addVideo()
         }
+    }
+
+    private fun addVideo() {
+        val addVideoQueue = Volley.newRequestQueue(this)
+
+        val url =
+            "https://kepler88d.pythonanywhere.com/addVideo?" +
+                    "title=${videoTitle.text}&description=${videoDescription.text}" +
+                    "tags=${videoTags.text}&size=${selectedVideoSize}&" +
+                    "length=${selectedVideoLength}"
+
+        Log.d("DEBUG", url)
+
+        val addVideoRequest = StringRequest(Request.Method.GET, url, { response ->
+            run {
+                Log.d("DEBUG", response)
+                progressBar.visibility = View.GONE
+
+                if (JSONObject(response).getBoolean("ok")) {
+                    val builder = AlertDialog.Builder(this)
+                        .setMessage("Ваше видео было успешно загружено")
+                        .setPositiveButton("Хорошо") { dialog, _ ->
+                            super.onBackPressed()
+                        }
+                    builder.setOnCancelListener {
+                        super.onBackPressed()
+                    }
+                    builder.create()
+                    builder.show()
+                } else {
+                    val builder =
+                        AlertDialog.Builder(this).setTitle("Произошла непредвиденная ошибка!")
+                            .setMessage("Попробуйте еще раз")
+                            .setPositiveButton("Понятно") { dialog, _ ->
+                                dialog.cancel()
+                            }
+                    builder.create()
+                    builder.show()
+                }
+            }
+        }, {
+            Log.e("ERROR", "Error at sign in : " + it.message)
+        })
+
+        addVideoQueue.add(addVideoRequest)
     }
 
     private fun openGalleryForVideo() {
@@ -87,6 +150,9 @@ class AddVideoActivity : AppCompatActivity() {
             if (videoTitle.text.isBlank()) {
                 videoTitle.setText(File(videoPath2).name.split(".")[0])
             }
+
+            selectedVideoSize = videoWeight.toLong()
+            selectedVideoLength = milliseconds
 
             videoSize.text = formatFileSizeFromBytes(videoWeight.toLong())
             videoLength.text = formatTimeFromMilliseconds(milliseconds)
