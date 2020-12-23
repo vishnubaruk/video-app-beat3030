@@ -21,15 +21,9 @@ data class User(
     @SerializedName("city")
     var city: String = ""
 ) {
-    fun toJson(): JSONObject {
-        val builder = GsonBuilder()
-        val json = builder.create().toJson(this)
-        return JSONObject(json)
-    }
+    fun toJson(): JSONObject = JSONObject(toJsonString())
 
-    fun toJsonString(): String {
-        return toJson().toString()
-    }
+    fun toJsonString(): String = GsonBuilder().create().toJson(this)
 
     companion object {
         fun newUser(jsonObject: JSONObject): User {
@@ -48,28 +42,17 @@ data class User(
         }
 
         private fun newFakeUser(jsonObject: JSONObject): User {
+            fun getStringOrEmpty(name: String): String {
+                return if (jsonObject.has(name)) jsonObject.getString(name) else ""
+            }
+
             return User(
-                username =
-                if (jsonObject.has("username"))
-                    jsonObject.getString("username")
-                else "",
-                password =
-                if (jsonObject.has("password"))
-                    jsonObject.getString("password")
-                else "",
-                email =
-                if (jsonObject.has("email"))
-                    jsonObject.getString("email")
-                else "",
-                phone =
-                if (jsonObject.has("phone")) jsonObject.getString("phone")
-                else "",
-                birthDate =
-                if (jsonObject.has("birthDate")) jsonObject.getString("birthDate")
-                else "",
-                city =
-                if (jsonObject.has("city")) jsonObject.getString("city")
-                else ""
+                username = getStringOrEmpty("username"),
+                password = getStringOrEmpty("password"),
+                email = getStringOrEmpty("email"),
+                phone = getStringOrEmpty("phone"),
+                birthDate = getStringOrEmpty("birthDate"),
+                city = getStringOrEmpty("city")
             )
         }
     }
