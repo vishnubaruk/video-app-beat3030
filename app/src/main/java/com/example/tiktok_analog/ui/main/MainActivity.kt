@@ -1,8 +1,9 @@
 package com.example.tiktok_analog.ui.main
 
-import android.Manifest
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -13,15 +14,25 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.android.volley.Request
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
+import com.example.tiktok_analog.ui.OpenVideoActivity
 import com.example.tiktok_analog.ui.menu_screens.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.backArrowButton
+import kotlinx.android.synthetic.main.activity_main.sectionTitleText
 import kotlinx.android.synthetic.main.filter.*
 import kotlinx.android.synthetic.main.menu.*
 import org.json.JSONObject
-import kotlin.random.Random
+import org.w3c.dom.Text
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
+import kotlin.concurrent.thread
 
 
 class MainActivity : AppCompatActivity() {
@@ -145,19 +156,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         fun addPostsToNewsLine(count: Int) {
-            for (i in 1..count) {
-                addViewToNewsLine(
-                    "Title${Random.nextInt(10000, 99999999)}",
-                    arrayListOf(
-                        "tag${Random.nextInt(100, 999)}",
-                        "tag${Random.nextInt(100, 999)}",
-                        "tag${Random.nextInt(100, 999)}"
-                    ),
-                    Random.nextInt(10, 9000),
-                    Random.nextInt(10, 1200),
-                    R.drawable.rectangle4
-                )
-            }
+            getVideos(count)
+
+//            for (i in 1..count) {
+//                addViewToNewsLine(
+//                    "Title${Random.nextInt(10000, 99999999)}",
+//                    "tag${Random.nextInt(100, 999)}" +
+//                            "tag${Random.nextInt(100, 999)}" +
+//                            "tag${Random.nextInt(100, 999)}",
+//                    Random.nextInt(10, 9000),
+//                    Random.nextInt(10, 1200),
+//                    R.drawable.rectangle4
+//                )
+//            }
         }
 
         addPostsToNewsLine(10)
@@ -265,12 +276,28 @@ class MainActivity : AppCompatActivity() {
         startActivity(Intent(this, NotificationsActivity::class.java))
     }
 
+    private fun getBitmapFromURL(src: String): Bitmap? {
+        return try {
+            val url = URL(src)
+            val connection = url.openConnection() as HttpURLConnection
+            connection.doInput = true;
+            connection.connect()
+            val input = connection.inputStream
+            val myBitmap = BitmapFactory.decodeStream(input)
+            myBitmap
+        } catch (e: IOException) {
+            e.printStackTrace();
+            null
+        }
+    }
+
     private fun addViewToNewsLine(
         title: String,
-        tags: ArrayList<String>,
-        likeCount: Int = 1200,
+        tags: String,
+        id: Int,
+        likeCount: Int,
         length: Int = 90,
-        imageId: Int
+        imageId: Int = 0
     ) {
         // replace with new pattern layout
         val newView =
@@ -283,21 +310,69 @@ class MainActivity : AppCompatActivity() {
         }
         newView.findViewWithTag<TextView>("tags").text = formattedTags
 
-        newView.findViewWithTag<Button>("likeButton").text = "$likeCount  "
+        newView.findViewWithTag<TextView>("likeText").text = "$likeCount"
+        newView.findViewWithTag<ConstraintLayout>("likeButton").setOnClickListener {
+            newView.findViewWithTag<TextView>("likeText").text =
+                "${(newView.findViewWithTag<TextView>("likeText").text.toString().toInt() + 1)}"
+        }
+
         newView.findViewWithTag<Button>("lengthButton").text =
             "${length / 60}:${if (length % 60 < 10) "0" else ""}${length % 60}"
 
-        newView.findViewWithTag<ImageView>("previewImage").setImageResource(imageId)
+        thread {
+            val bitmap =
+                getBitmapFromURL("https://res.cloudinary.com/kepler88d/video/upload/fl_attachment$id.jpg")
+
+            runOnUiThread {
+                newView.findViewWithTag<ImageView>("previewImage").setImageBitmap(bitmap)
+            }
+        }
         newsLineLayout.addView(newView)
 
         newView.setOnClickListener {
             Toast.makeText(
-                applicationContext, "Opening $title video",
+                applicationContext, "Opening $id video",
                 Toast.LENGTH_SHORT
             ).show()
+
+            val openVideoIntent = Intent(this, OpenVideoActivity::class.java)
+
+            openVideoIntent.putExtra("id", id)
+
+            startActivity(openVideoIntent)
         }
         // newView.findViewWithTag<ProgressBar>("progressBar").progress = progress
         // properties[id]= newView
+    }
+
+    private fun getVideos(count: Int) {
+        val getVideosQueue = Volley.newRequestQueue(this)
+
+        val url = "https://kepler88d.pythonanywhere.com/getVideos?count=$count"
+
+        progressBar.visibility = View.VISIBLE
+
+        val addVideoRequest = StringRequest(Request.Method.GET, url, { response ->
+            run {
+                val videosList = JSONObject(response).getJSONArray("videos")
+                for (index in 0 until videosList.length()) {
+                    val video = videosList.getJSONObject(index)
+                    addViewToNewsLine(
+                        title = video.getString("title"),
+                        tags = "", //video.getString("tags"),
+                        length = video.getInt("length"),
+                        id = video.getInt("videoId"),
+                        likeCount = video.getInt("likeCount")
+                    )
+                    // likeCount = video.getInt("likeCount"))
+                }
+                progressBar.visibility = View.GONE
+            }
+        }, {
+            Log.e("GetVideos", "Error at sign in : " + it.message)
+        })
+
+        getVideosQueue.add(addVideoRequest)
     }
 
     override fun onBackPressed() {
