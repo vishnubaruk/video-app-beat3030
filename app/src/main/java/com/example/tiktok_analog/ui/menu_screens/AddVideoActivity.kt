@@ -12,9 +12,12 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.android.volley.toolbox.Volley
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import com.cloudinary.android.MediaManager
+import com.cloudinary.android.callback.ErrorInfo
+import com.cloudinary.android.callback.UploadCallback
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.ui.afterTextChanged
 import kotlinx.android.synthetic.main.activity_main.backArrowButton
@@ -22,7 +25,9 @@ import kotlinx.android.synthetic.main.add_video.*
 import org.json.JSONObject
 import wseemann.media.FFmpegMediaMetadataRetriever
 import java.io.File
+import java.lang.IllegalStateException
 import kotlin.math.pow
+import kotlin.random.Random
 
 
 class AddVideoActivity : AppCompatActivity() {
@@ -72,38 +77,100 @@ class AddVideoActivity : AppCompatActivity() {
 
             addVideo()
         }
+
+
+        val config: MutableMap<String, String> = HashMap()
+        config["cloud_name"] = "kepler88d"
+        config["api_key"] = "829281113734147"
+        config["api_secret"] = "HeZK9Blh5VYtfwxW2neN2tmk5YQ"
+
+        try {
+            MediaManager.init(this, config)
+        } catch (e: IllegalStateException) {
+            Log.e("ERROR", e.stackTraceToString())
+        }
     }
 
     private fun addVideo() {
+        val addVideoContext = this
+
+        val videoId = Random.nextInt(10000, 10000000)
+
+        val requestId: String =
+            MediaManager.get().upload(selectedVideoPath)
+                .option("public_id", videoId.toString())
+                .option("resource_type", "video")
+                .callback(object : UploadCallback {
+                    override fun onStart(requestId: String) {
+                        // your code here
+                    }
+
+                    override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {
+                        // example code starts here
+                        val progress = bytes.toDouble() / totalBytes
+                        progressBar.progress = (progress * 100).toInt()
+                        // post progress to app UI (e.g. progress bar, notification)
+                        // example code ends here
+                    }
+
+                    override fun onSuccess(requestId: String, resultData: Map<*, *>?) {
+                        // your code here
+                        createAddVideoRequest(videoId)
+                    }
+
+                    override fun onError(requestId: String, error: ErrorInfo) {
+                        // your code here
+                        // progressBar.visibility = View.GONE
+                        Log.e("CloudError", error.description)
+                        val builder =
+                            AlertDialog.Builder(addVideoContext)
+                                .setTitle("Произошла непредвиденная ошибка!")
+                                .setMessage("Попробуйте еще раз")
+                                .setPositiveButton("Понятно") { dialog, _ ->
+                                    dialog.cancel()
+                                }
+                        builder.create()
+                        builder.show()
+                    }
+
+                    override fun onReschedule(requestId: String, error: ErrorInfo) {
+                        // your code here
+                    }
+                }).dispatch()
+    }
+
+    private fun createAddVideoRequest(videoId: Int) {
         val addVideoQueue = Volley.newRequestQueue(this)
 
         val url =
             "https://kepler88d.pythonanywhere.com/addVideo?" +
                     "title=${videoTitle.text}&description=${videoDescription.text}" +
                     "tags=${videoTags.text}&size=${selectedVideoSize}&" +
-                    "length=${selectedVideoLength}"
+                    "length=${selectedVideoLength / 1000}&" +
+                    "id=$videoId"
 
         Log.d("DEBUG", url)
 
         val addVideoRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
                 Log.d("DEBUG", response)
-                progressBar.visibility = View.GONE
 
                 if (JSONObject(response).getBoolean("ok")) {
+                    progressBar.visibility = View.GONE
                     val builder = AlertDialog.Builder(this)
                         .setMessage("Ваше видео было успешно загружено")
                         .setPositiveButton("Хорошо") { dialog, _ ->
-                            super.onBackPressed()
+                            back()
                         }
                     builder.setOnCancelListener {
-                        super.onBackPressed()
+                        back()
                     }
                     builder.create()
                     builder.show()
                 } else {
                     val builder =
-                        AlertDialog.Builder(this).setTitle("Произошла непредвиденная ошибка!")
+                        AlertDialog.Builder(this)
+                            .setTitle("Произошла непредвиденная ошибка!")
                             .setMessage("Попробуйте еще раз")
                             .setPositiveButton("Понятно") { dialog, _ ->
                                 dialog.cancel()
@@ -117,6 +184,10 @@ class AddVideoActivity : AppCompatActivity() {
         })
 
         addVideoQueue.add(addVideoRequest)
+    }
+
+    private fun back() {
+        super.onBackPressed()
     }
 
     private fun openGalleryForVideo() {
