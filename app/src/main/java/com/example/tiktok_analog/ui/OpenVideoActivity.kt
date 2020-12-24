@@ -5,22 +5,17 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.MediaController
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tiktok_analog.R
 import kotlinx.android.synthetic.main.activity_open_video.*
 import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
-import java.net.HttpURLConnection
-import java.net.URL
 
 
 class OpenVideoActivity : AppCompatActivity() {
@@ -34,8 +29,13 @@ class OpenVideoActivity : AppCompatActivity() {
             super.onBackPressed()
         }
 
-        if (File("/storage/emulated/0/Download/${intent.getIntExtra("id", 0)}.mp4").exists()) {
-            video.setVideoPath(
+        if (File(
+                "/storage/emulated/0/Download/${
+                    intent.getIntExtra("id", 0)
+                }.mp4"
+            ).exists()
+        ) {
+            playVideoWithPath(
                 "/storage/emulated/0/Download/${
                     intent.getIntExtra(
                         "id",
@@ -43,20 +43,10 @@ class OpenVideoActivity : AppCompatActivity() {
                     )
                 }.mp4"
             )
-            video.setMediaController(MediaController(this))
-            video.requestFocus(0)
-            video.start()
-
             progressBar.visibility = View.GONE
         } else {
             downloadFile()
         }
-
-
-//        download(
-//            "http://res.cloudinary.com/kepler88d/video/upload/fl_attachment/8699893.mp4",
-//            "file://tiktokanalog/8699893.mp4"
-//        )
     }
 
     private fun downloadFile() {
@@ -81,11 +71,13 @@ class OpenVideoActivity : AppCompatActivity() {
         val manager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         manager.enqueue(request)
 
-        val openVideoContext = this
+        val currentActivity = this
 
         val onComplete: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(ctxt: Context, intent: Intent) {
-                video.setVideoPath(
+                currentActivity.recreate()
+
+                playVideoWithPath(
                     "/storage/emulated/0/Download/${
                         intent.getIntExtra(
                             "id",
@@ -93,9 +85,7 @@ class OpenVideoActivity : AppCompatActivity() {
                         )
                     }.mp4"
                 )
-                video.setMediaController(MediaController(openVideoContext))
-                video.requestFocus(0)
-                video.start()
+
                 unregisterReceiver(this)
                 progressBar.visibility = View.GONE
             }
@@ -105,4 +95,24 @@ class OpenVideoActivity : AppCompatActivity() {
     }
 
 
+    private fun playVideoWithPath(path: String) {
+        Handler(Looper.getMainLooper()).postDelayed({
+            val controller = MediaController(this)
+            controller.setAnchorView(videoView)
+            controller.setMediaPlayer(videoView)
+            videoView.setMediaController(controller)
+            videoView.setVideoPath(path)
+
+            videoView.setOnPreparedListener { mediaPlayer ->
+                val layoutParams = videoView.layoutParams
+                val videoWidth = mediaPlayer.videoWidth.toFloat()
+                val videoHeight = mediaPlayer.videoHeight.toFloat()
+                val viewWidth = videoView.width.toFloat()
+                layoutParams.height = (viewWidth * (videoHeight / videoWidth)).toInt()
+                videoView.layoutParams = layoutParams
+
+                videoView.start()
+            }
+        }, 0)
+    }
 }
