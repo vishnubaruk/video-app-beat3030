@@ -5,6 +5,8 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,6 +24,7 @@ import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.OpenVideoActivity
 import com.example.tiktok_analog.ui.menu_screens.*
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.backArrowButton
 import kotlinx.android.synthetic.main.activity_main.sectionTitleText
@@ -319,14 +322,25 @@ class MainActivity : AppCompatActivity() {
         newView.findViewWithTag<Button>("lengthButton").text =
             "${length / 60}:${if (length % 60 < 10) "0" else ""}${length % 60}"
 
-        thread {
-            val bitmap =
-                getBitmapFromURL("https://res.cloudinary.com/kepler88d/video/upload/fl_attachment$id.jpg")
+        val urlSrc = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$id.jpg"
 
-            runOnUiThread {
-                newView.findViewWithTag<ImageView>("previewImage").setImageBitmap(bitmap)
+        Picasso.get().load(urlSrc).into(object : com.squareup.picasso.Target {
+            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                Log.d("DEBUG", urlSrc)
+                newView.findViewWithTag<ImageView>("previewImage").setImageDrawable(
+                    BitmapDrawable(
+                        resources, bitmap
+                    )
+                )
             }
-        }
+
+            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
+
+            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                Log.e("PicassoError", e?.stackTraceToString())
+            }
+        })
+
         newsLineLayout.addView(newView)
 
         newView.setOnClickListener {
