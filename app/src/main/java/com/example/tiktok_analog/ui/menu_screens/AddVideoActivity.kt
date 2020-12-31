@@ -225,7 +225,7 @@ class AddVideoActivity : AppCompatActivity() {
             selectedVideoSize = videoWeight.toLong()
             selectedVideoLength = milliseconds
 
-            videoSize.text = formatFileSizeFromBytes(videoWeight.toLong())
+            timeCode.text = formatFileSizeFromBytes(videoWeight.toLong())
             videoLength.text = formatTimeFromMilliseconds(milliseconds)
 
             val thumbnail = ThumbnailUtils.createVideoThumbnail(
