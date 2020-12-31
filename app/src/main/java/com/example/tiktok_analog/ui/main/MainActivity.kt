@@ -302,6 +302,7 @@ class MainActivity : AppCompatActivity() {
         length: Int = 90,
         imageId: Int = 0
     ) {
+
         // replace with new pattern layout
         val newView =
             LayoutInflater.from(applicationContext).inflate(R.layout.video_feed_item, null, false)
@@ -344,16 +345,18 @@ class MainActivity : AppCompatActivity() {
         newsLineLayout.addView(newView)
 
         newView.setOnClickListener {
-            Toast.makeText(
-                applicationContext, "Opening $id video",
-                Toast.LENGTH_SHORT
-            ).show()
+//            Toast.makeText(
+//                applicationContext, "Opening $id video",
+//                Toast.LENGTH_SHORT
+//            ).show()
 
             val openVideoIntent = Intent(this, OpenVideoActivity::class.java)
 
             openVideoIntent.putExtra("id", id)
 
-            startActivity(openVideoIntent)
+            if (id != 0) {
+                startActivity(openVideoIntent)
+            }
         }
         // newView.findViewWithTag<ProgressBar>("progressBar").progress = progress
         // properties[id]= newView
