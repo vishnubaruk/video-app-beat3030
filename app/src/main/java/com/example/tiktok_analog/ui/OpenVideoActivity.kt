@@ -14,10 +14,11 @@ import android.util.Log
 import android.view.View
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tiktok_analog.R
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_open_video.*
+import kotlinx.android.synthetic.main.bottom_sheet.*
 import java.io.File
 
 
@@ -29,6 +30,27 @@ class OpenVideoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_open_video)
+
+        val bottomSheetBehavior: BottomSheetBehavior<*> =
+            BottomSheetBehavior.from<View>(bottom_sheet)
+
+//        // настройка состояний нижнего экрана
+//        // настройка состояний нижнего экрана
+//        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+//        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+
+        bottomSheetBehavior.isHideable = false
+
+        bottomSheetBehavior.setBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {}
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+        })
+
+        openCommentsButton.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        }
 
         backArrowButton.setOnClickListener {
             super.onBackPressed()
@@ -169,20 +191,20 @@ class OpenVideoActivity : AppCompatActivity() {
     }
 
 
-//    override fun onSaveInstanceState(savedInstanceState: Bundle) {
-//        super.onSaveInstanceState(savedInstanceState)
-//
-//        // Store current position.
-//        savedInstanceState.putInt("CurrentPosition", videoView.currentPosition)
-//        videoView.pause()
-//    }
-//
-//    // After rotating the phone. This method is called.
-//    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-//        super.onRestoreInstanceState(savedInstanceState)
-//
-//        // Get saved position.
-//        val position = savedInstanceState.getInt("CurrentPosition")
-//        videoView.seekTo(position)
-//    }
+    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        super.onSaveInstanceState(savedInstanceState)
+
+        // Store current position.
+        savedInstanceState.putInt("CurrentPosition", videoView.currentPosition)
+        videoView.pause()
+    }
+
+    // After rotating the phone. This method is called.
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        // Get saved position.
+        val position = savedInstanceState.getInt("CurrentPosition")
+        videoView.seekTo(position)
+    }
 }
