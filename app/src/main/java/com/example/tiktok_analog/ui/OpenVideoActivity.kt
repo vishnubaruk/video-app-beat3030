@@ -111,7 +111,24 @@ class OpenVideoActivity : AppCompatActivity() {
                 }
             }
         })
+
+        sendButton.setOnClickListener {
+            commentText.setText("")
+        }
+
+        likeButton.setOnClickListener {
+            isLiked = !isLiked
+
+            it.setBackgroundResource(
+                if (isLiked) R.drawable.ic_like
+                else R.drawable.ic_baseline_favorite_border_24
+            )
+
+            likeCount.text = "${if (isLiked) 1 else 0}"
+        }
     }
+
+    var isLiked = false
 
     private fun downloadFile() {
         val url = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/${
@@ -176,8 +193,8 @@ class OpenVideoActivity : AppCompatActivity() {
                 updateHandler.postDelayed(updateVideoTime, 100)
             }
 
-            videoView.setOnClickListener(null)
-            videoView.setOnTouchListener(null)
+//            videoView.setOnClickListener(null)
+//            videoView.setOnTouchListener(null)
         }, 0)
     }
 

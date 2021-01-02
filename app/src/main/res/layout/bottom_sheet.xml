@@ -41,8 +41,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:background="#10273C"
         android:layout_height="64dp"
+        android:background="#10273C"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageView
@@ -55,6 +55,8 @@
             app:srcCompat="@drawable/user_image" />
 
         <EditText
+            android:id="@+id/commentText"
+
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="64dp"
@@ -74,7 +76,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/sendButton"
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:layout_marginTop="16dp"
