@@ -5,6 +5,8 @@
         <item name="colorPrimary">#FFF</item>
         <item name="colorPrimaryDark">#10273C</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:textColorHint">#FFF</item>
     </style>
 
     <style name="ButtonBorder" parent="Widget.AppCompat.Button.Colored" />
