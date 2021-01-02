@@ -193,7 +193,15 @@ class OpenVideoActivity : AppCompatActivity() {
                 updateHandler.postDelayed(updateVideoTime, 100)
             }
 
-//            videoView.setOnClickListener(null)
+            videoView.setOnClickListener {
+                if (videoView.isPlaying) {
+                    pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
+                    videoView.pause()
+                } else {
+                    pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
+                    videoView.start()
+                }
+            }
 //            videoView.setOnTouchListener(null)
         }, 0)
     }
