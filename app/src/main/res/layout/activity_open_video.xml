@@ -1,172 +1,184 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="#10273C"
-    android:layout_height="match_parent">
-
-    <VideoView
-        android:id="@+id/videoView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="80dp"
-        android:clickable="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    android:layout_height="match_parent"
+    tools:context="com.example.tiktok_analog.ui.OpenVideoActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/toolbar2"
-        android:layout_width="0dp"
-        android:layout_height="80dp"
-        android:background="@color/colorPrimary"
-        android:elevation="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Dark">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#10273C">
 
-        <TextView
-            android:id="@+id/sectionTitleText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:text="Видео"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:textStyle="bold"
+        <VideoView
+            android:id="@+id/videoView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="80dp"
+            android:clickable="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.472"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/backArrowButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="32dp"
-            android:background="@drawable/ic_back_arrow"
-            android:visibility="visible"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/toolbar2"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:background="@color/colorPrimary"
+            android:elevation="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintTop_toTopOf="parent"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout7"
-        android:layout_width="match_parent"
-        android:layout_height="128dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+            <TextView
+                android:id="@+id/sectionTitleText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:text="Видео"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.472"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout6"
-            android:layout_width="match_parent"
-            android:layout_height="32dp"
-            android:background="@drawable/video_bottom_controls_background"
-            app:layout_constraintBottom_toTopOf="@+id/constraintLayout4">
-
+            <ImageButton
+                android:id="@+id/backArrowButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="32dp"
+                android:background="@drawable/ic_back_arrow"
+                android:visibility="visible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout4"
+            android:id="@+id/constraintLayout7"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:background="#10273C"
-            app:layout_constraintBottom_toBottomOf="parent"
-            tools:layout_editor_absoluteX="0dp">
+            android:layout_height="128dp"
+            app:layout_constraintBottom_toBottomOf="parent">
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout6"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:background="@drawable/video_bottom_controls_background"
+                app:layout_constraintBottom_toTopOf="@+id/constraintLayout4">
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout4"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:background="#10273C"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:layout_editor_absoluteX="0dp">
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <ImageButton
+                android:id="@+id/pauseButton"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/ic_baseline_pause_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/timeCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="22dp"
+                android:fontFamily="@font/monsterrat_regular"
+                android:text="0:00"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/ic_baseline_favorite_border_24"
+                app:layout_constraintBottom_toBottomOf="@+id/constraintLayout6"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <Button
+                android:id="@+id/openCommentsButton"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="100dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/ic_comment"
+                app:layout_constraintBottom_toBottomOf="@+id/constraintLayout6"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/timeCode2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="16dp"
+                android:fontFamily="@font/monsterrat_regular"
+                android:text="0"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@+id/constraintLayout6"
+                app:layout_constraintStart_toEndOf="@+id/button3" />
+
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="64dp"
+                android:layout_marginBottom="22dp"
+                android:progressTint="@color/white"
+                android:thumbTint="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/pauseButton" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <ImageButton
-            android:id="@+id/pauseButton"
-            android:layout_width="32dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="32dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/ic_baseline_pause_24"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:background="@drawable/video_top_background"
+            app:layout_constraintTop_toTopOf="@+id/videoView"
+            tools:layout_editor_absoluteX="0dp" />
 
-        <TextView
-            android:id="@+id/timeCode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="22dp"
-            android:fontFamily="@font/monsterrat_regular"
-            android:text="0:00"
-            android:textColor="@color/white"
-            android:textSize="15sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
 
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/ic_baseline_favorite_border_24"
-            app:layout_constraintBottom_toBottomOf="@+id/constraintLayout6"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
-            android:id="@+id/button4"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="100dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/ic_comment"
-            app:layout_constraintBottom_toBottomOf="@+id/constraintLayout6"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <TextView
-            android:id="@+id/timeCode2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="16dp"
-            android:fontFamily="@font/monsterrat_regular"
-            android:text="0"
-            android:textAlignment="viewEnd"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="@+id/constraintLayout6"
-            app:layout_constraintStart_toEndOf="@+id/button3" />
-
-        <SeekBar
-            android:id="@+id/seekBar"
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="64dp"
-            android:layout_marginBottom="22dp"
-            android:progressTint="@color/white"
-            android:thumbTint="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:indeterminate="true"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/pauseButton" />
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/videoView" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:background="@drawable/video_top_background"
-        app:layout_constraintTop_toTopOf="@+id/videoView"
-        tools:layout_editor_absoluteX="0dp" />
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/videoView" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <include
+        layout="@layout/bottom_sheet"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

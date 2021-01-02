@@ -51,7 +51,7 @@
                 android:layout_marginStart="6dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/ic_like"
+                android:background="@drawable/ic_baseline_favorite_border_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -60,8 +60,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:tag = "likeText"
                 android:fontFamily="@font/monsterrat_medium"
+                android:tag="likeText"
                 android:text="2 534"
                 android:textAlignment="textEnd"
                 android:textColor="@color/white"
