@@ -30,6 +30,7 @@ import kotlinx.android.synthetic.main.activity_main.backArrowButton
 import kotlinx.android.synthetic.main.activity_main.sectionTitleText
 import kotlinx.android.synthetic.main.filter.*
 import kotlinx.android.synthetic.main.menu.*
+import kotlinx.android.synthetic.main.register.*
 import org.json.JSONObject
 import org.w3c.dom.Text
 import java.io.IOException
@@ -160,18 +161,6 @@ class MainActivity : AppCompatActivity() {
 
         fun addPostsToNewsLine(count: Int) {
             getVideos(count)
-
-//            for (i in 1..count) {
-//                addViewToNewsLine(
-//                    "Title${Random.nextInt(10000, 99999999)}",
-//                    "tag${Random.nextInt(100, 999)}" +
-//                            "tag${Random.nextInt(100, 999)}" +
-//                            "tag${Random.nextInt(100, 999)}",
-//                    Random.nextInt(10, 9000),
-//                    Random.nextInt(10, 1200),
-//                    R.drawable.rectangle4
-//                )
-//            }
         }
 
         addPostsToNewsLine(10)
@@ -345,11 +334,6 @@ class MainActivity : AppCompatActivity() {
         newsLineLayout.addView(newView)
 
         newView.setOnClickListener {
-//            Toast.makeText(
-//                applicationContext, "Opening $id video",
-//                Toast.LENGTH_SHORT
-//            ).show()
-
             val openVideoIntent = Intent(this, OpenVideoActivity::class.java)
 
             openVideoIntent.putExtra("id", id)
@@ -358,8 +342,29 @@ class MainActivity : AppCompatActivity() {
                 startActivity(openVideoIntent)
             }
         }
-        // newView.findViewWithTag<ProgressBar>("progressBar").progress = progress
-        // properties[id]= newView
+
+        // is video liked?
+
+        val url =
+            "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=$id&email=${userData.email}&phone=${userData.phone}"
+
+        val likeVideoQueue = Volley.newRequestQueue(this)
+
+        val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
+            run {
+                val result = JSONObject(response)
+                newView.findViewWithTag<ImageView>("likeIcon").setBackgroundResource(
+                    if (result.getBoolean("isLiked"))
+                        R.drawable.ic_like
+                    else
+                        R.drawable.ic_baseline_favorite_border_24
+                )
+            }
+        }, {
+            Log.e("VideoLikeCount", "Error at sign in : " + it.message)
+        })
+
+        likeVideoQueue.add(videoLikeCountRequest)
     }
 
     private fun getVideos(count: Int) {
