@@ -19,6 +19,7 @@ import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
 import com.example.tiktok_analog.R
+import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.afterTextChanged
 import kotlinx.android.synthetic.main.activity_main.backArrowButton
 import kotlinx.android.synthetic.main.add_video.*
@@ -38,9 +39,15 @@ class AddVideoActivity : AppCompatActivity() {
     private var selectedVideoLength: Long = 0
     private var selectedVideoSize: Long = 0
 
+    private lateinit var userData: User
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.add_video)
+
+        openFileInput("userData").use {
+            userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
+        }
 
         backArrowButton.setOnClickListener {
             onBackPressed()
@@ -144,10 +151,11 @@ class AddVideoActivity : AppCompatActivity() {
 
         val url =
             "https://kepler88d.pythonanywhere.com/addVideo?" +
-                    "title=${videoTitle.text}&description=${videoDescription.text}" +
+                    "email=${userData.email}&phone=${userData.phone}&" +
+                    "title=${videoTitle.text}&description=${videoDescription.text}&" +
                     "tags=${videoTags.text}&size=${selectedVideoSize}&" +
                     "length=${selectedVideoLength / 1000}&" +
-                    "id=$videoId"
+                    "videoId=$videoId"
 
         Log.d("DEBUG", url)
 
