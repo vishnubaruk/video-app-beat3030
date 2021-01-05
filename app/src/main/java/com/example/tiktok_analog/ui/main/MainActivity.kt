@@ -402,6 +402,7 @@ class MainActivity : AppCompatActivity() {
         val addVideoRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
                 val videosList = JSONObject(response).getJSONArray("videos")
+
                 for (index in 0 until videosList.length()) {
                     val video = videosList.getJSONObject(index)
                     addViewToNewsLine(

@@ -12,10 +12,12 @@ import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
@@ -70,6 +72,7 @@ class OpenVideoActivity : AppCompatActivity() {
 
         openCommentsButton.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            updateComments()
         }
 
         backArrowButton.setOnClickListener {
@@ -265,6 +268,36 @@ class OpenVideoActivity : AppCompatActivity() {
                 updateHandler.postDelayed(this, 100)
             }
         }
+    }
+
+    private fun updateComments() {
+        commentsContainer.removeAllViews()
+
+        val url =
+            "https://kepler88d.pythonanywhere.com/getComments?videoId=$videoId"
+
+        val commentQueue = Volley.newRequestQueue(this)
+
+        val commentRequest = StringRequest(Request.Method.GET, url, { response ->
+            run {
+                val result = JSONObject(response).getJSONArray("result")
+
+                for (index in 0 until result.length()) {
+                    addCommentView(result.getString(index))
+                }
+            }
+        }, {
+            Log.e("Comments", "Error at sign in : " + it.message)
+        })
+
+        commentQueue.add(commentRequest)
+    }
+
+    private fun addCommentView(commentText: String) {
+        val newView =
+            LayoutInflater.from(applicationContext).inflate(R.layout.comment_item, null, false)
+        newView.findViewWithTag<TextView>("commentText").text = commentText
+        commentsContainer.addView(newView)
     }
 
     private fun hideKeyboard(activity: Activity) {
