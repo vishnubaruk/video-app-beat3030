@@ -70,7 +70,7 @@ class FavouriteActivity : AppCompatActivity() {
                 val result = JSONObject(response).getJSONArray("result")
                 for (index in 0 until result.length()) {
                     addViewToFavourite(
-                        id = result.getInt(index)
+                        videoId = result.getInt(index)
                     )
                     // likeCount = video.getInt("likeCount"))
                 }
@@ -83,31 +83,47 @@ class FavouriteActivity : AppCompatActivity() {
         fillFavouritesQueue.add(getFavouritesRequest)
     }
 
-    private fun addViewToFavourite(id: Int) {
+    private fun dislikeVideo(videoId: Int) {
+        val url =
+            "https://kepler88d.pythonanywhere.com/likeVideo?videoId=$videoId&email=${userData.email}&phone=${userData.phone}"
+
+        val likeVideoQueue = Volley.newRequestQueue(this)
+
+        val videoLikeCountRequest = StringRequest(Request.Method.GET, url, {
+            run {}
+        }, {
+            Log.e("LikeVideo", "Error at sign in : " + it.message)
+        })
+
+        likeVideoQueue.add(videoLikeCountRequest)
+    }
+
+    private fun addViewToFavourite(videoId: Int) {
         val newView =
             LayoutInflater.from(applicationContext).inflate(R.layout.fav_video_item, null, false)
 
         newView.setOnLongClickListener {
-            Toast.makeText(applicationContext, "Video $id disliked", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, "Video $videoId disliked", Toast.LENGTH_SHORT).show()
             true
         }
 
         newView.setOnClickListener {
             val openVideoIntent = Intent(this, OpenVideoActivity::class.java)
 
-            openVideoIntent.putExtra("id", id)
+            openVideoIntent.putExtra("id", videoId)
 
-            if (id != 0) {
+            if (videoId != 0) {
                 startActivity(openVideoIntent)
             }
         }
 
         newView.findViewWithTag<Button>("delete").setOnClickListener {
             favouriteLayout.removeView(newView)
-            Toast.makeText(applicationContext, "Video $id disliked", Toast.LENGTH_SHORT).show()
+            dislikeVideo(videoId)
+            Toast.makeText(applicationContext, "Video $videoId disliked", Toast.LENGTH_SHORT).show()
         }
 
-        val urlSrc = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$id.jpg"
+        val urlSrc = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$videoId.jpg"
 
         Picasso.get().load(urlSrc).into(object : com.squareup.picasso.Target {
             override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
