@@ -26,17 +26,14 @@ import com.example.tiktok_analog.ui.OpenVideoActivity
 import com.example.tiktok_analog.ui.menu_screens.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.backArrowButton
-import kotlinx.android.synthetic.main.activity_main.sectionTitleText
 import kotlinx.android.synthetic.main.filter.*
 import kotlinx.android.synthetic.main.menu.*
 import kotlinx.android.synthetic.main.register.*
 import org.json.JSONObject
-import org.w3c.dom.Text
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
-import kotlin.concurrent.thread
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -365,28 +362,34 @@ class MainActivity : AppCompatActivity() {
 
         // is video liked?
 
-        val url =
-            "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=$id&email=${userData.email}&phone=${userData.phone}"
+        Timer().scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                val url =
+                    "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=$id&email=${userData.email}&phone=${userData.phone}"
 
-        Log.d("IsVideoLiked", url)
+                Log.d("IsVideoLiked", url)
 
-        val likeVideoQueue = Volley.newRequestQueue(this)
+                val likeVideoQueue = Volley.newRequestQueue(applicationContext)
 
-        val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
-            run {
-                val result = JSONObject(response)
-                newView.findViewWithTag<ImageView>("likeIcon").setBackgroundResource(
-                    if (result.getBoolean("isLiked"))
-                        R.drawable.ic_like
-                    else
-                        R.drawable.ic_baseline_favorite_border_24
-                )
+                val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
+                    run {
+                        val result = JSONObject(response)
+                        newView.findViewWithTag<ImageView>("likeIcon").setBackgroundResource(
+                            if (result.getBoolean("isLiked"))
+                                R.drawable.ic_like
+                            else
+                                R.drawable.ic_baseline_favorite_border_24
+                        )
+                        newView.findViewWithTag<TextView>("likeText").text =
+                            result.getInt("likeCount").toString()
+                    }
+                }, {
+                    Log.e("VideoLikeCount", "Error at sign in : " + it.message)
+                })
+
+                likeVideoQueue.add(videoLikeCountRequest)
             }
-        }, {
-            Log.e("VideoLikeCount", "Error at sign in : " + it.message)
-        })
-
-        likeVideoQueue.add(videoLikeCountRequest)
+        }, 0, 1000)
     }
 
     private fun getVideos(count: Int) {
