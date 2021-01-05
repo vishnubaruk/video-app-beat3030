@@ -130,15 +130,30 @@ class OpenVideoActivity : AppCompatActivity() {
             commentText.setText("")
         }
 
+
+            // TODO: FIX BUG WITH AUTOLIKE
         likeButton.setOnClickListener {
-//            isLiked = !isLiked
-//
-//            it.setBackgroundResource(
-//                if (isLiked) R.drawable.ic_like
-//                else R.drawable.ic_baseline_favorite_border_24
-//            )
-//
-//            likeCount.text = "${if (isLiked) 1 else 0}"
+            val url =
+                "https://kepler88d.pythonanywhere.com/likeVideo?videoId=$videoId&email=${userData.email}&phone=${userData.phone}"
+
+            val likeVideoQueue = Volley.newRequestQueue(this)
+
+            val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
+                run {
+                    val result = JSONObject(response)
+                    likeButton.setBackgroundResource(
+                        if (result.getBoolean("isLiked"))
+                            R.drawable.ic_like
+                        else
+                            R.drawable.ic_baseline_favorite_border_24
+                    )
+                    likeCount.text = result.getInt("likeCount").toString()
+                }
+            }, {
+                Log.e("LikeVideo", "Error at sign in : " + it.message)
+            })
+
+            likeVideoQueue.add(videoLikeCountRequest)
         }
 
         val url =
