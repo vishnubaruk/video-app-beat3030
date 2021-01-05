@@ -8,18 +8,6 @@
     <include
         layout="@layout/fav_video_item"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
+        android:layout_height="wrap_content"/>
 
-    <include
-        layout="@layout/fav_video_item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
-
-    <include
-        layout="@layout/fav_video_item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
 </LinearLayout>
