@@ -14,10 +14,8 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
@@ -27,7 +25,6 @@ import com.example.tiktok_analog.data.model.User
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_open_video.*
 import kotlinx.android.synthetic.main.bottom_sheet.*
-import kotlinx.android.synthetic.main.menu.*
 import org.json.JSONObject
 import java.io.File
 
@@ -131,7 +128,6 @@ class OpenVideoActivity : AppCompatActivity() {
         }
 
 
-            // TODO: FIX BUG WITH AUTOLIKE
         likeButton.setOnClickListener {
             val url =
                 "https://kepler88d.pythonanywhere.com/likeVideo?videoId=$videoId&email=${userData.email}&phone=${userData.phone}"
@@ -157,9 +153,9 @@ class OpenVideoActivity : AppCompatActivity() {
         }
 
         val url =
-            "https://kepler88d.pythonanywhere.com/likeVideo?videoId=$videoId&email=${userData.email}&phone=${userData.phone}"
+            "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=$videoId&email=${userData.email}&phone=${userData.phone}"
 
-        val likeVideoQueue = Volley.newRequestQueue(this)
+        val likeCountQueue = Volley.newRequestQueue(this)
 
         val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
@@ -177,7 +173,7 @@ class OpenVideoActivity : AppCompatActivity() {
             Log.e("LikeVideo", "Error at sign in : " + it.message)
         })
 
-        likeVideoQueue.add(videoLikeCountRequest)
+        likeCountQueue.add(videoLikeCountRequest)
     }
 
     private fun downloadFile() {
