@@ -305,8 +305,28 @@ class MainActivity : AppCompatActivity() {
 
         newView.findViewWithTag<TextView>("likeText").text = "$likeCount"
         newView.findViewWithTag<ConstraintLayout>("likeButton").setOnClickListener {
-            newView.findViewWithTag<TextView>("likeText").text =
-                "${(newView.findViewWithTag<TextView>("likeText").text.toString().toInt() + 1)}"
+            val url =
+                "https://kepler88d.pythonanywhere.com/likeVideo?videoId=$id&email=${userData.email}&phone=${userData.phone}"
+
+            val likeVideoQueue = Volley.newRequestQueue(this)
+
+            val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
+                run {
+                    val result = JSONObject(response)
+                    newView.findViewWithTag<ImageView>("likeIcon").setBackgroundResource(
+                        if (result.getBoolean("isLiked"))
+                            R.drawable.ic_like
+                        else
+                            R.drawable.ic_baseline_favorite_border_24
+                    )
+//                    newView.findViewWithTag<TextView>("likeText").text =
+//                        result.getInt("likeCount").toString()
+                }
+            }, {
+                Log.e("LikeVideo", "Error at sign in : " + it.message)
+            })
+
+            likeVideoQueue.add(videoLikeCountRequest)
         }
 
         newView.findViewWithTag<Button>("lengthButton").text =
@@ -347,6 +367,8 @@ class MainActivity : AppCompatActivity() {
 
         val url =
             "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=$id&email=${userData.email}&phone=${userData.phone}"
+
+        Log.d("IsVideoLiked", url)
 
         val likeVideoQueue = Volley.newRequestQueue(this)
 
