@@ -127,6 +127,7 @@ class OpenVideoActivity : AppCompatActivity() {
         })
 
         sendButton.setOnClickListener {
+            addComment(commentText.text.toString())
             commentText.setText("")
         }
 
@@ -298,6 +299,23 @@ class OpenVideoActivity : AppCompatActivity() {
             LayoutInflater.from(applicationContext).inflate(R.layout.comment_item, null, false)
         newView.findViewWithTag<TextView>("commentText").text = commentText
         commentsContainer.addView(newView)
+    }
+
+    private fun addComment(commentText: String) {
+        val url =
+            "https://kepler88d.pythonanywhere.com/addComment?videoId=$videoId&commentText=$commentText"
+
+        val addCommentQueue = Volley.newRequestQueue(this)
+
+        val addCommentRequest = StringRequest(Request.Method.GET, url, { response ->
+            run {
+                updateComments()
+            }
+        }, {
+            Log.e("Add comment", "Error at sign in : " + it.message)
+        })
+
+        addCommentQueue.add(addCommentRequest)
     }
 
     private fun hideKeyboard(activity: Activity) {
