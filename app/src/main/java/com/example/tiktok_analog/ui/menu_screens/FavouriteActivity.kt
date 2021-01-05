@@ -1,11 +1,15 @@
 package com.example.tiktok_analog.ui.menu_screens
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Request
@@ -14,6 +18,7 @@ import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.OpenVideoActivity
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_favourite.*
 import org.json.JSONObject
 
@@ -96,6 +101,30 @@ class FavouriteActivity : AppCompatActivity() {
                 startActivity(openVideoIntent)
             }
         }
+
+        newView.findViewWithTag<Button>("delete").setOnClickListener {
+            favouriteLayout.removeView(newView)
+            Toast.makeText(applicationContext, "Video $id disliked", Toast.LENGTH_SHORT).show()
+        }
+
+        val urlSrc = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$id.jpg"
+
+        Picasso.get().load(urlSrc).into(object : com.squareup.picasso.Target {
+            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                Log.d("DEBUG", urlSrc)
+                newView.findViewWithTag<ImageView>("previewImage").setImageDrawable(
+                    BitmapDrawable(
+                        resources, bitmap
+                    )
+                )
+            }
+
+            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
+
+            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                Log.e("PicassoError", e?.stackTraceToString())
+            }
+        })
 
 //        for (i in 0..2) {
 //            val newView =
