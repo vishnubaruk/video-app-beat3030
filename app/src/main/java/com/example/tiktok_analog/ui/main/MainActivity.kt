@@ -319,8 +319,8 @@ class MainActivity : AppCompatActivity() {
                         else
                             R.drawable.ic_baseline_favorite_border_24
                     )
-//                    newView.findViewWithTag<TextView>("likeText").text =
-//                        result.getInt("likeCount").toString()
+                    newView.findViewWithTag<TextView>("likeText").text =
+                        result.getInt("likeCount").toString()
                 }
             }, {
                 Log.e("LikeVideo", "Error at sign in : " + it.message)
