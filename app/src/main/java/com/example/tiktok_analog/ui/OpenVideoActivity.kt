@@ -14,13 +14,21 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.android.volley.Request
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
+import com.example.tiktok_analog.data.model.User
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_open_video.*
 import kotlinx.android.synthetic.main.bottom_sheet.*
+import kotlinx.android.synthetic.main.menu.*
+import org.json.JSONObject
 import java.io.File
 
 
@@ -28,10 +36,19 @@ class OpenVideoActivity : AppCompatActivity() {
 
     private val updateHandler = Handler()
 
+    var videoId: Int = 0
+    private lateinit var userData: User
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_open_video)
+
+        openFileInput("userData").use {
+            userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
+        }
+
+        videoId = intent.getIntExtra("id", 0)
 
         val bottomSheetBehavior: BottomSheetBehavior<*> =
             BottomSheetBehavior.from<View>(bottom_sheet)
@@ -64,16 +81,13 @@ class OpenVideoActivity : AppCompatActivity() {
 
         if (File(
                 "/storage/emulated/0/Download/${
-                    intent.getIntExtra("id", 0)
+                    videoId
                 }.mp4"
             ).exists()
         ) {
             playVideoWithPath(
                 "/storage/emulated/0/Download/${
-                    intent.getIntExtra(
-                        "id",
-                        0
-                    )
+                    videoId
                 }.mp4"
             )
             progressBar.visibility = View.GONE
@@ -117,18 +131,39 @@ class OpenVideoActivity : AppCompatActivity() {
         }
 
         likeButton.setOnClickListener {
-            isLiked = !isLiked
-
-            it.setBackgroundResource(
-                if (isLiked) R.drawable.ic_like
-                else R.drawable.ic_baseline_favorite_border_24
-            )
-
-            likeCount.text = "${if (isLiked) 1 else 0}"
+//            isLiked = !isLiked
+//
+//            it.setBackgroundResource(
+//                if (isLiked) R.drawable.ic_like
+//                else R.drawable.ic_baseline_favorite_border_24
+//            )
+//
+//            likeCount.text = "${if (isLiked) 1 else 0}"
         }
-    }
 
-    var isLiked = false
+        val url =
+            "https://kepler88d.pythonanywhere.com/likeVideo?videoId=$videoId&email=${userData.email}&phone=${userData.phone}"
+
+        val likeVideoQueue = Volley.newRequestQueue(this)
+
+        val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
+            run {
+                val result = JSONObject(response)
+                likeButton.setBackgroundResource(
+                    if (result.getBoolean("isLiked"))
+                        R.drawable.ic_like
+                    else
+                        R.drawable.ic_baseline_favorite_border_24
+                )
+                likeCount.text =
+                    result.getInt("likeCount").toString()
+            }
+        }, {
+            Log.e("LikeVideo", "Error at sign in : " + it.message)
+        })
+
+        likeVideoQueue.add(videoLikeCountRequest)
+    }
 
     private fun downloadFile() {
         val url = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/${
