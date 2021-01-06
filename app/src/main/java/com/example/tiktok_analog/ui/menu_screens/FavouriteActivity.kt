@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Request
@@ -142,20 +143,23 @@ class FavouriteActivity : AppCompatActivity() {
             }
         })
 
-//        for (i in 0..2) {
-//            val newView =
-//                LayoutInflater.from(applicationContext)
-//                    .inflate(R.layout.fav_video_item, null, false)
-//
-//            newView.findViewWithTag<TextView>("viewCount").text = viewCount.toString()
-//
-//            newView.findViewWithTag<ImageView>("previewImage").setImageResource(imageId)
-//            newViewLine.findViewWithTag<LinearLayout>("root").addView(newView)
-//        }
+        // processing view count
 
-//        val favLine =
-//            LayoutInflater.from(applicationContext).inflate(R.layout.fav_line, null, false)
-//        favLine.findViewWithTag<LinearLayout>("root").addView(newView)
+        val viewCountUrl = "https://kepler88d.pythonanywhere.com/getViewCount?videoId=$videoId"
+        val viewQueue = Volley.newRequestQueue(this)
+
+        val viewCountRequest = StringRequest(Request.Method.GET, viewCountUrl, { response ->
+            run {
+                val result = JSONObject(response)
+                newView.findViewWithTag<TextView>("viewCount").text =
+                    result.getInt("viewCount").toString()
+            }
+        }, {
+            Log.e("ViewCount", "Error at sign in : " + it.message)
+        })
+
+        viewQueue.add(viewCountRequest)
+
         favouriteLayout.addView(newView)
     }
 }
