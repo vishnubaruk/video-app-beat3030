@@ -178,12 +178,17 @@ class MainActivity : AppCompatActivity() {
             newsSwipeRefresh.isRefreshing = false
             Toast.makeText(applicationContext, "News Updated", Toast.LENGTH_SHORT).show()
             newsLineLayout.removeAllViews()
+            videoViewList.clear()
             addPostsToNewsLine(10)
         }
 
         Timer().scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                for (v in videoViewList) {
+                val iterator = videoViewList.iterator()
+
+                while (iterator.hasNext()) {
+                    val v = iterator.next()
+
                     val url =
                         "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=${v.second}&email=${userData.email}&phone=${userData.phone}"
 
