@@ -49,6 +49,19 @@ class OpenVideoActivity : AppCompatActivity() {
 
         videoId = intent.getIntExtra("id", 0)
 
+        val openVideoUrl = "https://kepler88d.pythonanywhere.com/openVideo?videoId=$videoId"
+        val openVideoQueue = Volley.newRequestQueue(this)
+
+        val openVideoRequest = StringRequest(Request.Method.GET, openVideoUrl, { response ->
+            run {
+                val result = JSONObject(response)
+            }
+        }, {
+            Log.e("OpenVideo", "Error at sign in : " + it.message)
+        })
+
+        openVideoQueue.add(openVideoRequest)
+
         val bottomSheetBehavior: BottomSheetBehavior<*> =
             BottomSheetBehavior.from<View>(bottom_sheet)
 
