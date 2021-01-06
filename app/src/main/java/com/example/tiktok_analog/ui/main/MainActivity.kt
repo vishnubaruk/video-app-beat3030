@@ -26,9 +26,11 @@ import com.example.tiktok_analog.ui.OpenVideoActivity
 import com.example.tiktok_analog.ui.menu_screens.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.backArrowButton
+import kotlinx.android.synthetic.main.activity_main.progressBar
+import kotlinx.android.synthetic.main.activity_main.sectionTitleText
 import kotlinx.android.synthetic.main.filter.*
 import kotlinx.android.synthetic.main.menu.*
-import kotlinx.android.synthetic.main.register.*
 import org.json.JSONObject
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -42,6 +44,8 @@ class MainActivity : AppCompatActivity() {
     private var isFilterOpened = false
 
     private lateinit var userData: User
+
+    private val videoViewList: MutableList<Pair<View, Int>> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -176,6 +180,37 @@ class MainActivity : AppCompatActivity() {
             newsLineLayout.removeAllViews()
             addPostsToNewsLine(10)
         }
+
+        Timer().scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                for (v in videoViewList) {
+                    val url =
+                        "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=${v.second}&email=${userData.email}&phone=${userData.phone}"
+
+                    Log.d("IsVideoLiked", url)
+
+                    val likeVideoQueue = Volley.newRequestQueue(applicationContext)
+
+                    val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
+                        run {
+                            val result = JSONObject(response)
+                            v.first.findViewWithTag<ImageView>("likeIcon").setBackgroundResource(
+                                if (result.getBoolean("isLiked"))
+                                    R.drawable.ic_like
+                                else
+                                    R.drawable.ic_baseline_favorite_border_24
+                            )
+                            v.first.findViewWithTag<TextView>("likeText").text =
+                                result.getInt("likeCount").toString()
+                        }
+                    }, {
+                        Log.e("VideoLikeCount", "Error at sign in : " + it.message)
+                    })
+
+                    likeVideoQueue.add(videoLikeCountRequest)
+                }
+            }
+        }, 0, 1000)
     }
 
     private fun openNewsLine() {
@@ -283,16 +318,18 @@ class MainActivity : AppCompatActivity() {
     private fun addViewToNewsLine(
         title: String,
         tags: String,
-        id: Int,
+        viewId: Int,
         likeCount: Int,
         length: Int = 90,
         imageId: Int = 0
     ) {
 
         // replace with new pattern layout
-        val newView =
+        val newView: View =
             LayoutInflater.from(applicationContext).inflate(R.layout.video_feed_item, null, false)
         newView.findViewWithTag<TextView>("title").text = title
+
+        videoViewList.add(Pair(newView, viewId))
 
         var formattedTags = ""
         for (i in tags) {
@@ -303,7 +340,7 @@ class MainActivity : AppCompatActivity() {
         newView.findViewWithTag<TextView>("likeText").text = "$likeCount"
         newView.findViewWithTag<ConstraintLayout>("likeButton").setOnClickListener {
             val url =
-                "https://kepler88d.pythonanywhere.com/likeVideo?videoId=$id&email=${userData.email}&phone=${userData.phone}"
+                "https://kepler88d.pythonanywhere.com/likeVideo?videoId=$viewId&email=${userData.email}&phone=${userData.phone}"
 
             val likeVideoQueue = Volley.newRequestQueue(this)
 
@@ -329,7 +366,7 @@ class MainActivity : AppCompatActivity() {
         newView.findViewWithTag<Button>("lengthButton").text =
             "${length / 60}:${if (length % 60 < 10) "0" else ""}${length % 60}"
 
-        val urlSrc = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$id.jpg"
+        val urlSrc = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$viewId.jpg"
 
         Picasso.get().load(urlSrc).into(object : com.squareup.picasso.Target {
             override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
@@ -353,43 +390,12 @@ class MainActivity : AppCompatActivity() {
         newView.setOnClickListener {
             val openVideoIntent = Intent(this, OpenVideoActivity::class.java)
 
-            openVideoIntent.putExtra("id", id)
+            openVideoIntent.putExtra("id", viewId)
 
-            if (id != 0) {
+            if (viewId != 0) {
                 startActivity(openVideoIntent)
             }
         }
-
-        // is video liked?
-
-        Timer().scheduleAtFixedRate(object : TimerTask() {
-            override fun run() {
-                val url =
-                    "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=$id&email=${userData.email}&phone=${userData.phone}"
-
-                Log.d("IsVideoLiked", url)
-
-                val likeVideoQueue = Volley.newRequestQueue(applicationContext)
-
-                val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
-                    run {
-                        val result = JSONObject(response)
-                        newView.findViewWithTag<ImageView>("likeIcon").setBackgroundResource(
-                            if (result.getBoolean("isLiked"))
-                                R.drawable.ic_like
-                            else
-                                R.drawable.ic_baseline_favorite_border_24
-                        )
-                        newView.findViewWithTag<TextView>("likeText").text =
-                            result.getInt("likeCount").toString()
-                    }
-                }, {
-                    Log.e("VideoLikeCount", "Error at sign in : " + it.message)
-                })
-
-                likeVideoQueue.add(videoLikeCountRequest)
-            }
-        }, 0, 1000)
     }
 
     private fun getVideos(count: Int) {
@@ -409,7 +415,7 @@ class MainActivity : AppCompatActivity() {
                         title = video.getString("title"),
                         tags = "", //video.getString("tags"),
                         length = video.getInt("length"),
-                        id = video.getInt("videoId"),
+                        viewId = video.getInt("videoId"),
                         likeCount = video.getInt("likeCount")
                     )
                     // likeCount = video.getInt("likeCount"))
