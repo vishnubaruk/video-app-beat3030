@@ -320,8 +320,7 @@ class MainActivity : AppCompatActivity() {
         tags: String,
         viewId: Int,
         likeCount: Int,
-        length: Int = 90,
-        imageId: Int = 0
+        length: Int = 90
     ) {
 
         // replace with new pattern layout
@@ -414,9 +413,9 @@ class MainActivity : AppCompatActivity() {
                     addViewToNewsLine(
                         title = video.getString("title"),
                         tags = "", //video.getString("tags"),
-                        length = video.getInt("length"),
                         viewId = video.getInt("videoId"),
-                        likeCount = video.getInt("likeCount")
+                        likeCount = video.getInt("likeCount"),
+                        length = video.getInt("length")
                     )
                     // likeCount = video.getInt("likeCount"))
                 }
