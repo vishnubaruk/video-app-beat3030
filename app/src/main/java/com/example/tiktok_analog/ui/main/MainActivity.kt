@@ -300,21 +300,6 @@ class MainActivity : AppCompatActivity() {
         startActivity(Intent(this, NotificationsActivity::class.java))
     }
 
-    private fun getBitmapFromURL(src: String): Bitmap? {
-        return try {
-            val url = URL(src)
-            val connection = url.openConnection() as HttpURLConnection
-            connection.doInput = true;
-            connection.connect()
-            val input = connection.inputStream
-            val myBitmap = BitmapFactory.decodeStream(input)
-            myBitmap
-        } catch (e: IOException) {
-            e.printStackTrace();
-            null
-        }
-    }
-
     private fun addViewToNewsLine(
         title: String,
         tags: String,
