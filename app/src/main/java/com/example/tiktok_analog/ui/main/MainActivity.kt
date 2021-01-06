@@ -184,10 +184,8 @@ class MainActivity : AppCompatActivity() {
 
         Timer().scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                val iterator = videoViewList.iterator()
-
-                while (iterator.hasNext()) {
-                    val v = iterator.next()
+                for (i in 0 until videoViewList.size) {
+                    val v = videoViewList[i]
 
                     val url =
                         "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=${v.second}&email=${userData.email}&phone=${userData.phone}"
@@ -196,21 +194,23 @@ class MainActivity : AppCompatActivity() {
 
                     val likeVideoQueue = Volley.newRequestQueue(applicationContext)
 
-                    val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
-                        run {
-                            val result = JSONObject(response)
-                            v.first.findViewWithTag<ImageView>("likeIcon").setBackgroundResource(
-                                if (result.getBoolean("isLiked"))
-                                    R.drawable.ic_like
-                                else
-                                    R.drawable.ic_baseline_favorite_border_24
-                            )
-                            v.first.findViewWithTag<TextView>("likeText").text =
-                                result.getInt("likeCount").toString()
-                        }
-                    }, {
-                        Log.e("VideoLikeCount", "Error at sign in : " + it.message)
-                    })
+                    val videoLikeCountRequest =
+                        StringRequest(Request.Method.GET, url, { response ->
+                            run {
+                                val result = JSONObject(response)
+                                v.first.findViewWithTag<ImageView>("likeIcon")
+                                    .setBackgroundResource(
+                                        if (result.getBoolean("isLiked"))
+                                            R.drawable.ic_like
+                                        else
+                                            R.drawable.ic_baseline_favorite_border_24
+                                    )
+                                v.first.findViewWithTag<TextView>("likeText").text =
+                                    result.getInt("likeCount").toString()
+                            }
+                        }, {
+                            Log.e("VideoLikeCount", "Error at sign in : " + it.message)
+                        })
 
                     likeVideoQueue.add(videoLikeCountRequest)
                 }
