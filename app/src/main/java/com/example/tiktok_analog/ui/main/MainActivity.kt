@@ -3,7 +3,6 @@ package com.example.tiktok_analog.ui.main
 import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -32,9 +31,6 @@ import kotlinx.android.synthetic.main.activity_main.sectionTitleText
 import kotlinx.android.synthetic.main.filter.*
 import kotlinx.android.synthetic.main.menu.*
 import org.json.JSONObject
-import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
 import java.util.*
 
 
@@ -215,7 +211,7 @@ class MainActivity : AppCompatActivity() {
                     likeVideoQueue.add(videoLikeCountRequest)
                 }
             }
-        }, 0, 1000)
+        }, 0, 10000)
     }
 
     private fun openNewsLine() {
@@ -308,7 +304,7 @@ class MainActivity : AppCompatActivity() {
     private fun addViewToNewsLine(
         title: String,
         tags: String,
-        viewId: Int,
+        videoId: Int,
         likeCount: Int,
         length: Int = 90
     ) {
@@ -318,7 +314,7 @@ class MainActivity : AppCompatActivity() {
             LayoutInflater.from(applicationContext).inflate(R.layout.video_feed_item, null, false)
         newView.findViewWithTag<TextView>("title").text = title
 
-        videoViewList.add(Pair(newView, viewId))
+        videoViewList.add(Pair(newView, videoId))
 
         var formattedTags = ""
         for (i in tags) {
@@ -329,7 +325,7 @@ class MainActivity : AppCompatActivity() {
         newView.findViewWithTag<TextView>("likeText").text = "$likeCount"
         newView.findViewWithTag<ConstraintLayout>("likeButton").setOnClickListener {
             val url =
-                "https://kepler88d.pythonanywhere.com/likeVideo?videoId=$viewId&email=${userData.email}&phone=${userData.phone}"
+                "https://kepler88d.pythonanywhere.com/likeVideo?videoId=$videoId&email=${userData.email}&phone=${userData.phone}"
 
             val likeVideoQueue = Volley.newRequestQueue(this)
 
@@ -355,7 +351,32 @@ class MainActivity : AppCompatActivity() {
         newView.findViewWithTag<Button>("lengthButton").text =
             "${length / 60}:${if (length % 60 < 10) "0" else ""}${length % 60}"
 
-        val urlSrc = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$viewId.jpg"
+        val url =
+            "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=${videoId}&email=${userData.email}&phone=${userData.phone}"
+
+        val likeVideoQueue = Volley.newRequestQueue(applicationContext)
+
+        val videoLikeCountRequest =
+            StringRequest(Request.Method.GET, url, { response ->
+                run {
+                    val result = JSONObject(response)
+                    newView.findViewWithTag<ImageView>("likeIcon")
+                        .setBackgroundResource(
+                            if (result.getBoolean("isLiked"))
+                                R.drawable.ic_like
+                            else
+                                R.drawable.ic_baseline_favorite_border_24
+                        )
+                    newView.findViewWithTag<TextView>("likeText").text =
+                        result.getInt("likeCount").toString()
+                }
+            }, {
+                Log.e("VideoLikeCount", "Error at sign in : " + it.message)
+            })
+
+        likeVideoQueue.add(videoLikeCountRequest)
+
+        val urlSrc = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$videoId.jpg"
 
         Picasso.get().load(urlSrc).into(object : com.squareup.picasso.Target {
             override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
@@ -379,9 +400,9 @@ class MainActivity : AppCompatActivity() {
         newView.setOnClickListener {
             val openVideoIntent = Intent(this, OpenVideoActivity::class.java)
 
-            openVideoIntent.putExtra("id", viewId)
+            openVideoIntent.putExtra("id", videoId)
 
-            if (viewId != 0) {
+            if (videoId != 0) {
                 startActivity(openVideoIntent)
             }
         }
@@ -403,7 +424,7 @@ class MainActivity : AppCompatActivity() {
                     addViewToNewsLine(
                         title = video.getString("title"),
                         tags = "", //video.getString("tags"),
-                        viewId = video.getInt("videoId"),
+                        videoId = video.getInt("videoId"),
                         likeCount = video.getInt("likeCount"),
                         length = video.getInt("length")
                     )
