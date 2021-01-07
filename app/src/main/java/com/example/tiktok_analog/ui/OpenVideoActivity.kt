@@ -15,6 +15,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ScrollView
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
@@ -313,6 +314,10 @@ class OpenVideoActivity : AppCompatActivity() {
         newView.findViewWithTag<TextView>("sender").text = userData.username
         newView.findViewWithTag<TextView>("commentText").text = commentText
         commentsContainer.addView(newView)
+
+        commentsScrollView.post {
+            commentsScrollView.fullScroll(ScrollView.FOCUS_DOWN)
+        }
     }
 
     private fun addComment(commentText: String) {
