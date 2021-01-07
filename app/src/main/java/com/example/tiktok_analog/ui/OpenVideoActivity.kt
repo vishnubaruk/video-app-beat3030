@@ -310,6 +310,7 @@ class OpenVideoActivity : AppCompatActivity() {
     private fun addCommentView(commentText: String) {
         val newView =
             LayoutInflater.from(applicationContext).inflate(R.layout.comment_item, null, false)
+        newView.findViewWithTag<TextView>("sender").text = userData.username
         newView.findViewWithTag<TextView>("commentText").text = commentText
         commentsContainer.addView(newView)
     }
