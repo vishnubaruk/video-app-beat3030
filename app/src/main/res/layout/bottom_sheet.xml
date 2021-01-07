@@ -57,16 +57,15 @@
 
         <EditText
             android:id="@+id/commentText"
-
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="64dp"
             android:layout_marginEnd="50dp"
-
             android:backgroundTint="#FFF"
 
             android:hint="Комментировать..."
-            android:inputType="text"
+            android:textAlignment="textStart"
+            android:inputType="textMultiLine"
             android:selectAllOnFocus="true"
 
             android:textColor="#FFF"
