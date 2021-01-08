@@ -142,6 +142,61 @@
                 app:layout_constraintBottom_toBottomOf="@+id/constraintLayout6"
                 app:layout_constraintStart_toEndOf="@+id/likeButton" />
 
+            <TextView
+                android:id="@+id/commentCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:fontFamily="@font/monsterrat_semibold"
+                android:text="0"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/constraintLayout6"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/viewCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/monsterrat_semibold"
+                android:text="0"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/commentCount" />
+
+            <TextView
+                android:id="@+id/textView27"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="16dp"
+                android:fontFamily="@font/monsterrat_regular"
+                android:text="Комментарии:"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/constraintLayout6"
+                app:layout_constraintEnd_toStartOf="@+id/commentCount" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/monsterrat_regular"
+                android:text="Просмотры:"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toStartOf="@+id/viewCount"
+                app:layout_constraintTop_toBottomOf="@+id/textView27" />
+
             <SeekBar
                 android:id="@+id/seekBar"
                 android:layout_width="0dp"

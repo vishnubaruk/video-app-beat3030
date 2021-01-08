@@ -57,12 +57,17 @@ class OpenVideoActivity : AppCompatActivity() {
         val openVideoRequest = StringRequest(Request.Method.GET, openVideoUrl, { response ->
             run {
                 val result = JSONObject(response)
+
+                viewCount.text = result.getString("viewCount")
+                commentCount.text = result.getString("commentCount")
             }
         }, {
             Log.e("OpenVideo", "Error at sign in : " + it.message)
         })
 
         openVideoQueue.add(openVideoRequest)
+
+        // TODO: implement get video data
 
         val bottomSheetBehavior: BottomSheetBehavior<*> =
             BottomSheetBehavior.from<View>(bottom_sheet)
