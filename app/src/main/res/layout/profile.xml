@@ -396,10 +396,10 @@
                             android:textSize="12sp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/textView43" />
+                            app:layout_constraintTop_toBottomOf="@+id/videoCount" />
 
                         <TextView
-                            android:id="@+id/textView43"
+                            android:id="@+id/videoCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/monsterrat_bold"
@@ -430,10 +430,10 @@
                             android:textSize="12sp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/textView221" />
+                            app:layout_constraintTop_toBottomOf="@+id/videoViewCount" />
 
                         <TextView
-                            android:id="@+id/textView221"
+                            android:id="@+id/videoViewCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/monsterrat_bold"
@@ -464,10 +464,10 @@
                             android:textSize="12sp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/textView41" />
+                            app:layout_constraintTop_toBottomOf="@+id/videoLikeCount" />
 
                         <TextView
-                            android:id="@+id/textView41"
+                            android:id="@+id/videoLikeCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/monsterrat_bold"
@@ -478,6 +478,18 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <LinearLayout
+                        android:id="@+id/uploadedVideosLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="96dp"
+                        android:columnCount="3"
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <TextView
