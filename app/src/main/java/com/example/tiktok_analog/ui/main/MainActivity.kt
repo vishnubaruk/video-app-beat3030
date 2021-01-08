@@ -25,9 +25,6 @@ import com.example.tiktok_analog.ui.OpenVideoActivity
 import com.example.tiktok_analog.ui.menu_screens.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.backArrowButton
-import kotlinx.android.synthetic.main.activity_main.progressBar
-import kotlinx.android.synthetic.main.activity_main.sectionTitleText
 import kotlinx.android.synthetic.main.filter.*
 import kotlinx.android.synthetic.main.menu.*
 import org.json.JSONObject
@@ -160,8 +157,6 @@ class MainActivity : AppCompatActivity() {
             getVideos(count)
         }
 
-        addPostsToNewsLine(10)
-
         newsRoot.viewTreeObserver.addOnScrollChangedListener {
             if (newsRoot.getChildAt(0).bottom <= newsRoot.height + newsRoot.scrollY) {
                 if (sectionTitleText.text == "Главная") {
@@ -177,6 +172,8 @@ class MainActivity : AppCompatActivity() {
             videoViewList.clear()
             addPostsToNewsLine(10)
         }
+
+        addPostsToNewsLine(10)
 
         Timer().scheduleAtFixedRate(object : TimerTask() {
             override fun run() {

@@ -9,7 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tiktok_analog.R
-import kotlinx.android.synthetic.main.profile.*
+import kotlinx.android.synthetic.main.activity_profile.*
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -21,8 +21,8 @@ import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.OpenVideoActivity
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.profile.backArrowButton
-import kotlinx.android.synthetic.main.profile.sectionTitleText
+import kotlinx.android.synthetic.main.activity_profile.backArrowButton
+import kotlinx.android.synthetic.main.activity_profile.sectionTitleText
 import org.json.JSONObject
 
 
@@ -31,7 +31,7 @@ class ProfileActivity : AppCompatActivity() {
     lateinit var userData: User
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.profile)
+        setContentView(R.layout.activity_profile)
 
         openFileInput("userData").use {
             userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
