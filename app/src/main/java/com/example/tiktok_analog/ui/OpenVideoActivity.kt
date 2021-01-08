@@ -15,6 +15,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
 import android.widget.ScrollView
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
@@ -314,6 +315,10 @@ class OpenVideoActivity : AppCompatActivity() {
         newView.findViewWithTag<TextView>("sender").text = userData.username
         newView.findViewWithTag<TextView>("commentText").text = commentText
         commentsContainer.addView(newView)
+
+        newView.findViewWithTag<ImageView>("likeIcon").setOnClickListener {
+            it.setBackgroundResource(R.drawable.ic_like)
+        }
 
         commentsScrollView.post {
             commentsScrollView.fullScroll(ScrollView.FOCUS_DOWN)
