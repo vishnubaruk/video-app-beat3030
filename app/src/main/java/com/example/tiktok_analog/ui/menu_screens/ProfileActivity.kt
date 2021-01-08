@@ -7,8 +7,10 @@ import com.example.tiktok_analog.R
 import kotlinx.android.synthetic.main.profile.*
 import android.view.View
 import android.widget.Toast
+import com.android.volley.Request
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.data.model.User
-import kotlinx.android.synthetic.main.authorize.*
 import org.json.JSONObject
 
 
@@ -61,6 +63,24 @@ class ProfileActivity : AppCompatActivity() {
             sectionTitleText.text = "Ваши видео"
 
             editData.visibility = View.GONE
+
+            val url =
+                "https://kepler88d.pythonanywhere.com/getUploadedVideosStats?email=${userData.email}&phone=${userData.phone}"
+
+            val videoStatsQueue = Volley.newRequestQueue(this)
+
+            val addCommentRequest = StringRequest(Request.Method.GET, url, { response ->
+                run {
+                    val result = JSONObject(response)
+                    videoCount.text = result.getInt("videoCount").toString()
+                    videoLikeCount.text = result.getInt("likeCount").toString()
+                    videoViewCount.text = result.getInt("viewCount").toString()
+                }
+            }, {
+                Log.e("VideoStats", "Error at sign in : " + it.message)
+            })
+
+            videoStatsQueue.add(addCommentRequest)
         }
 
         editData.setOnClickListener {
@@ -69,8 +89,10 @@ class ProfileActivity : AppCompatActivity() {
 
         profileSwipeRefresh.setOnRefreshListener {
             profileSwipeRefresh.isRefreshing = false
-            Toast.makeText(applicationContext,
-                "Profile page refreshed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                applicationContext,
+                "Profile page refreshed", Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
