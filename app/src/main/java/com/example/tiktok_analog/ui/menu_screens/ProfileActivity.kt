@@ -1,16 +1,28 @@
 package com.example.tiktok_analog.ui.menu_screens
 
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tiktok_analog.R
 import kotlinx.android.synthetic.main.profile.*
 import android.view.View
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.data.model.User
+import com.example.tiktok_analog.ui.OpenVideoActivity
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.profile.backArrowButton
+import kotlinx.android.synthetic.main.profile.sectionTitleText
 import org.json.JSONObject
 
 
@@ -64,23 +76,7 @@ class ProfileActivity : AppCompatActivity() {
 
             editData.visibility = View.GONE
 
-            val url =
-                "https://kepler88d.pythonanywhere.com/getUploadedVideosStats?email=${userData.email}&phone=${userData.phone}"
-
-            val videoStatsQueue = Volley.newRequestQueue(this)
-
-            val addCommentRequest = StringRequest(Request.Method.GET, url, { response ->
-                run {
-                    val result = JSONObject(response)
-                    videoCount.text = result.getInt("videoCount").toString()
-                    videoLikeCount.text = result.getInt("likeCount").toString()
-                    videoViewCount.text = result.getInt("viewCount").toString()
-                }
-            }, {
-                Log.e("VideoStats", "Error at sign in : " + it.message)
-            })
-
-            videoStatsQueue.add(addCommentRequest)
+            updateData()
         }
 
         editData.setOnClickListener {
@@ -93,7 +89,120 @@ class ProfileActivity : AppCompatActivity() {
                 applicationContext,
                 "Profile page refreshed", Toast.LENGTH_SHORT
             ).show()
+
+            updateData()
         }
+    }
+
+    private fun updateData() {
+        // updating video stats
+        val url =
+            "https://kepler88d.pythonanywhere.com/getUploadedVideosStats?email=${userData.email}&phone=${userData.phone}"
+
+        val videoStatsQueue = Volley.newRequestQueue(this)
+
+        val addCommentRequest = StringRequest(Request.Method.GET, url, { response ->
+            run {
+                val result = JSONObject(response)
+                videoCount.text = result.getInt("videoCount").toString()
+                videoLikeCount.text = result.getInt("likeCount").toString()
+                videoViewCount.text = result.getInt("viewCount").toString()
+            }
+        }, {
+            Log.e("VideoStats", "Error at sign in : " + it.message)
+        })
+
+        videoStatsQueue.add(addCommentRequest)
+
+        // getting uploaded videos list
+        uploadedVideosLayout.removeAllViews()
+
+        val uploadedVideosUrl =
+            "https://kepler88d.pythonanywhere.com/getUploadedVideos?email=${userData.email}&phone=${userData.phone}"
+
+        val uploadedVideosQueue = Volley.newRequestQueue(this)
+
+        val uploadedVideosRequest =
+            StringRequest(Request.Method.GET, uploadedVideosUrl, { response ->
+                run {
+                    val result = JSONObject(response).getJSONArray("result")
+
+                    for (index in 0 until result.length()) {
+                        addViewToUploadedVideos(
+                            videoId = result.getInt(index)
+                        )
+                    }
+
+                }
+            }, {
+                Log.e("UploadedVideos", "Error at sign in : " + it.message)
+            })
+
+        uploadedVideosQueue.add(uploadedVideosRequest)
+    }
+
+    private fun addViewToUploadedVideos(videoId: Int) {
+        val newView =
+            LayoutInflater.from(applicationContext).inflate(R.layout.fav_video_item, null, false)
+
+        newView.setOnLongClickListener {
+            Toast.makeText(applicationContext, "Video $videoId disliked", Toast.LENGTH_SHORT).show()
+            true
+        }
+
+        newView.setOnClickListener {
+            val openVideoIntent = Intent(this, OpenVideoActivity::class.java)
+
+            openVideoIntent.putExtra("id", videoId)
+
+            if (videoId != 0) {
+                startActivity(openVideoIntent)
+            }
+        }
+
+        newView.findViewWithTag<Button>("delete").setOnClickListener {
+            uploadedVideosLayout.removeView(newView)
+            // dislikeVideo(videoId)
+            Toast.makeText(applicationContext, "Video $videoId disliked", Toast.LENGTH_SHORT).show()
+        }
+
+        val urlSrc = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$videoId.jpg"
+
+        Picasso.get().load(urlSrc).into(object : com.squareup.picasso.Target {
+            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                Log.d("DEBUG", urlSrc)
+                newView.findViewWithTag<ImageView>("previewImage").setImageDrawable(
+                    BitmapDrawable(
+                        resources, bitmap
+                    )
+                )
+            }
+
+            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
+
+            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                Log.e("PicassoError", e?.stackTraceToString())
+            }
+        })
+
+        // processing view count
+
+        val viewCountUrl = "https://kepler88d.pythonanywhere.com/getViewCount?videoId=$videoId"
+        val viewQueue = Volley.newRequestQueue(this)
+
+        val viewCountRequest = StringRequest(Request.Method.GET, viewCountUrl, { response ->
+            run {
+                val result = JSONObject(response)
+                newView.findViewWithTag<TextView>("viewCount").text =
+                    result.getInt("viewCount").toString()
+            }
+        }, {
+            Log.e("ViewCount", "Error at sign in : " + it.message)
+        })
+
+        viewQueue.add(viewCountRequest)
+
+        uploadedVideosLayout.addView(newView)
     }
 
     private fun fillProfileData() {
