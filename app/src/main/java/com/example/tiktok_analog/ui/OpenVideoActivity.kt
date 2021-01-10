@@ -100,13 +100,13 @@ class OpenVideoActivity : AppCompatActivity() {
         }
 
         if (File(
-                "/storage/emulated/0/Download/${
+                "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/${
                     videoId
                 }.mp4"
             ).exists()
         ) {
             playVideoWithPath(
-                "/storage/emulated/0/Download/${
+                "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/${
                     videoId
                 }.mp4"
             )
@@ -229,7 +229,7 @@ class OpenVideoActivity : AppCompatActivity() {
                 currentActivity.recreate()
 
                 playVideoWithPath(
-                    "/storage/emulated/0/Download/${
+                    "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/${
                         intent.getIntExtra(
                             "id",
                             0
