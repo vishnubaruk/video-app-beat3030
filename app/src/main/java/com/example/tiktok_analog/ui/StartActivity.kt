@@ -7,6 +7,7 @@ import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -25,6 +26,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.android.volley.Request
@@ -55,14 +57,16 @@ class StartActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_login)
 
+        val requiredPermissions = arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.INTERNET
+        )
+
         ActivityCompat.requestPermissions(
             this,
-            arrayOf(
-                Manifest.permission.CAMERA,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.INTERNET
-            ),
+            requiredPermissions,
             300
         )
 
@@ -71,7 +75,12 @@ class StartActivity : AppCompatActivity() {
 //        }
 
         val userDataFile = applicationContext.getFileStreamPath("userData")
-        if (userDataFile != null && userDataFile.exists()) {
+        if (userDataFile != null && userDataFile.exists() && requiredPermissions.all {
+                ContextCompat.checkSelfPermission(
+                    applicationContext,
+                    it
+                ) == PackageManager.PERMISSION_GRANTED
+            }) {
             startActivity(Intent(this, MainActivity::class.java))
         }
 
@@ -339,7 +348,7 @@ class StartActivity : AppCompatActivity() {
         val loginQueue = Volley.newRequestQueue(this)
 
         val url =
-            "https://kepler88d.pythonanywhere.com/exist?"+
+            "https://kepler88d.pythonanywhere.com/exist?" +
                     "phone=${user.phone}&email=${user.email}"
 
         Log.d("DEBUG", user.toJsonString())
@@ -381,7 +390,8 @@ class StartActivity : AppCompatActivity() {
                     userData = User.newUser(jsonResponse.getJSONObject("user"))
                     this.openFileOutput("userData", Context.MODE_PRIVATE)
                         .write(userData.toJsonString().toByteArray())
-                    startActivity(Intent(this, MainActivity::class.java))
+
+                    openMainActivityWithAllPermissionsGranted()
                 } else {
                     AlertDialog.Builder(this).setTitle("Ошибка!")
                         .setMessage("Вами был введен неверный пароль")
@@ -445,7 +455,7 @@ class StartActivity : AppCompatActivity() {
 
                     Log.d("DEBUG", userData.toJsonString())
 
-                    startActivity(Intent(this, SmsActivity::class.java))
+                    openMainActivityWithAllPermissionsGranted()
                 } else {
                     AlertDialog.Builder(this).setTitle("Произошла непредвиденная ошибка!")
                         .setMessage("Попробуйте еще раз")
@@ -460,7 +470,40 @@ class StartActivity : AppCompatActivity() {
 
         registerQueue.add(registerRequest)
     }
+
+    private fun openMainActivityWithAllPermissionsGranted() {
+        val requiredPermissions = arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.INTERNET
+        )
+
+        if (requiredPermissions.all {
+                ContextCompat.checkSelfPermission(
+                    applicationContext,
+                    it
+                ) == PackageManager.PERMISSION_GRANTED
+            }) {
+            startActivity(Intent(this, MainActivity::class.java))
+        } else {
+            AlertDialog.Builder(this).setTitle("Ошибка!")
+                .setMessage("Вами были выданы не все разрешения, без чего полноценная работа приложения невозможна")
+                .setPositiveButton("Понятно") { dialog, _ ->
+                    run {
+                        dialog.cancel()
+
+                        ActivityCompat.requestPermissions(
+                            this,
+                            requiredPermissions,
+                            300
+                        )
+                    }
+                }.create().show()
+        }
+    }
 }
+
 
 /**
  * Extension function to simplify setting an afterTextChanged action to EditText components.
