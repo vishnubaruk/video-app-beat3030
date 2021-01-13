@@ -51,6 +51,8 @@ class SplashScreenActivity : AppCompatActivity() {
             val url =
                 "https://kepler88d.pythonanywhere.com/exist?email=${userData.email}&phone=${userData.phone}"
 
+
+
             val userExistQueue = Volley.newRequestQueue(applicationContext)
 
             val userExistRequest =

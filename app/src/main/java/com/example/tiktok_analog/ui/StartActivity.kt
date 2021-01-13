@@ -70,20 +70,6 @@ class StartActivity : AppCompatActivity() {
             300
         )
 
-//        if(userDataExists) {
-//            startActivity(Intent(this, MainActivity::class.java))
-//        }
-
-        val userDataFile = applicationContext.getFileStreamPath("userData")
-        if (userDataFile != null && userDataFile.exists() && requiredPermissions.all {
-                ContextCompat.checkSelfPermission(
-                    applicationContext,
-                    it
-                ) == PackageManager.PERMISSION_GRANTED
-            }) {
-            startActivity(Intent(this, MainActivity::class.java))
-        }
-
         val registerButton = findViewById<Button>(R.id.register_button)
         val authorizeButton = findViewById<Button>(R.id.authorize_button)
 
