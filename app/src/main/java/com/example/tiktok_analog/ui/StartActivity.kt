@@ -164,7 +164,7 @@ class StartActivity : AppCompatActivity() {
 
             userData = User(
                 username = username.text.toString().trim(),
-                phone = phone.text.toString().trim(),
+                phone = phone.text.toString().trim().filter { it.isDigit() },
                 email = email.text.toString().trim(),
                 password = password.text.toString().trim(),
                 birthDate = birthDate.text.toString().trim(),
@@ -178,24 +178,24 @@ class StartActivity : AppCompatActivity() {
 
         fun registerDataChanged() {
             registerViewModel.registerDataChanged(
-                username = username.text.toString(),
-                phone = phone.text.toString(),
-                email = email.text.toString(),
-                birthDate = birthDate.text.toString(),
-                city = city.text.toString(),
-                password = password.text.toString(),
-                password2 = confirmPassword.text.toString()
+                username = username.text.toString().trim(),
+                phone = phone.text.toString().trim().filter { it.isDigit() },
+                email = email.text.toString().trim(),
+                birthDate = birthDate.text.toString().trim(),
+                city = city.text.toString().trim(),
+                password = password.text.toString().trim(),
+                password2 = confirmPassword.text.toString().trim()
             )
         }
 
         fun registerModel() {
             registerViewModel.register(
-                username = username.text.toString(),
-                phone = phone.text.toString(),
-                email = email.text.toString(),
-                birthDate = birthDate.text.toString(),
-                city = city.text.toString(),
-                password = password.text.toString()
+                username = username.text.toString().trim(),
+                phone = phone.text.toString().trim().filter { it.isDigit() },
+                email = email.text.toString().trim(),
+                birthDate = birthDate.text.toString().trim(),
+                city = city.text.toString().trim(),
+                password = password.text.toString().trim()
             )
         }
 
