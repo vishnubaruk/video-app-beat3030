@@ -23,6 +23,10 @@ class SplashScreenActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_splashscreen)
+    }
+
+    override fun onResume() {
+        super.onResume()
 
         val requiredPermissions = arrayOf(
             Manifest.permission.CAMERA,
@@ -50,7 +54,6 @@ class SplashScreenActivity : AppCompatActivity() {
 
             val url =
                 "https://kepler88d.pythonanywhere.com/exist?email=${userData.email}&phone=${userData.phone}"
-
 
 
             val userExistQueue = Volley.newRequestQueue(applicationContext)
