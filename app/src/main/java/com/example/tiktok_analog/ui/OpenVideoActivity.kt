@@ -1,11 +1,9 @@
 package com.example.tiktok_analog.ui
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.DownloadManager
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -67,8 +65,6 @@ class OpenVideoActivity : AppCompatActivity() {
 
         openVideoQueue.add(openVideoRequest)
 
-        // TODO: implement get video data
-
         val bottomSheetBehavior: BottomSheetBehavior<*> =
             BottomSheetBehavior.from<View>(bottom_sheet)
 
@@ -115,7 +111,22 @@ class OpenVideoActivity : AppCompatActivity() {
             downloadFile()
         }
 
-        videoView.start()
+//        try {
+//            videoView.start()
+//        } catch(e: Exception) {
+//            AlertDialog.Builder(this).setTitle("Ошибка!")
+//                .setMessage("Не получилось воспроизвести видео")
+//                .setPositiveButton("Хорошо, скопировать лог ошибки") { dialog, _ ->
+//                    run {
+//                        val clipboard: ClipboardManager =
+//                            getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+//                        val clip = ClipData.newPlainText("Copied text", e.stackTraceToString())
+//                        clipboard.setPrimaryClip(clip)
+//                        dialog.cancel()
+//                    }
+//                }.create().show()
+//        }
+
 
         pauseButton.setOnClickListener {
             if (videoView.isPlaying) {
@@ -272,6 +283,8 @@ class OpenVideoActivity : AppCompatActivity() {
                     videoView.start()
                 }
             }
+
+            videoView.start()
 //            videoView.setOnTouchListener(null)
         }, 0)
     }

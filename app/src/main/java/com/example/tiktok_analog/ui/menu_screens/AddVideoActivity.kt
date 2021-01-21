@@ -1,7 +1,11 @@
 package com.example.tiktok_analog.ui.menu_screens
 
+import android.R.attr.label
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.graphics.Color
@@ -11,6 +15,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
@@ -26,7 +31,7 @@ import kotlinx.android.synthetic.main.add_video.*
 import org.json.JSONObject
 import wseemann.media.FFmpegMediaMetadataRetriever
 import java.io.File
-import java.lang.IllegalStateException
+import java.lang.Exception
 import kotlin.math.pow
 import kotlin.random.Random
 
@@ -207,17 +212,32 @@ class AddVideoActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (resultCode == Activity.RESULT_OK && requestCode == pickVideo) {
-            val videoUri: Uri = data?.data!!
+        if (resultCode == RESULT_OK && requestCode == pickVideo && data != null) {
+            // try {
+            val videoUri: Uri = data.data!!
 
             val videoPath1: String = videoUri.path!!
 
             val videoPath2: String = getPath(videoUri)!!
 
-            selectedVideoPath = videoPath2
-
             val mediaMetadataRetriever = FFmpegMediaMetadataRetriever()
-            mediaMetadataRetriever.setDataSource(videoPath2)
+
+            try {
+                selectedVideoPath = videoPath1
+                mediaMetadataRetriever.setDataSource(videoPath1)
+            } catch (e: Exception) {
+                e.printStackTrace();
+                Toast.makeText(applicationContext, e.message, Toast.LENGTH_LONG).show();
+            }
+
+            try {
+                selectedVideoPath = videoPath2
+                mediaMetadataRetriever.setDataSource(videoPath2)
+            } catch (e: Exception) {
+                e.printStackTrace();
+                Toast.makeText(applicationContext, e.message, Toast.LENGTH_LONG).show();
+            }
+
             val videoDuration =
                 mediaMetadataRetriever.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION)
             val milliseconds = videoDuration.toLong()
@@ -244,6 +264,20 @@ class AddVideoActivity : AppCompatActivity() {
             videoPreview.setImageBitmap(thumbnail)
 
             checkIfCanUpload()
+
+            // } catch (e: Error) {
+//                AlertDialog.Builder(this).setTitle("Ошибка!")
+//                    .setMessage("Не получилось добавить видео")
+//                    .setPositiveButton("Хорошо, скопировать лог ошибки") { dialog, _ ->
+//                        run {
+//                            val clipboard: ClipboardManager =
+//                                getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+//                            val clip = ClipData.newPlainText("Copied text", e.stackTraceToString())
+//                            clipboard.setPrimaryClip(clip)
+//                            dialog.cancel()
+//                        }
+//                    }.create().show()
+            // }
         }
     }
 
