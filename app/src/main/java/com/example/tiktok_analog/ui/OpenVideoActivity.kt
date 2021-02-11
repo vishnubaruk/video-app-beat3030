@@ -34,7 +34,8 @@ class OpenVideoActivity : AppCompatActivity() {
 
     private val updateHandler = Handler()
 
-    var videoId: Int = 0
+    private lateinit var videoIdList: List<Int>
+    private var videoId: Int = 0
     private lateinit var userData: User
     private lateinit var videoView: VideoView
 
@@ -56,8 +57,8 @@ class OpenVideoActivity : AppCompatActivity() {
             userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
         }
 
-        videoId = intent.getIntExtra("id", 0)
-
+        videoIdList = intent.getIntegerArrayListExtra("id")!!.toList()
+        videoId = videoIdList[0]
 //        val openVideoUrl = "https://kepler88d.pythonanywhere.com/openVideo?videoId=$videoId"
 //        val openVideoQueue = Volley.newRequestQueue(this)
 //
@@ -300,7 +301,7 @@ class OpenVideoActivity : AppCompatActivity() {
         commentsContainer.removeAllViews()
 
         val url =
-            "https://kepler88d.pythonanywhere.com/getComments?videoId=$videoId"
+            "https://kepler88d.pythonanywhere.com/getComments?videoId=$videoIdList"
 
         val commentQueue = Volley.newRequestQueue(this)
 
@@ -337,7 +338,7 @@ class OpenVideoActivity : AppCompatActivity() {
 
     private fun addComment(commentText: String) {
         val url =
-            "https://kepler88d.pythonanywhere.com/addComment?videoId=$videoId&commentText=$commentText"
+            "https://kepler88d.pythonanywhere.com/addComment?videoId=$videoIdList&commentText=$commentText"
 
         val addCommentQueue = Volley.newRequestQueue(this)
 
