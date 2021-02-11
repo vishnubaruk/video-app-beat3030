@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.VideoView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tiktok_analog.R
@@ -27,6 +28,7 @@ class ViewPagerAdapter(private val videoIdList: List<Int>) : RecyclerView.Adapte
     override fun onBindViewHolder(holder: PagerVH, position: Int) = holder.itemView.run {
 //        videoView = this.findViewWithTag("videoView")
         container.setBackgroundColor(colors.random())
+        this.findViewWithTag<TextView>("text").text = videoIdList[position].toString()
     }
 }
 
