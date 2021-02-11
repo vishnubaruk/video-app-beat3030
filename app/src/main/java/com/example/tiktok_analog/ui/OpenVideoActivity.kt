@@ -44,8 +44,14 @@ class OpenVideoActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_open_video)
 
-        viewPager2.adapter =
-            ViewPagerAdapter("https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/4308610.mp4")
+        openFileInput("userData").use {
+            userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
+        }
+
+        videoIdList = intent.getIntegerArrayListExtra("id")!!.toList()
+        videoId = videoIdList[0]
+
+        viewPager2.adapter = ViewPagerAdapter(videoIdList)
 
         viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
@@ -53,12 +59,6 @@ class OpenVideoActivity : AppCompatActivity() {
                 // No boilerplate, only useful
             }
         })
-        openFileInput("userData").use {
-            userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
-        }
-
-        videoIdList = intent.getIntegerArrayListExtra("id")!!.toList()
-        videoId = videoIdList[0]
 //        val openVideoUrl = "https://kepler88d.pythonanywhere.com/openVideo?videoId=$videoId"
 //        val openVideoQueue = Volley.newRequestQueue(this)
 //
