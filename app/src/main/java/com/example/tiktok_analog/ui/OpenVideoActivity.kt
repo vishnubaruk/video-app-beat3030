@@ -16,6 +16,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.doOnLayout
 import androidx.viewpager2.widget.ViewPager2
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
@@ -25,6 +26,7 @@ import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.util.ViewPagerAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_open_video.*
+import kotlinx.android.synthetic.main.activity_open_video.view.*
 import kotlinx.android.synthetic.main.bottom_sheet.*
 import org.json.JSONObject
 import java.io.File
@@ -39,6 +41,12 @@ class OpenVideoActivity : AppCompatActivity() {
     private lateinit var userData: User
     private lateinit var videoView: VideoView
 
+    public fun nextPage(pageId: Int) {
+        viewPager2.doOnLayout {
+            viewPager2.setCurrentItem(pageId + 1, true)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -51,7 +59,7 @@ class OpenVideoActivity : AppCompatActivity() {
         videoIdList = intent.getIntegerArrayListExtra("id")!!.toList()
         videoId = videoIdList[0]
 
-        viewPager2.adapter = ViewPagerAdapter(videoIdList)
+        viewPager2.adapter = ViewPagerAdapter(videoIdList, this, viewPager2 = viewPager2)
 
         viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
@@ -204,7 +212,7 @@ class OpenVideoActivity : AppCompatActivity() {
 //        likeCountQueue.add(videoLikeCountRequest)
     }
 
-    //    private fun downloadFile() {
+//    private fun downloadFile() {
 //        val url = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/${
 //            intent.getIntExtra(
 //                "id",
@@ -248,8 +256,8 @@ class OpenVideoActivity : AppCompatActivity() {
 //
 //        registerReceiver(onComplete, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 //    }
-//
-//
+
+    //
 //    private fun playVideoWithPath(path: String) {
 //        Handler(Looper.getMainLooper()).postDelayed({
 //            videoView.setVideoPath(path)
