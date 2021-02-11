@@ -1,16 +1,31 @@
 package com.example.tiktok_analog.util
 
+import android.app.Activity
+import android.app.DownloadManager
+import android.content.*
 import android.graphics.Color
+import android.net.Uri
+import android.os.Environment
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.VideoView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tiktok_analog.R
 import kotlinx.android.synthetic.main.item_page.view.*
+import java.io.File
+import android.os.Handler
+import androidx.core.view.doOnLayout
+import androidx.viewpager2.widget.ViewPager2
+import com.example.tiktok_analog.ui.OpenVideoActivity
+import kotlinx.android.synthetic.main.activity_open_video.view.*
 
-class ViewPagerAdapter(private val videoIdList: List<Int>) : RecyclerView.Adapter<PagerVH>() {
+
+class ViewPagerAdapter(private val videoIdList: List<Int>, private val activity: Activity, private val viewPager2: ViewPager2) :
+    RecyclerView.Adapter<PagerVH>() {
     //    public lateinit var videoView: VideoView
 
     private val colors = intArrayOf(
@@ -20,15 +35,103 @@ class ViewPagerAdapter(private val videoIdList: List<Int>) : RecyclerView.Adapte
         android.R.color.holo_purple
     )
 
+    private lateinit var videoView: VideoView
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PagerVH =
         PagerVH(LayoutInflater.from(parent.context).inflate(R.layout.item_page, parent, false))
 
-    override fun getItemCount(): Int = videoIdList.size
+    override fun getItemCount(): Int = videoIdList.filter { it != 0 }.size
 
     override fun onBindViewHolder(holder: PagerVH, position: Int) = holder.itemView.run {
 //        videoView = this.findViewWithTag("videoView")
-        container.setBackgroundColor(colors.random())
-        this.findViewWithTag<TextView>("text").text = videoIdList[position].toString()
+//        container.setBackgroundResource(colors.random())
+//        this.findViewWithTag<TextView>("text").text = videoIdList[position].toString()
+
+        val videoId = videoIdList[position]
+        videoView = findViewWithTag("videoView")
+
+        if (File(
+                "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$videoId.mp4"
+            ).exists()
+        ) {
+            playVideoWithPath(
+                "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$videoId.mp4"
+            )
+        } else {
+            downloadFile(videoIdList[position])
+        }
+
+        videoView.setOnCompletionListener {
+            (activity as OpenVideoActivity).nextPage(pageId = position)
+        }
+    }
+
+    private fun playVideoWithPath(path: String) {
+        Handler(Looper.getMainLooper()).postDelayed({
+            videoView.setVideoPath(path)
+
+            videoView.setOnPreparedListener { mediaPlayer ->
+                val layoutParams = videoView.layoutParams
+                val videoWidth = mediaPlayer.videoWidth.toFloat()
+                val videoHeight = mediaPlayer.videoHeight.toFloat()
+                val viewWidth = videoView.width.toFloat()
+                layoutParams.height = (viewWidth * (videoHeight / videoWidth)).toInt()
+                videoView.layoutParams = layoutParams
+
+//                seekBar.progress = 0
+//                seekBar.max = videoView.duration
+//                updateHandler.postDelayed(updateVideoTime, 100)
+            }
+
+            videoView.setOnClickListener {
+                if (videoView.isPlaying) {
+//                    pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
+                    videoView.pause()
+                } else {
+//                    pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
+                    videoView.start()
+                }
+            }
+
+            videoView.start()
+//            videoView.setOnTouchListener(null)
+        }, 0)
+    }
+
+    private fun downloadFile(videoId: Int) {
+        val url = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$videoId.mp4"
+        val request = DownloadManager.Request(Uri.parse(url))
+        request.setDescription("")
+        request.setTitle("Загрузка видео")
+
+        request.allowScanningByMediaScanner()
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+
+        request.setDestinationInExternalPublicDir(
+            Environment.DIRECTORY_DOWNLOADS,
+            "$videoId.mp4"
+        )
+
+        val manager = activity.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        manager.enqueue(request)
+
+        val onComplete: BroadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(ctxt: Context, intent: Intent) {
+                activity.recreate()
+
+                playVideoWithPath(
+                    "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$videoId.mp4"
+                )
+
+                activity.unregisterReceiver(this)
+//                progressBar.visibility = View.GONE
+            }
+        }
+
+        activity.registerReceiver(
+            onComplete,
+            IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+        )
     }
 }
 
