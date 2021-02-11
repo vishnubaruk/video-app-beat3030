@@ -301,7 +301,7 @@ class MainActivity : AppCompatActivity() {
     private fun addViewToNewsLine(
         title: String,
         tags: String,
-        videoIdList: List<Int>,
+        videoIdList: ArrayList<Int>,
         likeCount: Int,
         length: Int = 90,
     ) {
@@ -311,7 +311,7 @@ class MainActivity : AppCompatActivity() {
             LayoutInflater.from(applicationContext).inflate(R.layout.video_feed_item, null, false)
         newView.findViewWithTag<TextView>("title").text = title
 
-        val videoId = videoIdList[0]
+        val videoId = videoIdList.getOrElse(0) { 0 }
 
         videoViewList.add(Pair(newView, videoId))
 
@@ -399,7 +399,8 @@ class MainActivity : AppCompatActivity() {
         newView.setOnClickListener {
             val openVideoIntent = Intent(this, OpenVideoActivity::class.java)
 
-            openVideoIntent.putExtra("id", videoId)
+//            println(videoIdList)
+            openVideoIntent.putIntegerArrayListExtra("id", videoIdList)
 
             if (videoId != 0) {
                 startActivity(openVideoIntent)
@@ -423,14 +424,14 @@ class MainActivity : AppCompatActivity() {
                     videoIdList.add(element = videoList.getJSONObject(index).getInt("videoId"))
                 }
 
-
                 for (index in 0 until videoList.length()) {
                     val video = videoList.getJSONObject(index)
 
                     addViewToNewsLine(
                         title = video.getString("title"),
                         tags = "", //video.getString("tags"),
-                        videoIdList = videoIdList.subList(index, videoIdList.size),
+                        videoIdList = ArrayList<Int>(
+                            videoIdList.slice(index until videoIdList.size).filter { it != 0 }),
                         likeCount = video.getInt("likeCount"),
                         length = video.getInt("length")
                     )
