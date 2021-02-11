@@ -301,15 +301,17 @@ class MainActivity : AppCompatActivity() {
     private fun addViewToNewsLine(
         title: String,
         tags: String,
-        videoId: Int,
+        videoIdList: List<Int>,
         likeCount: Int,
-        length: Int = 90
+        length: Int = 90,
     ) {
 
         // replace with new pattern layout
         val newView: View =
             LayoutInflater.from(applicationContext).inflate(R.layout.video_feed_item, null, false)
         newView.findViewWithTag<TextView>("title").text = title
+
+        val videoId = videoIdList[0]
 
         videoViewList.add(Pair(newView, videoId))
 
@@ -414,14 +416,21 @@ class MainActivity : AppCompatActivity() {
 
         val addVideoRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
-                val videosList = JSONObject(response).getJSONArray("videos")
+                val videoList = JSONObject(response).getJSONArray("videos")
 
-                for (index in 0 until videosList.length()) {
-                    val video = videosList.getJSONObject(index)
+                val videoIdList: MutableList<Int> = mutableListOf()
+                for (index in 0 until videoList.length()) {
+                    videoIdList.add(element = videoList.getJSONObject(index).getInt("videoId"))
+                }
+
+
+                for (index in 0 until videoList.length()) {
+                    val video = videoList.getJSONObject(index)
+
                     addViewToNewsLine(
                         title = video.getString("title"),
                         tags = "", //video.getString("tags"),
-                        videoId = video.getInt("videoId"),
+                        videoIdList = videoIdList.subList(index, videoIdList.size),
                         likeCount = video.getInt("likeCount"),
                         length = video.getInt("length")
                     )
