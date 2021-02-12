@@ -183,8 +183,6 @@ class MainActivity : AppCompatActivity() {
                     val url =
                         "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=${v.second}&email=${userData.email}&phone=${userData.phone}"
 
-                    Log.d("IsVideoLiked", url)
-
                     val likeVideoQueue = Volley.newRequestQueue(applicationContext)
 
                     val videoLikeCountRequest =
@@ -375,34 +373,32 @@ class MainActivity : AppCompatActivity() {
 
         likeVideoQueue.add(videoLikeCountRequest)
 
-        val urlSrc = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$videoId.jpg"
+        if (videoId != 0) {
+            val urlSrc = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$videoId.jpg"
 
-        Picasso.get().load(urlSrc).into(object : com.squareup.picasso.Target {
-            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                Log.d("DEBUG", urlSrc)
-                newView.findViewWithTag<ImageView>("previewImage").setImageDrawable(
-                    BitmapDrawable(
-                        resources, bitmap
+            Picasso.get().load(urlSrc).into(object : com.squareup.picasso.Target {
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    newView.findViewWithTag<ImageView>("previewImage").setImageDrawable(
+                        BitmapDrawable(
+                            resources, bitmap
+                        )
                     )
-                )
-            }
+                }
 
-            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
 
-            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                Log.e("PicassoError", e?.stackTraceToString())
-            }
-        })
+                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                    Log.e("PicassoError", e?.stackTraceToString())
+                }
+            })
+        }
 
         newsLineLayout.addView(newView)
 
         newView.setOnClickListener {
-            val openVideoIntent = Intent(this, OpenVideoActivity::class.java)
-
-//            println(videoIdList)
-            openVideoIntent.putIntegerArrayListExtra("id", videoIdList)
-
             if (videoId != 0) {
+                val openVideoIntent = Intent(this, OpenVideoActivity::class.java)
+                openVideoIntent.putIntegerArrayListExtra("id", videoIdList)
                 startActivity(openVideoIntent)
             }
         }
