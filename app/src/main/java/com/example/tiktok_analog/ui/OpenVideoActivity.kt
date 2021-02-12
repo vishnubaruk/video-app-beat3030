@@ -34,8 +34,6 @@ import java.io.File
 
 class OpenVideoActivity : AppCompatActivity() {
 
-    private val updateHandler = Handler()
-
     private lateinit var videoIdList: List<Int>
     private var videoId: Int = 0
     private lateinit var userData: User
@@ -59,7 +57,7 @@ class OpenVideoActivity : AppCompatActivity() {
         videoIdList = intent.getIntegerArrayListExtra("id")!!.toList()
         videoId = videoIdList[0]
 
-        viewPager2.adapter = ViewPagerAdapter(videoIdList, this, viewPager2 = viewPager2)
+        viewPager2.adapter = ViewPagerAdapter(videoIdList, this, seekBar, progressBar, timeCode, pauseButton)
 
         viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
@@ -129,88 +127,106 @@ class OpenVideoActivity : AppCompatActivity() {
 //        } else {
 //            downloadFile()
 //        }
-//
-//        pauseButton.setOnClickListener {
-//            if (videoView.isPlaying) {
-//                pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
-//                videoView.pause()
-//            } else {
-//                pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
-//                videoView.start()
-//            }
-//        }
-//
-//        videoView.setOnCompletionListener {
-//            pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
-//        }
-//
-//        seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-//            override fun onStopTrackingTouch(seekBar: SeekBar) {}
-//
-//            override fun onStartTrackingTouch(seekBar: SeekBar) {}
-//
-//            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-//                if (fromUser) {
-//                    // Mean that the seekbar value is changed by user
-//                    // progress * videoView.duration) / 100
-//                    videoView.seekTo(progress)
-//                    Log.d("DEBUG", progress.toString())
-//                }
-//            }
-//        })
-//
-//        sendButton.setOnClickListener {
-//            addComment(commentText.text.toString())
-//            commentText.setText("")
-//        }
-//
-//
-//        likeButton.setOnClickListener {
-//            val url =
-//                "https://kepler88d.pythonanywhere.com/likeVideo?videoId=$videoId&email=${userData.email}&phone=${userData.phone}"
-//
-//            val likeVideoQueue = Volley.newRequestQueue(this)
-//
-//            val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
-//                run {
-//                    val result = JSONObject(response)
-//                    likeButton.setBackgroundResource(
-//                        if (result.getBoolean("isLiked"))
-//                            R.drawable.ic_like
-//                        else
-//                            R.drawable.ic_baseline_favorite_border_24
-//                    )
-//                    likeCount.text = result.getInt("likeCount").toString()
-//                }
-//            }, {
-//                Log.e("LikeVideo", "Error at sign in : " + it.message)
-//            })
-//
-//            likeVideoQueue.add(videoLikeCountRequest)
-//        }
-//
-//        val url =
-//            "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=$videoId&email=${userData.email}&phone=${userData.phone}"
-//
-//        val likeCountQueue = Volley.newRequestQueue(this)
-//
-//        val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
-//            run {
-//                val result = JSONObject(response)
-//                likeButton.setBackgroundResource(
-//                    if (result.getBoolean("isLiked"))
-//                        R.drawable.ic_like
-//                    else
-//                        R.drawable.ic_baseline_favorite_border_24
-//                )
-//                likeCount.text =
-//                    result.getInt("likeCount").toString()
-//            }
-//        }, {
-//            Log.e("LikeVideo", "Error at sign in : " + it.message)
-//        })
-//
-//        likeCountQueue.add(videoLikeCountRequest)
+    }
+
+    public fun fillVideoData(videoId: Int, videoView: VideoView) {
+        pauseButton.setOnClickListener {
+            if (videoView.isPlaying) {
+                pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
+                videoView.pause()
+            } else {
+                pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
+                videoView.start()
+            }
+        }
+
+        videoView.setOnCompletionListener {
+            pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
+        }
+
+        seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    // Mean that the seekbar value is changed by user
+                    // progress * videoView.duration) / 100
+                    videoView.seekTo(progress)
+                    Log.d("DEBUG", progress.toString())
+                }
+            }
+        })
+
+        sendButton.setOnClickListener {
+            addComment(commentText.text.toString())
+            commentText.setText("")
+        }
+
+
+        likeButton.setOnClickListener {
+            val url =
+                "https://kepler88d.pythonanywhere.com/likeVideo?videoId=$videoId&email=${userData.email}&phone=${userData.phone}"
+
+            val likeVideoQueue = Volley.newRequestQueue(this)
+
+            val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
+                run {
+                    val result = JSONObject(response)
+                    likeButton.setBackgroundResource(
+                        if (result.getBoolean("isLiked"))
+                            R.drawable.ic_like
+                        else
+                            R.drawable.ic_baseline_favorite_border_24
+                    )
+                    likeCount.text = result.getInt("likeCount").toString()
+                }
+            }, {
+                Log.e("LikeVideo", "Error at sign in : " + it.message)
+            })
+
+            likeVideoQueue.add(videoLikeCountRequest)
+        }
+
+        val url =
+            "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=$videoId&email=${userData.email}&phone=${userData.phone}"
+
+        val likeCountQueue = Volley.newRequestQueue(this)
+
+        val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
+            run {
+                val result = JSONObject(response)
+                likeButton.setBackgroundResource(
+                    if (result.getBoolean("isLiked"))
+                        R.drawable.ic_like
+                    else
+                        R.drawable.ic_baseline_favorite_border_24
+                )
+                likeCount.text =
+                    result.getInt("likeCount").toString()
+            }
+        }, {
+            Log.e("LikeVideo", "Error at sign in : " + it.message)
+        })
+
+        likeCountQueue.add(videoLikeCountRequest)
+
+        val openVideoUrl = "https://kepler88d.pythonanywhere.com/openVideo?videoId=$videoId"
+        val openVideoQueue = Volley.newRequestQueue(this)
+
+        val openVideoRequest = StringRequest(Request.Method.GET, openVideoUrl, { response ->
+            run {
+                val result = JSONObject(response)
+
+                viewCount.text = result.getString("viewCount")
+                commentCount.text = result.getString("commentCount")
+            }
+        }, {
+            Log.e("OpenVideo", "Error at sign in : " + it.message)
+        })
+
+        openVideoQueue.add(openVideoRequest)
     }
 
 //    private fun downloadFile() {
@@ -290,22 +306,7 @@ class OpenVideoActivity : AppCompatActivity() {
 ////            videoView.setOnTouchListener(null)
 //        }, 0)
 //    }
-//
-//    private val updateVideoTime: Runnable by lazy {
-//        object : Runnable {
-//            override fun run() {
-//                val currentPosition: Long = videoView.currentPosition.toLong()
-//                seekBar.progress = currentPosition.toInt()
-//
-//                val sec = currentPosition / 1000 % 60
-//                timeCode.text =
-//                    "${currentPosition / 60000}:${if (sec.toString().length > 1) "" else "0"}$sec"
-//
-//                updateHandler.postDelayed(this, 100)
-//            }
-//        }
-//    }
-//
+
     private fun updateComments() {
         commentsContainer.removeAllViews()
 
