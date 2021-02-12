@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.android.volley.Request
+import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
@@ -39,6 +40,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var userData: User
 
     private val videoViewList: MutableList<Pair<View, Int>> = arrayListOf()
+    private lateinit var requestQueue: RequestQueue
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +52,8 @@ class MainActivity : AppCompatActivity() {
             nameTextHeader.text = userData.username
             emailTextHeader.text = userData.email
         }
+
+        requestQueue = Volley.newRequestQueue(applicationContext)
 
         openMenuButton.setOnClickListener {
             openMenu()
@@ -160,7 +164,7 @@ class MainActivity : AppCompatActivity() {
         newsRoot.viewTreeObserver.addOnScrollChangedListener {
             if (newsRoot.getChildAt(0).bottom <= newsRoot.height + newsRoot.scrollY) {
                 if (sectionTitleText.text == "Главная") {
-                    addPostsToNewsLine(10)
+                    addPostsToNewsLine(100)
                 }
             }
         }
@@ -170,10 +174,10 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, "News Updated", Toast.LENGTH_SHORT).show()
             newsLineLayout.removeAllViews()
             videoViewList.clear()
-            addPostsToNewsLine(10)
+            addPostsToNewsLine(100)
         }
 
-        addPostsToNewsLine(10)
+        addPostsToNewsLine(100)
 
         Timer().scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
@@ -182,8 +186,6 @@ class MainActivity : AppCompatActivity() {
 
                     val url =
                         "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=${v.second}&email=${userData.email}&phone=${userData.phone}"
-
-                    val likeVideoQueue = Volley.newRequestQueue(applicationContext)
 
                     val videoLikeCountRequest =
                         StringRequest(Request.Method.GET, url, { response ->
@@ -203,7 +205,7 @@ class MainActivity : AppCompatActivity() {
                             Log.e("VideoLikeCount", "Error at sign in : " + it.message)
                         })
 
-                    likeVideoQueue.add(videoLikeCountRequest)
+                    requestQueue.add(videoLikeCountRequest)
                 }
             }
         }, 0, 10000)
@@ -324,8 +326,6 @@ class MainActivity : AppCompatActivity() {
             val url =
                 "https://kepler88d.pythonanywhere.com/likeVideo?videoId=$videoId&email=${userData.email}&phone=${userData.phone}"
 
-            val likeVideoQueue = Volley.newRequestQueue(this)
-
             val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
                 run {
                     val result = JSONObject(response)
@@ -342,7 +342,7 @@ class MainActivity : AppCompatActivity() {
                 Log.e("LikeVideo", "Error at sign in : " + it.message)
             })
 
-            likeVideoQueue.add(videoLikeCountRequest)
+            requestQueue.add(videoLikeCountRequest)
         }
 
         newView.findViewWithTag<Button>("lengthButton").text =
@@ -350,8 +350,6 @@ class MainActivity : AppCompatActivity() {
 
         val url =
             "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=${videoId}&email=${userData.email}&phone=${userData.phone}"
-
-        val likeVideoQueue = Volley.newRequestQueue(applicationContext)
 
         val videoLikeCountRequest =
             StringRequest(Request.Method.GET, url, { response ->
@@ -371,10 +369,11 @@ class MainActivity : AppCompatActivity() {
                 Log.e("VideoLikeCount", "Error at sign in : " + it.message)
             })
 
-        likeVideoQueue.add(videoLikeCountRequest)
+        requestQueue.add(videoLikeCountRequest)
 
         if (videoId != 0) {
-            val urlSrc = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$videoId.jpg"
+            val urlSrc =
+                "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$videoId.jpg"
 
             Picasso.get().load(urlSrc).into(object : com.squareup.picasso.Target {
                 override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
@@ -405,8 +404,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getVideos(count: Int) {
-        val getVideosQueue = Volley.newRequestQueue(this)
-
         val url = "https://kepler88d.pythonanywhere.com/getVideos?count=$count"
 
         progressBar.visibility = View.VISIBLE
@@ -439,7 +436,7 @@ class MainActivity : AppCompatActivity() {
             Log.e("GetVideos", "Error at sign in : " + it.message)
         })
 
-        getVideosQueue.add(addVideoRequest)
+        requestQueue.add(addVideoRequest)
     }
 
     override fun onBackPressed() {
