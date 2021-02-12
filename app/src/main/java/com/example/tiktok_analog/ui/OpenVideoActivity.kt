@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.doOnLayout
 import androidx.viewpager2.widget.ViewPager2
 import com.android.volley.Request
+import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
@@ -37,7 +38,8 @@ class OpenVideoActivity : AppCompatActivity() {
     private lateinit var videoIdList: List<Int>
     private var videoId: Int = 0
     private lateinit var userData: User
-    private lateinit var videoView: VideoView
+
+    private lateinit var requestQueue: RequestQueue
 
     public fun nextPage(pageId: Int) {
         viewPager2.doOnLayout {
@@ -54,10 +56,13 @@ class OpenVideoActivity : AppCompatActivity() {
             userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
         }
 
+        requestQueue = Volley.newRequestQueue(applicationContext)
+
         videoIdList = intent.getIntegerArrayListExtra("id")!!.toList()
         videoId = videoIdList[0]
 
-        viewPager2.adapter = ViewPagerAdapter(videoIdList, this, seekBar, progressBar, timeCode, pauseButton)
+        viewPager2.adapter =
+            ViewPagerAdapter(videoIdList, this, seekBar, progressBar, timeCode, pauseButton)
 
         viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
@@ -169,8 +174,6 @@ class OpenVideoActivity : AppCompatActivity() {
             val url =
                 "https://kepler88d.pythonanywhere.com/likeVideo?videoId=$videoId&email=${userData.email}&phone=${userData.phone}"
 
-            val likeVideoQueue = Volley.newRequestQueue(this)
-
             val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
                 run {
                     val result = JSONObject(response)
@@ -186,13 +189,11 @@ class OpenVideoActivity : AppCompatActivity() {
                 Log.e("LikeVideo", "Error at sign in : " + it.message)
             })
 
-            likeVideoQueue.add(videoLikeCountRequest)
+            requestQueue.add(videoLikeCountRequest)
         }
 
         val url =
             "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=$videoId&email=${userData.email}&phone=${userData.phone}"
-
-        val likeCountQueue = Volley.newRequestQueue(this)
 
         val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
@@ -210,10 +211,9 @@ class OpenVideoActivity : AppCompatActivity() {
             Log.e("LikeVideo", "Error at sign in : " + it.message)
         })
 
-        likeCountQueue.add(videoLikeCountRequest)
+        requestQueue.add(videoLikeCountRequest)
 
         val openVideoUrl = "https://kepler88d.pythonanywhere.com/openVideo?videoId=$videoId"
-        val openVideoQueue = Volley.newRequestQueue(this)
 
         val openVideoRequest = StringRequest(Request.Method.GET, openVideoUrl, { response ->
             run {
@@ -226,7 +226,7 @@ class OpenVideoActivity : AppCompatActivity() {
             Log.e("OpenVideo", "Error at sign in : " + it.message)
         })
 
-        openVideoQueue.add(openVideoRequest)
+        requestQueue.add(openVideoRequest)
     }
 
 //    private fun downloadFile() {
@@ -313,8 +313,6 @@ class OpenVideoActivity : AppCompatActivity() {
         val url =
             "https://kepler88d.pythonanywhere.com/getComments?videoId=$videoIdList"
 
-        val commentQueue = Volley.newRequestQueue(this)
-
         val commentRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
                 val result = JSONObject(response).getJSONArray("result")
@@ -327,7 +325,7 @@ class OpenVideoActivity : AppCompatActivity() {
             Log.e("Comments", "Error at sign in : " + it.message)
         })
 
-        commentQueue.add(commentRequest)
+        requestQueue.add(commentRequest)
     }
 
     private fun addCommentView(jsonObject: JSONObject) {
@@ -350,8 +348,6 @@ class OpenVideoActivity : AppCompatActivity() {
         val url =
             "https://kepler88d.pythonanywhere.com/addComment?videoId=$videoIdList&commentText=$commentText"
 
-        val addCommentQueue = Volley.newRequestQueue(this)
-
         val addCommentRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
                 updateComments()
@@ -360,7 +356,7 @@ class OpenVideoActivity : AppCompatActivity() {
             Log.e("Add comment", "Error at sign in : " + it.message)
         })
 
-        addCommentQueue.add(addCommentRequest)
+        requestQueue.add(addCommentRequest)
     }
 
     private fun hideKeyboard(activity: Activity) {
