@@ -3,28 +3,27 @@ package com.example.tiktok_analog.util
 import android.app.Activity
 import android.app.DownloadManager
 import android.content.*
-import android.graphics.Color
 import android.net.Uri
 import android.os.Environment
-import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
-import android.widget.TextView
 import android.widget.VideoView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.tiktok_analog.R
-import kotlinx.android.synthetic.main.item_page.view.*
-import java.io.File
-import android.os.Handler
-import androidx.core.view.doOnLayout
 import androidx.viewpager2.widget.ViewPager2
+import com.example.tiktok_analog.R
 import com.example.tiktok_analog.ui.OpenVideoActivity
 import kotlinx.android.synthetic.main.activity_open_video.view.*
+import kotlinx.android.synthetic.main.item_page.view.*
+import java.io.File
 
 
-class ViewPagerAdapter(private val videoIdList: List<Int>, private val activity: Activity, private val viewPager2: ViewPager2) :
+class ViewPagerAdapter(
+    private val videoIdList: List<Int>,
+    private val activity: Activity,
+    private val viewPager2: ViewPager2
+) :
     RecyclerView.Adapter<PagerVH>() {
     //    public lateinit var videoView: VideoView
 
@@ -46,13 +45,20 @@ class ViewPagerAdapter(private val videoIdList: List<Int>, private val activity:
 //        videoView = this.findViewWithTag("videoView")
 //        container.setBackgroundResource(colors.random())
 //        this.findViewWithTag<TextView>("text").text = videoIdList[position].toString()
-
-        val videoId = videoIdList[position]
         videoView = findViewWithTag("videoView")
+//        if (File("${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/${videoIdList[position]}.mp4").exists()
+//        ) {
+//            playVideoWithPath(
+//                "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/${videoIdList[position]}.mp4"
+//            )
+//        }
+    }
 
-        if (File(
-                "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$videoId.mp4"
-            ).exists()
+    public fun setPage(position: Int) {
+        val videoId = videoIdList[position]
+        Log.d("DEBUG", videoId.toString())
+
+        if (File("${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$videoId.mp4").exists()
         ) {
             playVideoWithPath(
                 "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$videoId.mp4"
@@ -67,35 +73,35 @@ class ViewPagerAdapter(private val videoIdList: List<Int>, private val activity:
     }
 
     private fun playVideoWithPath(path: String) {
-        Handler(Looper.getMainLooper()).postDelayed({
-            videoView.setVideoPath(path)
+        videoView.setVideoPath(path)
 
-            videoView.setOnPreparedListener { mediaPlayer ->
-                val layoutParams = videoView.layoutParams
-                val videoWidth = mediaPlayer.videoWidth.toFloat()
-                val videoHeight = mediaPlayer.videoHeight.toFloat()
-                val viewWidth = videoView.width.toFloat()
-                layoutParams.height = (viewWidth * (videoHeight / videoWidth)).toInt()
-                videoView.layoutParams = layoutParams
+        videoView.setOnPreparedListener { mediaPlayer ->
+            mediaPlayer.start()
+
+            val layoutParams = videoView.layoutParams
+            val videoWidth = mediaPlayer.videoWidth.toFloat()
+            val videoHeight = mediaPlayer.videoHeight.toFloat()
+            val viewWidth = videoView.width.toFloat()
+            layoutParams.height = (viewWidth * (videoHeight / videoWidth)).toInt()
+            videoView.layoutParams = layoutParams
 
 //                seekBar.progress = 0
 //                seekBar.max = videoView.duration
 //                updateHandler.postDelayed(updateVideoTime, 100)
-            }
+        }
 
-            videoView.setOnClickListener {
-                if (videoView.isPlaying) {
+        videoView.setOnClickListener {
+            if (videoView.isPlaying) {
 //                    pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
-                    videoView.pause()
-                } else {
+                videoView.pause()
+            } else {
 //                    pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
-                    videoView.start()
-                }
+                videoView.start()
             }
+        }
 
-            videoView.start()
+        videoView.start()
 //            videoView.setOnTouchListener(null)
-        }, 0)
     }
 
     private fun downloadFile(videoId: Int) {
