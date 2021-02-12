@@ -64,7 +64,8 @@ class OpenVideoActivity : AppCompatActivity() {
         viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                // No boilerplate, only useful
+                (viewPager2.adapter as ViewPagerAdapter).setPage(position)
+                Log.d("DEBUG", position.toString())
             }
         })
 //        val openVideoUrl = "https://kepler88d.pythonanywhere.com/openVideo?videoId=$videoId"
@@ -75,7 +76,7 @@ class OpenVideoActivity : AppCompatActivity() {
 //                val result = JSONObject(response)
 //
 //                viewCount.text = result.getString("viewCount")
-//                commentCount.text = result.getString("commentCount")
+//                commentCount.text = result.getString("commentCount")se
 //            }
 //        }, {
 //            Log.e("OpenVideo", "Error at sign in : " + it.message)
