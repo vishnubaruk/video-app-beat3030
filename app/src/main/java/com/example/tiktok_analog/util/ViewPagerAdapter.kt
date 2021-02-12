@@ -2,27 +2,31 @@ package com.example.tiktok_analog.util
 
 import android.app.Activity
 import android.app.DownloadManager
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import android.os.Environment
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.VideoView
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager2.widget.ViewPager2
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.ui.OpenVideoActivity
-import kotlinx.android.synthetic.main.activity_open_video.view.*
-import kotlinx.android.synthetic.main.item_page.view.*
 import java.io.File
 
 
 class ViewPagerAdapter(
     private val videoIdList: List<Int>,
     private val activity: Activity,
-    private val viewPager2: ViewPager2
+    private val seekBar: SeekBar,
+    private val progressBar: ProgressBar,
+    private val timeCode: TextView,
+    private val pauseButton: ImageButton
 ) :
     RecyclerView.Adapter<PagerVH>() {
     //    public lateinit var videoView: VideoView
@@ -34,10 +38,14 @@ class ViewPagerAdapter(
         android.R.color.holo_purple
     )
 
+    private val updateHandler = Handler()
+
     private lateinit var videoView: VideoView
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PagerVH =
-        PagerVH(LayoutInflater.from(parent.context).inflate(R.layout.item_page, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PagerVH {
+        updateHandler.postDelayed(updateVideoTime, 100)
+        return PagerVH(LayoutInflater.from(parent.context).inflate(R.layout.item_page, parent, false))
+    }
 
     override fun getItemCount(): Int = videoIdList.filter { it != 0 }.size
 
@@ -61,7 +69,8 @@ class ViewPagerAdapter(
         if (File("${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$videoId.mp4").exists()
         ) {
             playVideoWithPath(
-                "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$videoId.mp4"
+                "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$videoId.mp4",
+                videoIdList[position]
             )
         } else {
             downloadFile(videoIdList[position])
@@ -72,7 +81,8 @@ class ViewPagerAdapter(
         }
     }
 
-    private fun playVideoWithPath(path: String) {
+    private fun playVideoWithPath(path: String, videoId: Int) {
+        progressBar.visibility = View.GONE
         videoView.setVideoPath(path)
 
         videoView.setOnPreparedListener { mediaPlayer ->
@@ -85,23 +95,23 @@ class ViewPagerAdapter(
             layoutParams.height = (viewWidth * (videoHeight / videoWidth)).toInt()
             videoView.layoutParams = layoutParams
 
-//                seekBar.progress = 0
-//                seekBar.max = videoView.duration
-//                updateHandler.postDelayed(updateVideoTime, 100)
+            seekBar.progress = 0
+            seekBar.max = videoView.duration
         }
 
         videoView.setOnClickListener {
             if (videoView.isPlaying) {
-//                    pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
+                pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
                 videoView.pause()
             } else {
-//                    pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
+                    pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
                 videoView.start()
             }
         }
 
         videoView.start()
 //            videoView.setOnTouchListener(null)
+        (activity as OpenVideoActivity).fillVideoData(videoId, videoView)
     }
 
     private fun downloadFile(videoId: Int) {
@@ -109,6 +119,7 @@ class ViewPagerAdapter(
         val request = DownloadManager.Request(Uri.parse(url))
         request.setDescription("")
         request.setTitle("Загрузка видео")
+        progressBar.visibility = View.VISIBLE
 
         request.allowScanningByMediaScanner()
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
@@ -126,11 +137,12 @@ class ViewPagerAdapter(
                 activity.recreate()
 
                 playVideoWithPath(
-                    "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$videoId.mp4"
+                    "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$videoId.mp4",
+                    videoId
                 )
 
                 activity.unregisterReceiver(this)
-//                progressBar.visibility = View.GONE
+                progressBar.visibility = View.GONE
             }
         }
 
@@ -138,6 +150,21 @@ class ViewPagerAdapter(
             onComplete,
             IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
         )
+    }
+
+    private val updateVideoTime: Runnable by lazy {
+        object : Runnable {
+            override fun run() {
+                val currentPosition: Long = videoView.currentPosition.toLong()
+                seekBar.progress = currentPosition.toInt()
+
+                val sec = currentPosition / 1000 % 60
+                timeCode.text =
+                    "${currentPosition / 60000}:${if (sec.toString().length > 1) "" else "0"}$sec"
+
+                updateHandler.postDelayed(this, 100)
+            }
+        }
     }
 }
 
