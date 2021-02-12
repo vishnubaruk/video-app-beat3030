@@ -111,7 +111,7 @@ class FavouriteActivity : AppCompatActivity() {
         newView.setOnClickListener {
             val openVideoIntent = Intent(this, OpenVideoActivity::class.java)
 
-            openVideoIntent.putExtra("id", videoId)
+            openVideoIntent.putIntegerArrayListExtra("id", arrayListOf(videoId))
 
             if (videoId != 0) {
                 startActivity(openVideoIntent)
