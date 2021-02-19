@@ -47,10 +47,14 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        openFileInput("userData").use {
-            userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
-            nameTextHeader.text = userData.username
-            emailTextHeader.text = userData.email
+        try {
+            openFileInput("userData").use {
+                userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
+                nameTextHeader.text = userData.username
+                emailTextHeader.text = userData.email
+            }
+        } catch (e: Error) {
+            onBackPressed()
         }
 
         requestQueue = Volley.newRequestQueue(applicationContext)

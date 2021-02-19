@@ -377,7 +377,7 @@ class StartActivity : AppCompatActivity() {
                     this.openFileOutput("userData", Context.MODE_PRIVATE)
                         .write(userData.toJsonString().toByteArray())
 
-                    openMainActivityWithAllPermissionsGranted()
+                    openActivityWithAllPermissionsGranted(MainActivity::class.java)
                 } else {
                     AlertDialog.Builder(this).setTitle("Ошибка!")
                         .setMessage("Вами был введен неверный пароль")
@@ -441,7 +441,7 @@ class StartActivity : AppCompatActivity() {
 
                     Log.d("DEBUG", userData.toJsonString())
 
-                    openMainActivityWithAllPermissionsGranted()
+                    openActivityWithAllPermissionsGranted(SmsActivity::class.java)
                 } else {
                     AlertDialog.Builder(this).setTitle("Произошла непредвиденная ошибка!")
                         .setMessage("Попробуйте еще раз")
@@ -457,7 +457,8 @@ class StartActivity : AppCompatActivity() {
         registerQueue.add(registerRequest)
     }
 
-    private fun openMainActivityWithAllPermissionsGranted() {
+
+    private fun openActivityWithAllPermissionsGranted(ActivityToOpen: Class<out Activity?>) {
         val requiredPermissions = arrayOf(
             Manifest.permission.CAMERA,
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -471,7 +472,7 @@ class StartActivity : AppCompatActivity() {
                     it
                 ) == PackageManager.PERMISSION_GRANTED
             }) {
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, ActivityToOpen))
         } else {
             AlertDialog.Builder(this).setTitle("Ошибка!")
                 .setMessage("Вами были выданы не все разрешения, без чего полноценная работа приложения невозможна")
