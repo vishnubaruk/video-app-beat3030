@@ -43,8 +43,9 @@ class ViewPagerAdapter(
     private lateinit var videoView: VideoView
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PagerVH {
-        updateHandler.postDelayed(updateVideoTime, 100)
-        return PagerVH(LayoutInflater.from(parent.context).inflate(R.layout.item_page, parent, false))
+        return PagerVH(
+            LayoutInflater.from(parent.context).inflate(R.layout.item_page, parent, false)
+        )
     }
 
     override fun getItemCount(): Int = videoIdList.filter { it != 0 }.size
@@ -63,6 +64,9 @@ class ViewPagerAdapter(
     }
 
     public fun setPage(position: Int) {
+        updateHandler.removeCallbacksAndMessages(null)
+        updateHandler.postDelayed(updateVideoTime, 100)
+
         val videoId = videoIdList[position]
         Log.d("DEBUG", videoId.toString())
 
@@ -104,7 +108,7 @@ class ViewPagerAdapter(
                 pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
                 videoView.pause()
             } else {
-                    pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
+                pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
                 videoView.start()
             }
         }
