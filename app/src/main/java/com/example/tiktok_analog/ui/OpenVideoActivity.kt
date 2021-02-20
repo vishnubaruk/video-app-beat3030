@@ -33,7 +33,9 @@ class OpenVideoActivity : AppCompatActivity() {
 
     public fun nextPage(pageId: Int) {
         viewPager2.doOnLayout {
-            viewPager2.setCurrentItem(pageId + 1, true)
+            if (viewPager2.currentItem == pageId) {
+                viewPager2.setCurrentItem(pageId + 1, true)
+            }
         }
     }
 
@@ -53,7 +55,7 @@ class OpenVideoActivity : AppCompatActivity() {
         viewPager2.adapter =
             ViewPagerAdapter(videoIdList, this, seekBar, progressBar, timeCode, pauseButton)
 
-        // viewPager2.offscreenPageLimit = 10
+        viewPager2.offscreenPageLimit = 10
 
         viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
@@ -105,9 +107,16 @@ class OpenVideoActivity : AppCompatActivity() {
             }
         }
 
-        videoView.setOnCompletionListener {
-            pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
-        }
+//        videoView.setOnCompletionListener(null)
+//
+//        videoView.setOnCompletionListener {
+//            pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
+//
+//            val savedPosition = (viewPager2.adapter as ViewPagerAdapter).currentPosition
+//            if ((viewPager2.adapter as ViewPagerAdapter).currentPosition == savedPosition) {
+//                nextPage(pageId = savedPosition)
+//            }
+//        }
 
         seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
@@ -208,6 +217,11 @@ class OpenVideoActivity : AppCompatActivity() {
         })
 
         requestQueue.add(commentRequest)
+
+        fillVideoData(
+            (viewPager2.adapter as ViewPagerAdapter).getCurrentVideoId(),
+            (viewPager2.adapter as ViewPagerAdapter).currentVideoView
+        )
     }
 
     private fun addCommentView(jsonObject: JSONObject) {

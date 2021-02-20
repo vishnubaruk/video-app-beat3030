@@ -53,7 +53,7 @@ class ViewPagerAdapter(
 
     override fun getItemCount(): Int = videoIdList.size
 
-    val currentVideoView: VideoView
+    public val currentVideoView: VideoView
         get() = viewHolderList[currentPosition].videoView
 
     fun getCurrentVideoId(): Int {
@@ -80,10 +80,10 @@ class ViewPagerAdapter(
             downloadFile(videoIdList[position])
         }
 
-        currentVideoView.setOnCompletionListener {
-            pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
-            (activity as OpenVideoActivity).nextPage(pageId = position)
-        }
+//        currentVideoView.setOnCompletionListener {
+//            pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
+//            (activity as OpenVideoActivity).nextPage(pageId = position)
+//        }
 
         (activity as OpenVideoActivity).fillVideoData(videoId, viewHolderList[position].videoView)
 
