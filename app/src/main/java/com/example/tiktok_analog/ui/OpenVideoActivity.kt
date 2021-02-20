@@ -1,14 +1,7 @@
 package com.example.tiktok_analog.ui
 
 import android.app.Activity
-import android.app.AlertDialog
-import android.app.DownloadManager
-import android.content.*
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -27,16 +20,13 @@ import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.util.ViewPagerAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_open_video.*
-import kotlinx.android.synthetic.main.activity_open_video.view.*
 import kotlinx.android.synthetic.main.bottom_sheet.*
 import org.json.JSONObject
-import java.io.File
 
 
 class OpenVideoActivity : AppCompatActivity() {
 
     private lateinit var videoIdList: List<Int>
-    private var videoId: Int = 0
     private lateinit var userData: User
 
     private lateinit var requestQueue: RequestQueue
@@ -59,41 +49,22 @@ class OpenVideoActivity : AppCompatActivity() {
         requestQueue = Volley.newRequestQueue(applicationContext)
 
         videoIdList = intent.getIntegerArrayListExtra("id")!!.toList()
-        videoId = videoIdList[0]
 
         viewPager2.adapter =
             ViewPagerAdapter(videoIdList, this, seekBar, progressBar, timeCode, pauseButton)
 
+        // viewPager2.offscreenPageLimit = 10
+
         viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
                 (viewPager2.adapter as ViewPagerAdapter).setPage(position)
                 Log.d("DEBUG", position.toString())
             }
         })
-//        val openVideoUrl = "https://kepler88d.pythonanywhere.com/openVideo?videoId=$videoId"
-//        val openVideoQueue = Volley.newRequestQueue(this)
-//
-//        val openVideoRequest = StringRequest(Request.Method.GET, openVideoUrl, { response ->
-//            run {
-//                val result = JSONObject(response)
-//
-//                viewCount.text = result.getString("viewCount")
-//                commentCount.text = result.getString("commentCount")se
-//            }
-//        }, {
-//            Log.e("OpenVideo", "Error at sign in : " + it.message)
-//        })
-//
-//        openVideoQueue.add(openVideoRequest)
-//
+
         val bottomSheetBehavior: BottomSheetBehavior<*> =
             BottomSheetBehavior.from<View>(bottom_sheet)
 
-//        // настройка состояний нижнего экрана
-//        // настройка состояний нижнего экрана
-//        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-//        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
         bottomSheetBehavior.isHideable = false
@@ -110,28 +81,17 @@ class OpenVideoActivity : AppCompatActivity() {
 
         openCommentsButton.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+            if ((viewPager2.adapter as ViewPagerAdapter).isVideoPlaying()) {
+                (viewPager2.adapter as ViewPagerAdapter).pauseVideo()
+            }
+
             updateComments()
         }
 
         backArrowButton.setOnClickListener {
             super.onBackPressed()
         }
-//
-//        if (File(
-//                "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/${
-//                    videoId
-//                }.mp4"
-//            ).exists()
-//        ) {
-//            playVideoWithPath(
-//                "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/${
-//                    videoId
-//                }.mp4"
-//            )
-//            progressBar.visibility = View.GONE
-//        } else {
-//            downloadFile()
-//        }
     }
 
     public fun fillVideoData(videoId: Int, videoView: VideoView) {
@@ -229,89 +189,11 @@ class OpenVideoActivity : AppCompatActivity() {
         requestQueue.add(openVideoRequest)
     }
 
-//    private fun downloadFile() {
-//        val url = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/${
-//            intent.getIntExtra(
-//                "id",
-//                0
-//            )
-//        }.mp4"
-//        val request = DownloadManager.Request(Uri.parse(url))
-//        request.setDescription("")
-//        request.setTitle("Загрузка видео")
-//
-//        request.allowScanningByMediaScanner()
-//        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-//
-//        request.setDestinationInExternalPublicDir(
-//            Environment.DIRECTORY_DOWNLOADS,
-//            "${intent.getIntExtra("id", 0)}.mp4"
-//        )
-//
-//        val manager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-//        manager.enqueue(request)
-//
-//        val currentActivity = this
-//
-//        val onComplete: BroadcastReceiver = object : BroadcastReceiver() {
-//            override fun onReceive(ctxt: Context, intent: Intent) {
-//                currentActivity.recreate()
-//
-//                playVideoWithPath(
-//                    "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/${
-//                        intent.getIntExtra(
-//                            "id",
-//                            0
-//                        )
-//                    }.mp4"
-//                )
-//
-//                unregisterReceiver(this)
-//                progressBar.visibility = View.GONE
-//            }
-//        }
-//
-//        registerReceiver(onComplete, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
-//    }
-
-    //
-//    private fun playVideoWithPath(path: String) {
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            videoView.setVideoPath(path)
-//
-//            videoView.setOnPreparedListener { mediaPlayer ->
-//                val layoutParams = videoView.layoutParams
-//                val videoWidth = mediaPlayer.videoWidth.toFloat()
-//                val videoHeight = mediaPlayer.videoHeight.toFloat()
-//                val viewWidth = videoView.width.toFloat()
-//                layoutParams.height = (viewWidth * (videoHeight / videoWidth)).toInt()
-//                videoView.layoutParams = layoutParams
-//
-//                seekBar.progress = 0
-//                seekBar.max = videoView.duration
-//                updateHandler.postDelayed(updateVideoTime, 100)
-//            }
-//
-//            videoView.setOnClickListener {
-//                if (videoView.isPlaying) {
-//                    pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
-//                    videoView.pause()
-//                } else {
-//                    pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
-//                    videoView.start()
-//                }
-//            }
-//
-//            videoView.start()
-////            videoView.setOnTouchListener(null)
-//        }, 0)
-//    }
-
     private fun updateComments() {
         commentsContainer.removeAllViews()
 
         val url =
-            "https://kepler88d.pythonanywhere.com/getComments?videoId=$videoIdList"
+            "https://kepler88d.pythonanywhere.com/getComments?videoId=${(viewPager2.adapter as ViewPagerAdapter).getCurrentVideoId()}"
 
         val commentRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
@@ -346,9 +228,10 @@ class OpenVideoActivity : AppCompatActivity() {
 
     private fun addComment(commentText: String) {
         val url =
-            "https://kepler88d.pythonanywhere.com/addComment?videoId=$videoIdList&commentText=$commentText"
+            "https://kepler88d.pythonanywhere.com/addComment?videoId=${(viewPager2.adapter as ViewPagerAdapter).getCurrentVideoId()}" +
+                    "&commentText=${commentText.trim()}&email=${userData.email}&phone=${userData.phone}"
 
-        val addCommentRequest = StringRequest(Request.Method.GET, url, { response ->
+        val addCommentRequest = StringRequest(Request.Method.GET, url, {
             run {
                 updateComments()
             }
@@ -370,22 +253,4 @@ class OpenVideoActivity : AppCompatActivity() {
         }
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
-//
-//
-//    override fun onSaveInstanceState(savedInstanceState: Bundle) {
-//        super.onSaveInstanceState(savedInstanceState)
-//
-//        // Store current position.
-//        savedInstanceState.putInt("CurrentPosition", videoView.currentPosition)
-//        videoView.pause()
-//    }
-//
-//    // After rotating the phone. This method is called.
-//    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-//        super.onRestoreInstanceState(savedInstanceState)
-//
-//        // Get saved position.
-//        val position = savedInstanceState.getInt("CurrentPosition")
-//        videoView.seekTo(position)
-//    }
 }
