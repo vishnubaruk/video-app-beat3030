@@ -168,7 +168,7 @@ class MainActivity : AppCompatActivity() {
         newsRoot.viewTreeObserver.addOnScrollChangedListener {
             if (newsRoot.getChildAt(0).bottom <= newsRoot.height + newsRoot.scrollY) {
                 if (sectionTitleText.text == "Главная") {
-                    addPostsToNewsLine(100)
+                    addPostsToNewsLine(25)
                 }
             }
         }
@@ -178,10 +178,10 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, "News Updated", Toast.LENGTH_SHORT).show()
             newsLineLayout.removeAllViews()
             videoViewList.clear()
-            addPostsToNewsLine(100)
+            addPostsToNewsLine(25)
         }
 
-        addPostsToNewsLine(100)
+        addPostsToNewsLine(25)
 
         Timer().scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
@@ -421,6 +421,8 @@ class MainActivity : AppCompatActivity() {
                     videoIdList.add(element = videoList.getJSONObject(index).getInt("videoId"))
                 }
 
+
+
                 for (index in 0 until videoList.length()) {
                     val video = videoList.getJSONObject(index)
 
@@ -428,7 +430,9 @@ class MainActivity : AppCompatActivity() {
                         title = video.getString("title"),
                         tags = "", //video.getString("tags"),
                         videoIdList = ArrayList<Int>(
-                            videoIdList.slice(index until videoIdList.size).filter { it != 0 }),
+                            listOf(videoIdList[index]) + videoIdList.filter { it != 0 }
+                                .slice(0 until 10).shuffled()
+                        ),
                         likeCount = video.getInt("likeCount"),
                         length = video.getInt("length")
                     )
