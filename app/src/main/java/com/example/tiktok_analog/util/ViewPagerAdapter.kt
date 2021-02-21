@@ -29,14 +29,6 @@ class ViewPagerAdapter(
     private val pauseButton: ImageButton
 ) :
     RecyclerView.Adapter<VideoViewHolder>() {
-    //    public lateinit var videoView: VideoView
-
-    private val colors = intArrayOf(
-        android.R.color.black,
-        android.R.color.holo_red_light,
-        android.R.color.holo_blue_dark,
-        android.R.color.holo_purple
-    )
 
     var currentPosition: Int = 0
 
@@ -44,16 +36,15 @@ class ViewPagerAdapter(
 
     private val viewHolderList = mutableListOf<VideoViewHolder>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoViewHolder {
-        Log.d("DEBUG", "New viewHolder created")
-        return VideoViewHolder(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoViewHolder =
+        VideoViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.item_page, parent, false)
         )
-    }
+
 
     override fun getItemCount(): Int = videoIdList.size
 
-    public val currentVideoView: VideoView
+    val currentVideoView: VideoView
         get() = viewHolderList[currentPosition].videoView
 
     fun getCurrentVideoId(): Int {
@@ -61,7 +52,6 @@ class ViewPagerAdapter(
     }
 
     override fun onBindViewHolder(holder: VideoViewHolder, position: Int) {
-        Log.d("DEBUG", "New viewHolder bind")
         viewHolderList.add(holder)
     }
 
@@ -74,33 +64,27 @@ class ViewPagerAdapter(
         }
 
         val videoId = videoIdList[position]
-        Log.d("DEBUG", videoId.toString())
 
-        if (File("${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$videoId.mp4").exists()
+        if (File(
+                "${
+                    Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_DOWNLOADS
+                    )
+                }/$videoId.mp4"
+            ).exists()
         ) {
             playVideoWithPath(
-                "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$videoId.mp4"
+                "${
+                    Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_DOWNLOADS
+                    )
+                }/$videoId.mp4"
             )
         } else {
             downloadFile(videoIdList[position])
         }
 
-//        currentVideoView.setOnCompletionListener {
-//            pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
-//            (activity as OpenVideoActivity).nextPage(pageId = position)
-//        }
-
         (activity as OpenVideoActivity).fillVideoData(videoId, viewHolderList[position].videoView)
-
-//        currentVideoView.setOnClickListener {
-//            if (currentVideoView.isPlaying) {
-//                pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
-//                currentVideoView.pause()
-//            } else {
-//                pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
-//                currentVideoView.start()
-//            }
-//        }
 
         updateHandler.removeCallbacksAndMessages(null)
         updateHandler.postDelayed(updateVideoTime, 100)
@@ -131,15 +115,6 @@ class ViewPagerAdapter(
             if (layoutParams.height == 0) {
                 layoutParams.height = videoHeight.toInt()
             }
-            // layoutParams.height = if (videoHeight.toInt() != 0) videoHeight.toInt() else 1000
-
-            Log.d(
-                "VIDEO",
-                "layoutParams.height = ${layoutParams.height} " +
-                        "videoWidth = ${mediaPlayer.videoWidth.toFloat()} " +
-                        "videoHeight = ${mediaPlayer.videoHeight.toFloat()}"
-            )
-            // videoView.layoutParams = layoutParams
 
             seekBar.progress = 0
             seekBar.max = currentVideoView.duration
@@ -147,7 +122,6 @@ class ViewPagerAdapter(
         }
 
         viewHolderList[currentPosition].videoView.start()
-//            videoView.setOnTouchListener(null)
     }
 
     private fun downloadFile(videoId: Int) {
@@ -158,7 +132,9 @@ class ViewPagerAdapter(
         progressBar.visibility = View.VISIBLE
 
         request.allowScanningByMediaScanner()
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+        request.setNotificationVisibility(
+            DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED
+        )
 
         request.setDestinationInExternalPublicDir(
             Environment.DIRECTORY_DOWNLOADS,
@@ -171,7 +147,11 @@ class ViewPagerAdapter(
         val onComplete: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(ctxt: Context, intent: Intent) {
                 playVideoWithPath(
-                    "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$videoId.mp4"
+                    "${
+                        Environment.getExternalStoragePublicDirectory(
+                            Environment.DIRECTORY_DOWNLOADS
+                        )
+                    }/$videoId.mp4"
                 )
 
                 activity.unregisterReceiver(this)

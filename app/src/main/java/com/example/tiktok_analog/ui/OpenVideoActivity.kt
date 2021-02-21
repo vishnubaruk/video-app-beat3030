@@ -94,7 +94,7 @@ class OpenVideoActivity : AppCompatActivity() {
         }
     }
 
-    public fun fillVideoData(videoId: Int, videoView: VideoView) {
+    fun fillVideoData(videoId: Int, videoView: VideoView) {
         pauseButton.setOnClickListener {
             if (videoView.isPlaying) {
                 pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
@@ -117,8 +117,6 @@ class OpenVideoActivity : AppCompatActivity() {
 
         videoView.setOnCompletionListener {
             pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
-
-
             nextPage(pageId = (viewPager2.adapter as ViewPagerAdapter).currentPosition)
         }
 
@@ -129,10 +127,7 @@ class OpenVideoActivity : AppCompatActivity() {
 
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
-                    // Mean that the seekbar value is changed by user
-                    // progress * videoView.duration) / 100
                     videoView.seekTo(progress)
-                    Log.d("DEBUG", progress.toString())
                 }
             }
         })
@@ -142,10 +137,10 @@ class OpenVideoActivity : AppCompatActivity() {
             commentText.setText("")
         }
 
-
         likeButton.setOnClickListener {
             val url =
-                "https://kepler88d.pythonanywhere.com/likeVideo?videoId=$videoId&email=${userData.email}&phone=${userData.phone}"
+                "https://kepler88d.pythonanywhere.com/likeVideo?videoId=" +
+                        "$videoId&email=${userData.email}&phone=${userData.phone}"
 
             val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
                 run {
@@ -158,15 +153,14 @@ class OpenVideoActivity : AppCompatActivity() {
                     )
                     likeCount.text = result.getInt("likeCount").toString()
                 }
-            }, {
-                Log.e("LikeVideo", "Error at sign in : " + it.message)
-            })
+            }, { Log.e("LikeVideo", "Error at sign in : " + it.message) })
 
             requestQueue.add(videoLikeCountRequest)
         }
 
         val url =
-            "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=$videoId&email=${userData.email}&phone=${userData.phone}"
+            "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=" +
+                    "$videoId&email=${userData.email}&phone=${userData.phone}"
 
         val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
@@ -206,7 +200,8 @@ class OpenVideoActivity : AppCompatActivity() {
         commentsContainer.removeAllViews()
 
         val url =
-            "https://kepler88d.pythonanywhere.com/getComments?videoId=${(viewPager2.adapter as ViewPagerAdapter).getCurrentVideoId()}"
+            "https://kepler88d.pythonanywhere.com/getComments?videoId=" +
+                    "${(viewPager2.adapter as ViewPagerAdapter).getCurrentVideoId()}"
 
         val commentRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
@@ -216,9 +211,7 @@ class OpenVideoActivity : AppCompatActivity() {
                     addCommentView(result.getJSONObject(index))
                 }
             }
-        }, {
-            Log.e("Comments", "Error at sign in : " + it.message)
-        })
+        }, { Log.e("Comments", "Error at sign in : " + it.message) })
 
         requestQueue.add(commentRequest)
 
@@ -230,9 +223,12 @@ class OpenVideoActivity : AppCompatActivity() {
 
     private fun addCommentView(jsonObject: JSONObject) {
         val newView =
-            LayoutInflater.from(applicationContext).inflate(R.layout.comment_item, null, false)
-        newView.findViewWithTag<TextView>("sender").text = jsonObject.getString("authorUsername")
-        newView.findViewWithTag<TextView>("commentText").text = jsonObject.getString("text")
+            LayoutInflater.from(applicationContext)
+                .inflate(R.layout.comment_item, null, false)
+        newView.findViewWithTag<TextView>("sender").text =
+            jsonObject.getString("authorUsername")
+        newView.findViewWithTag<TextView>("commentText").text =
+            jsonObject.getString("text")
         commentsContainer.addView(newView)
 
         newView.findViewWithTag<ImageView>("likeIcon").setOnClickListener {
@@ -245,9 +241,9 @@ class OpenVideoActivity : AppCompatActivity() {
     }
 
     private fun addComment(commentText: String) {
-        val url =
-            "https://kepler88d.pythonanywhere.com/addComment?videoId=${(viewPager2.adapter as ViewPagerAdapter).getCurrentVideoId()}" +
-                    "&commentText=${commentText.trim()}&email=${userData.email}&phone=${userData.phone}"
+        val url = "https://kepler88d.pythonanywhere.com/addComment?videoId=" +
+                "${(viewPager2.adapter as ViewPagerAdapter).getCurrentVideoId()}" +
+                "&commentText=${commentText.trim()}&email=${userData.email}&phone=${userData.phone}"
 
         val addCommentRequest = StringRequest(Request.Method.GET, url, {
             run {
@@ -261,14 +257,10 @@ class OpenVideoActivity : AppCompatActivity() {
     }
 
     private fun hideKeyboard(activity: Activity) {
-        val imm: InputMethodManager =
-            activity.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        //Find the currently focused view, so we can grab the correct window token from it.
-        var view = activity.currentFocus
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = View(activity)
-        }
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
+        (activity.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager)
+            .hideSoftInputFromWindow(
+                (if (activity.currentFocus == null) View(activity)
+                else activity.currentFocus)!!.windowToken, 0
+            )
     }
 }

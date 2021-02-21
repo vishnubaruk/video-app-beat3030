@@ -229,7 +229,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openMenu() {
-        // Toast.makeText(applicationContext, "Menu Opened!", Toast.LENGTH_SHORT).show()
         closeFilter()
         closeNewsLine()
 
@@ -244,7 +243,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun closeMenu() {
-        // Toast.makeText(applicationContext, "Menu Closed!", Toast.LENGTH_SHORT).show()
         openNewsLine()
 
         openMenuButton.visibility = View.VISIBLE
@@ -258,7 +256,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openFilter() {
-        // Toast.makeText(applicationContext, "Filter Opened!", Toast.LENGTH_SHORT).show()
         closeNewsLine()
 
         openFilterButton.visibility = View.GONE
@@ -272,7 +269,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun closeFilter() {
-        // Toast.makeText(applicationContext, "Filter Closed!", Toast.LENGTH_SHORT).show()
         openNewsLine()
 
         openFilterButton.visibility = View.VISIBLE
@@ -312,7 +308,6 @@ class MainActivity : AppCompatActivity() {
         length: Int = 90,
     ) {
 
-        // replace with new pattern layout
         val newView: View =
             LayoutInflater.from(applicationContext).inflate(R.layout.video_feed_item, null, false)
         newView.findViewWithTag<TextView>("title").text = title
@@ -381,29 +376,12 @@ class MainActivity : AppCompatActivity() {
             val urlSrc =
                 "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$videoId.jpg"
 
-//            Picasso.get().load(urlSrc).into(object : com.squareup.picasso.Target {
-//                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-//                    newView.findViewWithTag<ImageView>("previewImage").setImageDrawable(
-//                        BitmapDrawable(
-//                            resources, bitmap
-//                        )
-//                    )
-//                }
-//
-//                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
-//
-//                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-//                    Log.e("PicassoError", e?.stackTraceToString())
-//                }
-//            })
-
             val previewImage = newView.findViewWithTag<ImageView>("previewImage")
 
             Picasso
                 .get()
                 .load(urlSrc)
                 .placeholder(R.drawable.rectangle4)
-                // .resize(previewImage.width, previewImage.height)
                 .into(previewImage)
         }
 
@@ -432,14 +410,12 @@ class MainActivity : AppCompatActivity() {
                     videoIdList.add(element = videoList.getJSONObject(index).getInt("videoId"))
                 }
 
-
-
                 for (index in 0 until videoList.length()) {
                     val video = videoList.getJSONObject(index)
 
                     addViewToNewsLine(
                         title = video.getString("title"),
-                        tags = "", //video.getString("tags"),
+                        tags = "",
                         videoIdList = ArrayList<Int>(
                             listOf(videoIdList[index]) + videoIdList.filter { it != 0 }
                                 .slice(0 until 10).shuffled()
@@ -447,7 +423,6 @@ class MainActivity : AppCompatActivity() {
                         likeCount = video.getInt("likeCount"),
                         length = video.getInt("length")
                     )
-                    // likeCount = video.getInt("likeCount"))
                 }
                 progressBar.visibility = View.GONE
             }
@@ -459,8 +434,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        // super.onBackPressed()
-
         if (isFilterOpened) {
             closeFilter()
             return
