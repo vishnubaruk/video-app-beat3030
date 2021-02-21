@@ -126,22 +126,31 @@ class FavouriteActivity : AppCompatActivity() {
 
         val urlSrc = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$videoId.jpg"
 
-        Picasso.get().load(urlSrc).into(object : com.squareup.picasso.Target {
-            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                Log.d("DEBUG", urlSrc)
-                newView.findViewWithTag<ImageView>("previewImage").setImageDrawable(
-                    BitmapDrawable(
-                        resources, bitmap
-                    )
-                )
-            }
+//        Picasso.get().load(urlSrc).into(object : com.squareup.picasso.Target {
+//            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+//                Log.d("DEBUG", urlSrc)
+//                newView.findViewWithTag<ImageView>("previewImage").setImageDrawable(
+//                    BitmapDrawable(
+//                        resources, bitmap
+//                    )
+//                )
+//            }
+//
+//            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
+//
+//            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+//                Log.e("PicassoError", e?.stackTraceToString())
+//            }
+//        })
 
-            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
+        val previewImage = newView.findViewWithTag<ImageView>("previewImage")
 
-            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                Log.e("PicassoError", e?.stackTraceToString())
-            }
-        })
+        Picasso
+            .get()
+            .load(urlSrc)
+            .placeholder(R.drawable.rectangle34)
+            // .resize(previewImage.width, previewImage.height)
+            .into(previewImage)
 
         // processing view count
 
