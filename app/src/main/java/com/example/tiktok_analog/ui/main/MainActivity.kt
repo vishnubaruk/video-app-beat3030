@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
                 nameTextHeader.text = userData.username
                 emailTextHeader.text = userData.email
             }
-        } catch (e: Error) {
+        } catch (e: Exception) {
             onBackPressed()
         }
 
@@ -379,21 +379,30 @@ class MainActivity : AppCompatActivity() {
             val urlSrc =
                 "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$videoId.jpg"
 
-            Picasso.get().load(urlSrc).into(object : com.squareup.picasso.Target {
-                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                    newView.findViewWithTag<ImageView>("previewImage").setImageDrawable(
-                        BitmapDrawable(
-                            resources, bitmap
-                        )
-                    )
-                }
+//            Picasso.get().load(urlSrc).into(object : com.squareup.picasso.Target {
+//                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+//                    newView.findViewWithTag<ImageView>("previewImage").setImageDrawable(
+//                        BitmapDrawable(
+//                            resources, bitmap
+//                        )
+//                    )
+//                }
+//
+//                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
+//
+//                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+//                    Log.e("PicassoError", e?.stackTraceToString())
+//                }
+//            })
 
-                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
+            val previewImage = newView.findViewWithTag<ImageView>("previewImage")
 
-                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                    Log.e("PicassoError", e?.stackTraceToString())
-                }
-            })
+            Picasso
+                .get()
+                .load(urlSrc)
+                .placeholder(R.drawable.rectangle4)
+                // .resize(previewImage.width, previewImage.height)
+                .into(previewImage)
         }
 
         newsLineLayout.addView(newView)

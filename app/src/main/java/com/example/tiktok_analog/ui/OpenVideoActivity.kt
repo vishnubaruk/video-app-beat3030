@@ -33,9 +33,7 @@ class OpenVideoActivity : AppCompatActivity() {
 
     public fun nextPage(pageId: Int) {
         viewPager2.doOnLayout {
-            if (viewPager2.currentItem == pageId) {
-                viewPager2.setCurrentItem(pageId + 1, true)
-            }
+            viewPager2.setCurrentItem(pageId + 1, true)
         }
     }
 
@@ -107,16 +105,22 @@ class OpenVideoActivity : AppCompatActivity() {
             }
         }
 
-//        videoView.setOnCompletionListener(null)
-//
-//        videoView.setOnCompletionListener {
-//            pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
-//
-//            val savedPosition = (viewPager2.adapter as ViewPagerAdapter).currentPosition
-//            if ((viewPager2.adapter as ViewPagerAdapter).currentPosition == savedPosition) {
-//                nextPage(pageId = savedPosition)
-//            }
-//        }
+        videoView.setOnClickListener {
+            if (videoView.isPlaying) {
+                pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
+                videoView.pause()
+            } else {
+                pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
+                videoView.start()
+            }
+        }
+
+        videoView.setOnCompletionListener {
+            pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
+
+
+            nextPage(pageId = (viewPager2.adapter as ViewPagerAdapter).currentPosition)
+        }
 
         seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
