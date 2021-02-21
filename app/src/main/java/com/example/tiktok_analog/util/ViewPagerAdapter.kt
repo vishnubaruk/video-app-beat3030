@@ -170,8 +170,6 @@ class ViewPagerAdapter(
 
         val onComplete: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(ctxt: Context, intent: Intent) {
-                activity.recreate()
-
                 playVideoWithPath(
                     "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$videoId.mp4"
                 )
