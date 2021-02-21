@@ -66,7 +66,12 @@ class ViewPagerAdapter(
     }
 
     fun setPage(position: Int) {
-        currentPosition = position
+        if (currentPosition != position) {
+            currentVideoView.setOnCompletionListener(null)
+            currentVideoView.pause()
+
+            currentPosition = position
+        }
 
         val videoId = videoIdList[position]
         Log.d("DEBUG", videoId.toString())
@@ -87,15 +92,15 @@ class ViewPagerAdapter(
 
         (activity as OpenVideoActivity).fillVideoData(videoId, viewHolderList[position].videoView)
 
-        currentVideoView.setOnClickListener {
-            if (currentVideoView.isPlaying) {
-                pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
-                currentVideoView.pause()
-            } else {
-                pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
-                currentVideoView.start()
-            }
-        }
+//        currentVideoView.setOnClickListener {
+//            if (currentVideoView.isPlaying) {
+//                pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
+//                currentVideoView.pause()
+//            } else {
+//                pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
+//                currentVideoView.start()
+//            }
+//        }
 
         updateHandler.removeCallbacksAndMessages(null)
         updateHandler.postDelayed(updateVideoTime, 100)
