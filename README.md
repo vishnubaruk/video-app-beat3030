@@ -3,7 +3,7 @@ This is an open repository of a new application that allows you to record videos
 
 # What has already been implemented
 * Interaction with server-side using http requests with json.
-* Full registration and authorization (except phone number confirm using SMS API). 
+* Full registration and authorization. 
 * Mediaserver (cloudinary) integration: uploading and downloading videos.
 * Fully functional ui: working news feed, video player, comments, etc. 
 * Sms phone confirm.
