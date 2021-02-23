@@ -6,11 +6,11 @@ This is an open repository of a new application that allows you to record videos
 * Full registration and authorization (except phone number confirm using SMS API). 
 * Mediaserver (cloudinary) integration: uploading and downloading videos.
 * Fully functional ui: working news feed, video player, comments, etc. 
+* Sms phone confirm.
 
 # What is going to be implemented soon
 * Live broadcasts.
 * Built-in video editor.
-* Sms phone confirm.
 * Some improvements in ui and app functionality. 
 
 # Link to the server repository
