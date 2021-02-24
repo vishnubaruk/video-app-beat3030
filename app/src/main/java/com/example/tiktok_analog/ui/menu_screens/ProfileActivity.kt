@@ -153,7 +153,7 @@ class ProfileActivity : AppCompatActivity() {
         newView.setOnClickListener {
             val openVideoIntent = Intent(this, OpenVideoActivity::class.java)
 
-            openVideoIntent.putExtra("id", videoId)
+            openVideoIntent.putIntegerArrayListExtra("id", arrayListOf(videoId))
 
             if (videoId != 0) {
                 startActivity(openVideoIntent)
@@ -175,8 +175,6 @@ class ProfileActivity : AppCompatActivity() {
             .load(urlSrc)
             .placeholder(R.drawable.rectangle34)
             .into(previewImage)
-
-        // processing view count
 
         val viewCountUrl = "https://kepler88d.pythonanywhere.com/getViewCount?videoId=$videoId"
         val viewQueue = Volley.newRequestQueue(this)
