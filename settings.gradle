@@ -1,2 +1,2 @@
 include ':app'
-rootProject.name = "TikTokAnalog"
+rootProject.name = "Video Sharing App"
