@@ -10,6 +10,7 @@ import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.doOnLayout
+import androidx.viewpager.widget.ViewPager
 import androidx.viewpager2.widget.ViewPager2
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -17,8 +18,12 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
+import com.example.tiktok_analog.ui.menu_screens.fragments.CommentsFragment
+import com.example.tiktok_analog.ui.menu_screens.fragments.ProfileFragment
+import com.example.tiktok_analog.util.TabViewPagerAdapter
 import com.example.tiktok_analog.util.ViewPagerAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_open_video.*
 import kotlinx.android.synthetic.main.bottom_sheet.*
 import org.json.JSONObject
@@ -30,6 +35,12 @@ class OpenVideoActivity : AppCompatActivity() {
     private lateinit var userData: User
 
     private lateinit var requestQueue: RequestQueue
+
+    private val profileFragment: ProfileFragment = ProfileFragment()
+
+    // private val videoFragment = ...
+
+    private val commentsFragment: CommentsFragment = CommentsFragment()
 
     public fun nextPage(pageId: Int) {
         viewPager2.doOnLayout {
@@ -91,6 +102,17 @@ class OpenVideoActivity : AppCompatActivity() {
 
         backArrowButton.setOnClickListener {
             super.onBackPressed()
+        }
+
+        setupViewPager(tabViewPager)
+        tabLayout.run {
+            setupWithViewPager(tabViewPager)
+
+            addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: TabLayout.Tab) {}
+                override fun onTabUnselected(tab: TabLayout.Tab) {}
+                override fun onTabReselected(tab: TabLayout.Tab) {}
+            })
         }
     }
 
@@ -262,5 +284,14 @@ class OpenVideoActivity : AppCompatActivity() {
                 (if (activity.currentFocus == null) View(activity)
                 else activity.currentFocus)!!.windowToken, 0
             )
+    }
+
+    private fun setupViewPager(viewPager: ViewPager) {
+        val adapter = TabViewPagerAdapter(supportFragmentManager)
+        adapter.addFragment(profileFragment, "Profile")
+        // adapter.addFragment(dashboardFragment, "Videos")
+        adapter.addFragment(commentsFragment, "Comments")
+//        tabViewPager.adapter = adapter
+//        tabViewPager.currentItem = 1
     }
 }
