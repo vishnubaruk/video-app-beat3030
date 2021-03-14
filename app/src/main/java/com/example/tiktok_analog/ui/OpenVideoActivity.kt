@@ -42,6 +42,10 @@ class OpenVideoActivity : AppCompatActivity() {
 
     private val commentsFragment: CommentsFragment = CommentsFragment()
 
+    public fun getViewPager2(): ViewPager2 {
+        return viewPager2
+    }
+
     public fun nextPage(pageId: Int) {
         viewPager2.doOnLayout {
             viewPager2.setCurrentItem(pageId + 1, true)
@@ -105,15 +109,6 @@ class OpenVideoActivity : AppCompatActivity() {
         }
 
         setupViewPager(tabViewPager)
-        tabLayout.run {
-            setupWithViewPager(tabViewPager)
-
-            addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-                override fun onTabSelected(tab: TabLayout.Tab) {}
-                override fun onTabUnselected(tab: TabLayout.Tab) {}
-                override fun onTabReselected(tab: TabLayout.Tab) {}
-            })
-        }
     }
 
     fun fillVideoData(videoId: Int, videoView: VideoView) {
@@ -291,7 +286,7 @@ class OpenVideoActivity : AppCompatActivity() {
         adapter.addFragment(profileFragment, "Profile")
         // adapter.addFragment(dashboardFragment, "Videos")
         adapter.addFragment(commentsFragment, "Comments")
-//        tabViewPager.adapter = adapter
-//        tabViewPager.currentItem = 1
+        viewPager.adapter = adapter
+        viewPager.currentItem = 1
     }
 }

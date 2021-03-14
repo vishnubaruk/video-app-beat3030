@@ -117,7 +117,6 @@ class MainActivity : AppCompatActivity() {
             alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
         }
 
-        // filter panel
         oneMinuteButton.setOnClickListener {
             oneMinuteButton.background =
                 applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_selected)
