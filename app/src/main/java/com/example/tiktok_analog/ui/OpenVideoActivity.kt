@@ -19,6 +19,7 @@ import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.menu_screens.fragments.CommentsFragment
+import com.example.tiktok_analog.ui.menu_screens.fragments.OpenVideoFragment
 import com.example.tiktok_analog.ui.menu_screens.fragments.ProfileFragment
 import com.example.tiktok_analog.util.TabViewPagerAdapter
 import com.example.tiktok_analog.util.ViewPagerAdapter
@@ -38,7 +39,7 @@ class OpenVideoActivity : AppCompatActivity() {
 
     private val profileFragment: ProfileFragment = ProfileFragment()
 
-    // private val videoFragment = ...
+    private val openVideoFragment: OpenVideoFragment = OpenVideoFragment()
 
     private val commentsFragment: CommentsFragment = CommentsFragment()
 
@@ -284,7 +285,7 @@ class OpenVideoActivity : AppCompatActivity() {
     private fun setupViewPager(viewPager: ViewPager) {
         val adapter = TabViewPagerAdapter(supportFragmentManager)
         adapter.addFragment(profileFragment, "Profile")
-        // adapter.addFragment(dashboardFragment, "Videos")
+        adapter.addFragment(openVideoFragment, "Videos")
         adapter.addFragment(commentsFragment, "Comments")
         viewPager.adapter = adapter
         viewPager.currentItem = 1
