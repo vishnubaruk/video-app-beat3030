@@ -6,11 +6,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -18,7 +17,6 @@ import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.OpenVideoActivity
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.fragment_profile.*
 import org.json.JSONObject
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
@@ -26,77 +24,83 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        requireActivity().openFileInput("userData").use {
-            userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
-        }
-
-        fillProfileData()
-
-        backArrowButton.setOnClickListener {
-            requireActivity().onBackPressed()
-        }
-
-        yourProfileTab.setOnClickListener {
-            yourProfileTab.backgroundTintList =
-                requireActivity().applicationContext.resources.getColorStateList(R.color.buttonEnabledBg)
-            yourProfileTab.setTextColor(resources.getColor(R.color.white))
-
-            yourVideosTab.backgroundTintList =
-                requireActivity().applicationContext.resources.getColorStateList(R.color.groupUnselected)
-            yourVideosTab.setTextColor(resources.getColor(R.color.colorPrimary))
-
-            yourProfileBlock.visibility = View.VISIBLE
-            yourVideosBlock.visibility = View.GONE
-
-            sectionTitleText.text = "Ваш профиль"
-
-            editData.visibility = View.VISIBLE
-        }
-
-        yourVideosTab.setOnClickListener {
-            yourProfileTab.backgroundTintList =
-                requireActivity().applicationContext.resources.getColorStateList(R.color.groupUnselected)
-            yourProfileTab.setTextColor(resources.getColor(R.color.colorPrimary))
-
-            yourVideosTab.backgroundTintList =
-                requireActivity().applicationContext.resources.getColorStateList(R.color.buttonEnabledBg)
-            yourVideosTab.setTextColor(resources.getColor(R.color.white))
-
-            yourProfileBlock.visibility = View.GONE
-            yourVideosBlock.visibility = View.VISIBLE
-
-            sectionTitleText.text = "Ваши видео"
-
-            editData.visibility = View.GONE
-
-            updateData()
-        }
-
-        editData.setOnClickListener {
-            Toast.makeText(requireActivity().applicationContext, "Edit data clicked", Toast.LENGTH_SHORT).show()
-        }
-
-        profileSwipeRefresh.setOnRefreshListener {
-            profileSwipeRefresh.isRefreshing = false
-            Toast.makeText(
-                requireActivity().applicationContext,
-                "Profile page refreshed", Toast.LENGTH_SHORT
-            ).show()
-
-            updateData()
-        }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return super.onCreateView(inflater, container, savedInstanceState)
+    ): View {
+        val view = super.onCreateView(inflater, container, savedInstanceState)!!
+
+        requireActivity().openFileInput("userData").use {
+            userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
+        }
+
+        fillProfileData(view)
+
+        view.findViewById<ImageButton>(R.id.backArrowButton).setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+
+        view.findViewById<Button>(R.id.yourProfileTab).setOnClickListener {
+            view.findViewById<Button>(R.id.yourProfileTab).backgroundTintList =
+                requireActivity().applicationContext.resources.getColorStateList(R.color.buttonEnabledBg)
+            view.findViewById<TextView>(R.id.yourProfileTab).setTextColor(resources.getColor(R.color.white))
+
+            view.findViewById<Button>(R.id.yourVideosTab).backgroundTintList =
+                requireActivity().applicationContext.resources.getColorStateList(R.color.groupUnselected)
+            view.findViewById<Button>(R.id.yourVideosTab).setTextColor(resources.getColor(R.color.colorPrimary))
+
+            view.findViewById<ConstraintLayout>(R.id.yourProfileBlock).visibility = View.VISIBLE
+            view.findViewById<ConstraintLayout>(R.id.yourVideosBlock).visibility = View.GONE
+
+            view.findViewById<TextView>(R.id.sectionTitleText).text = "Ваш профиль"
+
+            view.findViewById<ImageButton>(R.id.editData).visibility = View.VISIBLE
+        }
+
+        view.findViewById<Button>(R.id.yourVideosTab).setOnClickListener {
+            view.findViewById<Button>(R.id.yourProfileTab).backgroundTintList =
+                requireActivity().applicationContext.resources.getColorStateList(R.color.groupUnselected)
+            view.findViewById<Button>(R.id.yourProfileTab).setTextColor(resources.getColor(R.color.colorPrimary))
+
+            view.findViewById<Button>(R.id.yourVideosTab).backgroundTintList =
+                requireActivity().applicationContext.resources.getColorStateList(R.color.buttonEnabledBg)
+            view.findViewById<Button>(R.id.yourVideosTab).setTextColor(resources.getColor(R.color.white))
+
+            view.findViewById<ConstraintLayout>(R.id.yourProfileBlock).visibility = View.GONE
+            view.findViewById<ConstraintLayout>(R.id.yourVideosBlock).visibility = View.VISIBLE
+
+            view.findViewById<TextView>(R.id.sectionTitleText).text = "Ваши видео"
+
+            view.findViewById<ImageButton>(R.id.editData).visibility = View.GONE
+
+            updateData(view)
+        }
+
+        view.findViewById<ImageButton>(R.id.editData).setOnClickListener {
+            Toast.makeText(
+                requireActivity().applicationContext,
+                "Edit data clicked",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        view.findViewById<SwipeRefreshLayout>(R.id.profileSwipeRefresh).setOnRefreshListener {
+            view.findViewById<SwipeRefreshLayout>(R.id.profileSwipeRefresh).isRefreshing = false
+            Toast.makeText(
+                requireActivity().applicationContext,
+                "Profile page refreshed", Toast.LENGTH_SHORT
+            ).show()
+
+            updateData(view)
+        }
+
+        return view
     }
 
-    private fun updateData() {
+    private fun updateData(view: View) {
         // updating video stats
         val url =
             "https://kepler88d.pythonanywhere.com/getUploadedVideosStats?email=${userData.email}&phone=${userData.phone}"
@@ -106,9 +110,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         val addCommentRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
                 val result = JSONObject(response)
-                videoCount.text = result.getInt("videoCount").toString()
-                videoLikeCount.text = result.getInt("likeCount").toString()
-                videoViewCount.text = result.getInt("viewCount").toString()
+                view.findViewById<TextView>(R.id.videoCount).text = result.getInt("videoCount").toString()
+                view.findViewById<TextView>(R.id.videoLikeCount).text = result.getInt("likeCount").toString()
+                view.findViewById<TextView>(R.id.videoViewCount).text = result.getInt("viewCount").toString()
             }
         }, {
             Log.e("VideoStats", "Error at sign in : " + it.message)
@@ -117,7 +121,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         videoStatsQueue.add(addCommentRequest)
 
         // getting uploaded videos list
-        uploadedVideosLayout.removeAllViews()
+        view.findViewById<GridLayout>(R.id.uploadedVideosLayout).removeAllViews()
 
         val uploadedVideosUrl =
             "https://kepler88d.pythonanywhere.com/getUploadedVideos?email=${userData.email}&phone=${userData.phone}"
@@ -131,7 +135,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
                     for (index in 0 until result.length()) {
                         addViewToUploadedVideos(
-                            videoId = result.getInt(index)
+                            videoId = result.getInt(index),
+                            view
                         )
                     }
 
@@ -143,17 +148,23 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         uploadedVideosQueue.add(uploadedVideosRequest)
     }
 
-    private fun addViewToUploadedVideos(videoId: Int) {
+    private fun addViewToUploadedVideos(videoId: Int, view: View) {
         val newView =
-            LayoutInflater.from(requireActivity().applicationContext).inflate(R.layout.fav_video_item, null, false)
+            LayoutInflater.from(requireActivity().applicationContext)
+                .inflate(R.layout.fav_video_item, null, false)
 
         newView.setOnLongClickListener {
-            Toast.makeText(requireActivity().applicationContext, "Video $videoId disliked", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireActivity().applicationContext,
+                "Video $videoId disliked",
+                Toast.LENGTH_SHORT
+            ).show()
             true
         }
 
         newView.setOnClickListener {
-            val openVideoIntent = Intent(requireActivity().applicationContext, OpenVideoActivity::class.java)
+            val openVideoIntent =
+                Intent(requireActivity().applicationContext, OpenVideoActivity::class.java)
 
             openVideoIntent.putIntegerArrayListExtra("id", arrayListOf(videoId))
 
@@ -163,9 +174,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         }
 
         newView.findViewWithTag<Button>("delete").setOnClickListener {
-            uploadedVideosLayout.removeView(newView)
+            view.findViewById<GridLayout>(R.id.uploadedVideosLayout).removeView(newView)
             // dislikeVideo(videoId)
-            Toast.makeText(requireActivity().applicationContext, "Video $videoId disliked", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireActivity().applicationContext,
+                "Video $videoId disliked",
+                Toast.LENGTH_SHORT
+            ).show()
         }
 
         val urlSrc = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$videoId.jpg"
@@ -193,18 +208,18 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         viewQueue.add(viewCountRequest)
 
-        uploadedVideosLayout.addView(newView)
+        view.findViewById<GridLayout>(R.id.uploadedVideosLayout).addView(newView)
     }
 
-    private fun fillProfileData() {
-        nameText.text = userData.username
-        nameTextHeader.text = userData.username
+    private fun fillProfileData(view: View) {
+        view.findViewById<TextView>(R.id.nameText).text = userData.username
+        view.findViewById<TextView>(R.id.nameTextHeader).text = userData.username
 
-        phoneText.text = userData.phone
-        birthDateText.text = userData.birthDate
-        cityText.text = userData.city
+        view.findViewById<TextView>(R.id.phoneText).text = userData.phone
+        view.findViewById<TextView>(R.id.birthDateText).text = userData.birthDate
+        view.findViewById<TextView>(R.id.cityText).text = userData.city
 
-        emailText.text = userData.email
-        emailTextHeader.text = userData.email
+        view.findViewById<TextView>(R.id.emailText).text = userData.email
+        view.findViewById<TextView>(R.id.emailTextHeader).text = userData.email
     }
 }
