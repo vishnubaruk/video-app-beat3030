@@ -43,6 +43,7 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
             view.findViewById<TextView>(R.id.commentText).text = ""
         }
 
+        updateComments(view)
         return view
     }
 
