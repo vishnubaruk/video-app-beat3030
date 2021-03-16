@@ -176,7 +176,6 @@ class MainActivity : AppCompatActivity() {
 
         newsSwipeRefresh.setOnRefreshListener {
             newsSwipeRefresh.isRefreshing = false
-            Toast.makeText(applicationContext, "News Updated", Toast.LENGTH_SHORT).show()
             newsLineLayout.removeAllViews()
             videoViewList.clear()
             addPostsToNewsLine(25)
