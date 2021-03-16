@@ -21,6 +21,7 @@ import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.util.ViewPagerAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.android.synthetic.main.fragment_open_video.*
 import org.json.JSONObject
 
 class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
@@ -30,6 +31,8 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     private lateinit var rootView: View
 
     private lateinit var videoIdList: List<Int>
+
+    private lateinit var viewPagerAdapter: ViewPagerAdapter
 
     fun getViewPager2(): ViewPager2 {
         return rootView.findViewById(R.id.viewPager2)
@@ -67,6 +70,9 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
                 rootView.findViewById(R.id.timeCode),
                 rootView.findViewById(R.id.pauseButton)
             )
+
+        viewPagerAdapter =
+            rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter
 
         rootView.findViewById<ViewPager2>(R.id.viewPager2).offscreenPageLimit = 10
 
@@ -133,6 +139,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             } else {
                 rootView.findViewById<ImageButton>(R.id.pauseButton)
                     .setBackgroundResource(R.drawable.ic_baseline_pause_24)
+                videoView.seekTo(seekBar.progress)
                 videoView.start()
             }
         }
@@ -145,13 +152,17 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
         rootView.findViewById<SeekBar>(R.id.seekBar)
             .setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onStopTrackingTouch(seekBar: SeekBar) {}
+                override fun onStopTrackingTouch(seekBar: SeekBar) {
+//                    viewPagerAdapter.removeSeekBarCallbacks()
+                }
 
-                override fun onStartTrackingTouch(seekBar: SeekBar) {}
+                override fun onStartTrackingTouch(seekBar: SeekBar) {
+//                    viewPagerAdapter.updateSeekBar()
+                }
 
                 override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                     if (fromUser) {
-                        videoView.seekTo(progress)
+                        viewPagerAdapter.currentVideoView.seekTo(seekBar.progress)
                     }
                 }
             })

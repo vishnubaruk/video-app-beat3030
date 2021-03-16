@@ -17,6 +17,7 @@ import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.ui.OpenVideoActivity
+import kotlinx.android.synthetic.main.fragment_open_video.view.*
 import java.io.File
 
 
@@ -36,10 +37,13 @@ class ViewPagerAdapter(
 
     private val viewHolderList = mutableListOf<VideoViewHolder>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoViewHolder =
-        VideoViewHolder(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoViewHolder {
+        updateSeekBar()
+
+        return VideoViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.item_page, parent, false)
         )
+    }
 
 
     override fun getItemCount(): Int = videoIdList.size
@@ -86,10 +90,7 @@ class ViewPagerAdapter(
             downloadFile(videoIdList[position])
         }
 
-        (activity as OpenVideoActivity).fillVideoData(videoId, viewHolderList[position].videoView)
-
-        updateHandler.removeCallbacksAndMessages(null)
-        updateHandler.postDelayed(updateVideoTime, 100)
+        activity.fillVideoData(videoId, viewHolderList[position].videoView)
     }
 
     fun isVideoPlaying(): Boolean {
@@ -167,17 +168,30 @@ class ViewPagerAdapter(
         )
     }
 
+    fun updateSeekBar() {
+        updateHandler.postDelayed(updateVideoTime, 10)
+    }
+
+    fun removeSeekBarCallbacks() {
+        updateHandler.removeCallbacksAndMessages(null)
+    }
+
+    fun updateTimeIndicators() {
+        val currentPosition: Long = currentVideoView.currentPosition.toLong()
+
+        val sec = currentPosition / 1000 % 60
+        timeCode.text =
+            "${currentPosition / 60000}:${if (sec.toString().length > 1) "" else "0"}$sec"
+    }
+
     private val updateVideoTime: Runnable by lazy {
         return@lazy object : Runnable {
             override fun run() {
-                val currentPosition: Long = currentVideoView.currentPosition.toLong()
-                seekBar.progress = currentPosition.toInt()
-
-                val sec = currentPosition / 1000 % 60
-                timeCode.text =
-                    "${currentPosition / 60000}:${if (sec.toString().length > 1) "" else "0"}$sec"
-
-                updateHandler.postDelayed(this, 100)
+                updateTimeIndicators()
+                val currentPosition = currentVideoView.currentPosition
+                Log.d("current position", currentPosition.toString())
+                seekBar.progress = currentPosition
+                updateHandler.postDelayed(this, 10)
             }
         }
     }

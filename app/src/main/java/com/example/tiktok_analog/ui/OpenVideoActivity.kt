@@ -23,9 +23,7 @@ class OpenVideoActivity : AppCompatActivity() {
     private lateinit var requestQueue: RequestQueue
 
     private val profileFragment: ProfileFragment = ProfileFragment()
-
     private val openVideoFragment: OpenVideoFragment = OpenVideoFragment()
-
     private val commentsFragment: CommentsFragment = CommentsFragment()
 
     fun fillVideoData(videoId: Int, videoView: VideoView) {
@@ -50,7 +48,6 @@ class OpenVideoActivity : AppCompatActivity() {
         }
 
         requestQueue = Volley.newRequestQueue(applicationContext)
-
         setupViewPager(tabViewPager)
     }
 
