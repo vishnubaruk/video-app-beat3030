@@ -25,6 +25,7 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
     lateinit var userData: User
 
     private lateinit var requestQueue: RequestQueue
+    private lateinit var rootView: View
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,6 +33,8 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
         savedInstanceState: Bundle?
     ): View {
         val view = super.onCreateView(inflater, container, savedInstanceState)!!
+        rootView = view
+
         requireActivity().openFileInput("userData").use {
             userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
         }
@@ -43,7 +46,7 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
             view.findViewById<TextView>(R.id.commentText).text = ""
         }
 
-        updateComments(view)
+        updateComments()
         return view
     }
 
@@ -54,7 +57,7 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
 
         val addCommentRequest = StringRequest(Request.Method.GET, url, {
             run {
-                updateComments(view)
+                updateComments()
             }
         }, {
             Log.e("Add comment", "Error at sign in : " + it.message)
@@ -63,8 +66,8 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
         requestQueue.add(addCommentRequest)
     }
 
-    private fun updateComments(view: View) {
-        view.findViewById<LinearLayout>(R.id.commentsContainer).removeAllViews()
+    public fun updateComments() {
+        rootView.findViewById<LinearLayout>(R.id.commentsContainer).removeAllViews()
 
         val url =
             "https://kepler88d.pythonanywhere.com/getComments?videoId=" +
@@ -75,7 +78,7 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
                 val result = JSONObject(response).getJSONArray("result")
 
                 for (index in 0 until result.length()) {
-                    addCommentView(result.getJSONObject(index), view)
+                    addCommentView(result.getJSONObject(index), rootView)
                 }
             }
         }, { Log.e("Comments", "Error at sign in : " + it.message) })
@@ -98,7 +101,8 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
         }
 
         view.findViewById<NestedScrollView>(R.id.commentsScrollView).post {
-            view.findViewById<NestedScrollView>(R.id.commentsScrollView).fullScroll(ScrollView.FOCUS_DOWN)
+            view.findViewById<NestedScrollView>(R.id.commentsScrollView)
+                .fullScroll(ScrollView.FOCUS_DOWN)
         }
     }
 
