@@ -20,6 +20,7 @@ import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.OpenVideoActivity
 import com.example.tiktok_analog.util.ViewPagerAdapter
 import org.json.JSONObject
+import java.lang.IllegalStateException
 
 class CommentsFragment : Fragment(R.layout.fragment_comments) {
     lateinit var userData: User
@@ -87,22 +88,26 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
     }
 
     private fun addCommentView(jsonObject: JSONObject, view: View) {
-        val newView =
-            LayoutInflater.from(requireActivity().applicationContext)
-                .inflate(R.layout.comment_item, null, false)
-        newView.findViewWithTag<TextView>("sender").text =
-            jsonObject.getString("authorUsername")
-        newView.findViewWithTag<TextView>("commentText").text =
-            jsonObject.getString("text")
-        view.findViewById<LinearLayout>(R.id.commentsContainer).addView(newView)
+        try {
+            val newView =
+                LayoutInflater.from(requireActivity().applicationContext)
+                    .inflate(R.layout.comment_item, null, false)
+            newView.findViewWithTag<TextView>("sender").text =
+                jsonObject.getString("authorUsername")
+            newView.findViewWithTag<TextView>("commentText").text =
+                jsonObject.getString("text")
+            view.findViewById<LinearLayout>(R.id.commentsContainer).addView(newView)
 
-        newView.findViewWithTag<ImageView>("likeIcon").setOnClickListener {
-            it.setBackgroundResource(R.drawable.ic_like)
-        }
+            newView.findViewWithTag<ImageView>("likeIcon").setOnClickListener {
+                it.setBackgroundResource(R.drawable.ic_like)
+            }
 
-        view.findViewById<NestedScrollView>(R.id.commentsScrollView).post {
-            view.findViewById<NestedScrollView>(R.id.commentsScrollView)
-                .fullScroll(ScrollView.FOCUS_DOWN)
+            view.findViewById<NestedScrollView>(R.id.commentsScrollView).post {
+                view.findViewById<NestedScrollView>(R.id.commentsScrollView)
+                    .fullScroll(ScrollView.FOCUS_DOWN)
+            }
+        } catch (e: IllegalStateException) {
+            print(e.stackTrace)
         }
     }
 
