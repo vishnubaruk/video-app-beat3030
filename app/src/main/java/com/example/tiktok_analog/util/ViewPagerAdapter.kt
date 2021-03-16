@@ -63,6 +63,8 @@ class ViewPagerAdapter(
             currentPosition = position
         }
 
+        (activity as OpenVideoActivity)!!.updateCommentsFragment()
+
         val videoId = videoIdList[position]
 
         if (File(
