@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.telephony.PhoneNumberFormattingTextWatcher
 import android.text.Editable
@@ -22,6 +23,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -42,6 +44,8 @@ import com.example.tiktok_analog.ui.register.RegisterViewModelFactory
 import com.example.tiktok_analog.ui.register.RegisteredUserView
 import kotlinx.android.synthetic.main.register.*
 import org.json.JSONObject
+import java.time.LocalDate
+import java.time.Period
 import java.util.*
 
 
@@ -52,6 +56,7 @@ class StartActivity : AppCompatActivity() {
 
     private lateinit var userData: User
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -61,7 +66,9 @@ class StartActivity : AppCompatActivity() {
             Manifest.permission.CAMERA,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.INTERNET
+            Manifest.permission.INTERNET,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
         )
 
         ActivityCompat.requestPermissions(
@@ -96,6 +103,7 @@ class StartActivity : AppCompatActivity() {
         initLoginScreen()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun initRegisterScreen() {
         val register = findViewById<Button>(R.id.register)
 
@@ -106,10 +114,6 @@ class StartActivity : AppCompatActivity() {
         val email = findViewById<EditText>(R.id.email)
         val password = findViewById<EditText>(R.id.passwordRegistration)
         val confirmPassword = findViewById<EditText>(R.id.confirm_password)
-
-        val mDateSetListener: OnDateSetListener
-
-        // TODO: refactor with authorization / registration
 
         registerViewModel = ViewModelProviders.of(this, RegisterViewModelFactory())
             .get(RegisterViewModel::class.java)
@@ -205,11 +209,10 @@ class StartActivity : AppCompatActivity() {
 
         phone.addTextChangedListener(PhoneNumberFormattingTextWatcher("RU"))
 
-        mDateSetListener =
-            OnDateSetListener { _, year, month, day ->
-                birthDate.text =
-                    "${if (day < 10) "0" else ""}$day.${if (month < 9) "0" else ""}${month + 1}.$year"
-            }
+        val mDateSetListener: OnDateSetListener = OnDateSetListener { _, year, month, day ->
+            birthDate.text =
+                "${if (day < 10) "0" else ""}$day.${if (month < 9) "0" else ""}${month + 1}.$year"
+        }
 
         birthDate.setOnClickListener {
             val cal: Calendar = Calendar.getInstance();
@@ -393,6 +396,7 @@ class StartActivity : AppCompatActivity() {
         loginQueue.add(loginRequest)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun checkIfUserIsRegistered(user: User) {
         val checkRegisterQueue = Volley.newRequestQueue(this)
 
@@ -422,7 +426,23 @@ class StartActivity : AppCompatActivity() {
         checkRegisterQueue.add(existenceRequest)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun registerUser(user: User) {
+
+        val date = user.birthDate.split(".").toList()
+        if (Period.between(
+                LocalDate.of(date[2].toInt(), date[1].toInt(), date[0].toInt()),
+                LocalDate.now()
+            ).years < 18
+        ) {
+            AlertDialog.Builder(this).setTitle("Ошибка регистрации!")
+                .setMessage("Ваш возраст должен превышать 18 лет для регистрации")
+                .setPositiveButton("Понятно") { dialog, _ ->
+                    dialog.cancel()
+                }.create().show()
+            return
+        }
+
         val registerQueue = Volley.newRequestQueue(this)
 
         val url =
