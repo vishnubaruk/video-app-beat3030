@@ -123,6 +123,7 @@ class ViewPagerAdapter(
             seekBar.max = currentVideoView.duration
             pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
         }
+        currentVideoView.requestFocus()
 
         viewHolderList[currentPosition].videoView.start()
     }
