@@ -1,11 +1,13 @@
 package com.example.tiktok_analog.ui.main
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,7 +15,6 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.android.volley.Request
@@ -23,6 +24,7 @@ import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.OpenVideoActivity
+import com.example.tiktok_analog.ui.StartActivity
 import com.example.tiktok_analog.ui.menu_screens.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
@@ -42,6 +44,8 @@ class MainActivity : AppCompatActivity() {
     private val videoViewList: MutableList<Pair<View, Int>> = arrayListOf()
     private lateinit var requestQueue: RequestQueue
 
+    private var savedLocation: Location? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -58,6 +62,8 @@ class MainActivity : AppCompatActivity() {
         } else {
             finish()
         }
+
+        updateLocation()
 
         requestQueue = Volley.newRequestQueue(applicationContext)
 
@@ -429,6 +435,42 @@ class MainActivity : AppCompatActivity() {
         })
 
         requestQueue.add(addVideoRequest)
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun updateLocation() {
+        val locationManager =
+            this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        val locationListener: LocationListener = object : LocationListener {
+            override fun onLocationChanged(location: Location) {
+                if (savedLocation == null) {
+                    savedLocation = location
+
+                    val url =
+                        "https://kepler88d.pythonanywhere.com/updateCoordinates?email=${userData.email}&phone=${userData.phone}&coordinates=${location.latitude}:${location.longitude}"
+
+                    requestQueue.add(
+                        StringRequest(Request.Method.GET, url, { _ -> run {} }, {
+                            Log.e("Does user exist", "Error at sign in : " + it.message)
+                        })
+                    )
+
+                    Log.d("LocationUpdated", url)
+                }
+            }
+
+            override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
+            override fun onProviderEnabled(provider: String) {}
+            override fun onProviderDisabled(provider: String) {}
+        }
+
+        locationManager.requestLocationUpdates(
+            LocationManager.NETWORK_PROVIDER,
+            0,
+            0f,
+            locationListener
+        )
     }
 
     override fun onBackPressed() {
