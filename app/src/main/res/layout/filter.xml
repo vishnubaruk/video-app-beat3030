@@ -8,6 +8,7 @@
     android:background="@color/mainLayoutColor">
 
     <TextView
+        android:visibility="gone"
         android:id="@+id/textView10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="252dp"
+        android:layout_marginTop="28dp"
         android:fontFamily="@font/monsterrat_bold"
         android:text="Сортировать по"
         android:textColor="#243444"
@@ -35,6 +36,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:visibility="gone"
         android:id="@+id/textView11"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -48,6 +50,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:visibility="gone"
         android:id="@+id/textView12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -65,7 +68,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="72dp"
-        android:layout_marginTop="328dp"
+        android:layout_marginTop="108dp"
         android:fontFamily="@font/monsterrat_regular"
         android:text="Популярности"
         android:textColor="#243444"
@@ -78,7 +81,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="72dp"
-        android:layout_marginTop="404dp"
+        android:layout_marginTop="180dp"
         android:fontFamily="@font/monsterrat_regular"
         android:text="Дате"
         android:textColor="#243444"
@@ -91,7 +94,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="72dp"
-        android:layout_marginTop="480dp"
+        android:layout_marginTop="252dp"
         android:fontFamily="@font/monsterrat_regular"
         android:text="Длительности"
         android:textColor="#243444"
@@ -136,6 +139,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <View
+        android:visibility="gone"
         android:id="@+id/view4"
         tools:layout_editor_absoluteX="0dp"
         android:layout_width="match_parent"
@@ -145,6 +149,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <View
+        android:visibility="gone"
         android:id="@+id/view5"
         tools:layout_editor_absoluteX="0dp"
         android:layout_width="match_parent"
@@ -154,6 +159,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <View
+        android:visibility="gone"
         android:id="@+id/view6"
         tools:layout_editor_absoluteX="0dp"
         android:layout_width="match_parent"
@@ -189,6 +195,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
+        android:visibility="gone"
         android:id="@+id/oneMinuteButton"
         android:layout_width="35dp"
         android:layout_height="35dp"
@@ -199,6 +206,7 @@
         app:layout_constraintTop_toBottomOf="@+id/view7" />
 
     <Button
+        android:visibility="gone"
         android:id="@+id/threeMinutesButton"
         android:layout_width="35dp"
         android:layout_height="35dp"
@@ -216,7 +224,7 @@
         android:layout_marginTop="22dp"
         android:background="@drawable/ic_radiobutton_selected"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view3" />
+        app:layout_constraintTop_toBottomOf="@+id/view7"/>
 
     <Button
         android:id="@+id/sortByDate"
@@ -226,7 +234,7 @@
         android:layout_marginTop="22dp"
         android:background="@drawable/ic_radiobutton_notselected"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view4" />
+        app:layout_constraintTop_toBottomOf="@+id/view" />
 
     <Button
         android:id="@+id/sortByLength"
@@ -236,5 +244,5 @@
         android:layout_marginTop="22dp"
         android:background="@drawable/ic_radiobutton_notselected"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view5" />
+        app:layout_constraintTop_toBottomOf="@+id/view2" />
 </androidx.constraintlayout.widget.ConstraintLayout>
