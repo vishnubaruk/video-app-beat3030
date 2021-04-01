@@ -448,7 +448,7 @@ class StartActivity : AppCompatActivity() {
         val url =
             "https://kepler88d.pythonanywhere.com/register?username=${user.username}&" +
                     "phone=${user.phone}&email=${user.email}&city=${user.city}&" +
-                    "birthDate=${user.birthDate}&password=${user.password}"
+                    "birthDate=${user.birthDate}&password=${user.password}&confirmPhone=true"
 
         val registerRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
