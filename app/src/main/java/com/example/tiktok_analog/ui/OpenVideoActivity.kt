@@ -9,10 +9,10 @@ import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
-import com.example.tiktok_analog.ui.menu_screens.fragments.CommentsFragment
-import com.example.tiktok_analog.ui.menu_screens.fragments.OpenVideoFragment
-import com.example.tiktok_analog.ui.menu_screens.fragments.ProfileFragment
-import com.example.tiktok_analog.util.TabViewPagerAdapter
+import com.example.tiktok_analog.ui.menuscreens.fragments.CommentsFragment
+import com.example.tiktok_analog.ui.menuscreens.fragments.OpenVideoFragment
+import com.example.tiktok_analog.ui.menuscreens.fragments.ProfileFragment
+import com.example.tiktok_analog.util.viewpageradapters.TabViewPagerAdapter
 import kotlinx.android.synthetic.main.activity_open_video.*
 import org.json.JSONObject
 

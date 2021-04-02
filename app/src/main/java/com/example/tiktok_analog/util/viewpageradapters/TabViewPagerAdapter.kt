@@ -1,4 +1,4 @@
-package com.example.tiktok_analog.util
+package com.example.tiktok_analog.util.viewpageradapters
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager

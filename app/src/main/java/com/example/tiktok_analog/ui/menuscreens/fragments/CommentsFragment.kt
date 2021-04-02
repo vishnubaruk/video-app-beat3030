@@ -1,4 +1,4 @@
-package com.example.tiktok_analog.ui.menu_screens.fragments
+package com.example.tiktok_analog.ui.menuscreens.fragments
 
 import android.app.Activity
 import android.os.Bundle

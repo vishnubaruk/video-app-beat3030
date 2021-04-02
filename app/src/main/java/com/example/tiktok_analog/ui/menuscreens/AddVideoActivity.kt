@@ -1,11 +1,6 @@
-package com.example.tiktok_analog.ui.menu_screens
+package com.example.tiktok_analog.ui.menuscreens
 
-import android.R.attr.label
-import android.app.Activity
 import android.app.AlertDialog
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.graphics.Color

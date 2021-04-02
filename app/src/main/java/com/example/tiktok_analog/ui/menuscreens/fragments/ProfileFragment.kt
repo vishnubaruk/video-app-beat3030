@@ -1,4 +1,4 @@
-package com.example.tiktok_analog.ui.menu_screens.fragments
+package com.example.tiktok_analog.ui.menuscreens.fragments
 
 import android.content.Intent
 import android.os.Bundle
@@ -22,10 +22,6 @@ import org.json.JSONObject
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
     lateinit var userData: User
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -46,11 +42,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         view.findViewById<Button>(R.id.yourProfileTab).setOnClickListener {
             view.findViewById<Button>(R.id.yourProfileTab).backgroundTintList =
                 requireActivity().applicationContext.resources.getColorStateList(R.color.buttonEnabledBg)
-            view.findViewById<TextView>(R.id.yourProfileTab).setTextColor(resources.getColor(R.color.white))
+            view.findViewById<TextView>(R.id.yourProfileTab)
+                .setTextColor(resources.getColor(R.color.white))
 
             view.findViewById<Button>(R.id.yourVideosTab).backgroundTintList =
                 requireActivity().applicationContext.resources.getColorStateList(R.color.groupUnselected)
-            view.findViewById<Button>(R.id.yourVideosTab).setTextColor(resources.getColor(R.color.colorPrimary))
+            view.findViewById<Button>(R.id.yourVideosTab)
+                .setTextColor(resources.getColor(R.color.colorPrimary))
 
             view.findViewById<ConstraintLayout>(R.id.yourProfileBlock).visibility = View.VISIBLE
             view.findViewById<ConstraintLayout>(R.id.yourVideosBlock).visibility = View.GONE
@@ -63,11 +61,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         view.findViewById<Button>(R.id.yourVideosTab).setOnClickListener {
             view.findViewById<Button>(R.id.yourProfileTab).backgroundTintList =
                 requireActivity().applicationContext.resources.getColorStateList(R.color.groupUnselected)
-            view.findViewById<Button>(R.id.yourProfileTab).setTextColor(resources.getColor(R.color.colorPrimary))
+            view.findViewById<Button>(R.id.yourProfileTab)
+                .setTextColor(resources.getColor(R.color.colorPrimary))
 
             view.findViewById<Button>(R.id.yourVideosTab).backgroundTintList =
                 requireActivity().applicationContext.resources.getColorStateList(R.color.buttonEnabledBg)
-            view.findViewById<Button>(R.id.yourVideosTab).setTextColor(resources.getColor(R.color.white))
+            view.findViewById<Button>(R.id.yourVideosTab)
+                .setTextColor(resources.getColor(R.color.white))
 
             view.findViewById<ConstraintLayout>(R.id.yourProfileBlock).visibility = View.GONE
             view.findViewById<ConstraintLayout>(R.id.yourVideosBlock).visibility = View.VISIBLE
@@ -110,9 +110,12 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         val addCommentRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
                 val result = JSONObject(response)
-                view.findViewById<TextView>(R.id.videoCount).text = result.getInt("videoCount").toString()
-                view.findViewById<TextView>(R.id.videoLikeCount).text = result.getInt("likeCount").toString()
-                view.findViewById<TextView>(R.id.videoViewCount).text = result.getInt("viewCount").toString()
+                view.findViewById<TextView>(R.id.videoCount).text =
+                    result.getInt("videoCount").toString()
+                view.findViewById<TextView>(R.id.videoLikeCount).text =
+                    result.getInt("likeCount").toString()
+                view.findViewById<TextView>(R.id.videoViewCount).text =
+                    result.getInt("viewCount").toString()
             }
         }, {
             Log.e("VideoStats", "Error at sign in : " + it.message)
@@ -120,11 +123,11 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         videoStatsQueue.add(addCommentRequest)
 
-        // getting uploaded videos list
         view.findViewById<GridLayout>(R.id.uploadedVideosLayout).removeAllViews()
 
-        val uploadedVideosUrl =
-            "https://kepler88d.pythonanywhere.com/getUploadedVideos?email=${userData.email}&phone=${userData.phone}"
+        val uploadedVideosUrl = "https://kepler88d.pythonanywhere.com/getUploadedVideos?" +
+                "email=${userData.email}&" +
+                "phone=${userData.phone}"
 
         val uploadedVideosQueue = Volley.newRequestQueue(requireActivity().applicationContext)
 
@@ -175,7 +178,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         newView.findViewWithTag<Button>("delete").setOnClickListener {
             view.findViewById<GridLayout>(R.id.uploadedVideosLayout).removeView(newView)
-            // dislikeVideo(videoId)
+
             Toast.makeText(
                 requireActivity().applicationContext,
                 "Video $videoId disliked",

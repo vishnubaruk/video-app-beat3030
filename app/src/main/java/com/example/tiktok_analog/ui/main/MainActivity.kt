@@ -24,8 +24,8 @@ import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.OpenVideoActivity
-import com.example.tiktok_analog.ui.StartActivity
-import com.example.tiktok_analog.ui.menu_screens.*
+import com.example.tiktok_analog.ui.menuscreens.*
+import com.example.tiktok_analog.util.dataclasses.AppConfig
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.filter.*
@@ -35,7 +35,6 @@ import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
-
     private var isMenuOpened = false
     private var isFilterOpened = false
 
@@ -84,6 +83,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         acceptFilter.setOnClickListener {
+
             closeFilter()
         }
 
@@ -221,6 +221,22 @@ class MainActivity : AppCompatActivity() {
         }, 0, 10000)
     }
 
+    override fun onBackPressed() {
+        if (isFilterOpened) {
+            closeFilter()
+            return
+        }
+
+
+        if (isMenuOpened) {
+            closeMenu()
+            return
+        }
+
+
+        super.onBackPressed()
+    }
+
     private fun openNewsLine() {
         newsRoot.visibility = View.VISIBLE
         openFilterButton.visibility = View.VISIBLE
@@ -286,7 +302,6 @@ class MainActivity : AppCompatActivity() {
     private fun openProfile() {
         startActivity(Intent(this, ProfileActivity::class.java))
     }
-
 
     private fun openAddVideo() {
         startActivity(Intent(this, AddVideoActivity::class.java))
@@ -473,19 +488,20 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    override fun onBackPressed() {
-        if (isFilterOpened) {
-            closeFilter()
-            return
+    private fun getConfig(): AppConfig {
+        val configDataFile = applicationContext.getFileStreamPath("appConfig")
+
+        if (configDataFile != null && configDataFile.exists()) {
+            openFileInput("appConfig").use {
+                return  AppConfig()
+            }
+        } else {
+            return AppConfig()
         }
+    }
 
-
-        if (isMenuOpened) {
-            closeMenu()
-            return
-        }
-
-
-        super.onBackPressed()
+    private fun setConfig(config: AppConfig) {
+//        this.openFileOutput("appConfig", Context.MODE_PRIVATE)
+//            .write(config)
     }
 }

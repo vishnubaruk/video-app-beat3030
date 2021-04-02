@@ -1,15 +1,5 @@
 package com.example.tiktok_analog.ui.main
 
-import android.os.Bundle
-import android.view.View
-import androidx.appcompat.app.AppCompatActivity
-import com.example.tiktok_analog.R
-import com.example.tiktok_analog.util.UIState
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.filter.*
-import kotlinx.android.synthetic.main.menu.*
-import java.util.*
-
 // TODO: refactor MainActivity to this state system
 
 //class MainActivity : AppCompatActivity() {

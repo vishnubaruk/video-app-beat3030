@@ -1,4 +1,4 @@
-package com.example.tiktok_analog.ui.menu_screens
+package com.example.tiktok_analog.ui.menuscreens
 
 import android.os.Bundle
 import android.widget.Toast

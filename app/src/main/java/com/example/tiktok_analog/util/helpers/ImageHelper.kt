@@ -1,4 +1,4 @@
-package com.example.tiktok_analog.util
+package com.example.tiktok_analog.util.helpers
 
 import android.graphics.*
 

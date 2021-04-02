@@ -16,9 +16,8 @@ import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.ui.main.MainActivity
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
-import com.example.tiktok_analog.util.GenericTextWatcher
+import com.example.tiktok_analog.util.textwatchers.GenericTextWatcher
 import kotlinx.android.synthetic.main.activity_sms.*
-import kotlinx.android.synthetic.main.menu.*
 import org.json.JSONObject
 
 class SmsActivity : AppCompatActivity() {

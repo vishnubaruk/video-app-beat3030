@@ -1,4 +1,4 @@
-package com.example.tiktok_analog.ui.menu_screens
+package com.example.tiktok_analog.ui.menuscreens
 
 import android.app.AlertDialog
 import android.graphics.Color
