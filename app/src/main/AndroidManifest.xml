@@ -57,23 +57,23 @@
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name="com.example.tiktok_analog.ui.menu_screens.AddVideoActivity"
+            android:name="com.example.tiktok_analog.ui.menuscreens.AddVideoActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name="com.example.tiktok_analog.ui.menu_screens.ProfileActivity"
+            android:name="com.example.tiktok_analog.ui.menuscreens.ProfileActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name="com.example.tiktok_analog.ui.menu_screens.FavouriteActivity"
+            android:name="com.example.tiktok_analog.ui.menuscreens.FavouriteActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name="com.example.tiktok_analog.ui.menu_screens.BroadcastActivity"
+            android:name="com.example.tiktok_analog.ui.menuscreens.BroadcastActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name="com.example.tiktok_analog.ui.menu_screens.NotificationsActivity"
+            android:name="com.example.tiktok_analog.ui.menuscreens.NotificationsActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan" />
     </application>
