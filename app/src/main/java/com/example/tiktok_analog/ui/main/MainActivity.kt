@@ -26,10 +26,14 @@ import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.OpenVideoActivity
 import com.example.tiktok_analog.ui.menuscreens.*
 import com.example.tiktok_analog.util.dataclasses.AppConfig
+import com.example.tiktok_analog.util.enums.SortType
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.filter.*
 import kotlinx.android.synthetic.main.menu.*
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.json.JSONObject
 import java.util.*
 
@@ -39,10 +43,10 @@ class MainActivity : AppCompatActivity() {
     private var isFilterOpened = false
 
     private lateinit var userData: User
+    private lateinit var requestQueue: RequestQueue
+    private lateinit var currentConfig: AppConfig
 
     private val videoViewList: MutableList<Pair<View, Int>> = arrayListOf()
-    private lateinit var requestQueue: RequestQueue
-
     private var savedLocation: Location? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +55,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val userDataFile = applicationContext.getFileStreamPath("userData")
-
         if (userDataFile != null && userDataFile.exists()) {
             openFileInput("userData").use {
                 userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
@@ -63,8 +66,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         updateLocation()
-
         requestQueue = Volley.newRequestQueue(applicationContext)
+        currentConfig = getConfig()
 
         openMenuButton.setOnClickListener {
             openMenu()
@@ -83,7 +86,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         acceptFilter.setOnClickListener {
-
+            setConfig(currentConfig)
             closeFilter()
         }
 
@@ -138,37 +141,22 @@ class MainActivity : AppCompatActivity() {
         }
 
         sortByPopularity.setOnClickListener {
-            sortByPopularity.background =
-                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_selected)
-            sortByDate.background =
-                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_notselected)
-            sortByLength.background =
-                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_notselected)
+            updateFilterButtons(SortType.ByPopularity)
         }
 
         sortByDate.setOnClickListener {
-            sortByPopularity.background =
-                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_notselected)
-            sortByDate.background =
-                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_selected)
-            sortByLength.background =
-                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_notselected)
+            updateFilterButtons(SortType.ByDate)
         }
 
         sortByLength.setOnClickListener {
-            sortByPopularity.background =
-                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_notselected)
-            sortByDate.background =
-                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_notselected)
-            sortByLength.background =
-                applicationContext.resources.getDrawable(R.drawable.ic_radiobutton_selected)
+            updateFilterButtons(SortType.ByLength)
         }
 
         backArrowButton.setOnClickListener {
             onBackPressed()
         }
 
-        fun addPostsToNewsLine(count: Int) {
+        fun addPostsToNewsLine(count: Int = 25) {
             getVideos(count)
         }
 
@@ -280,12 +268,12 @@ class MainActivity : AppCompatActivity() {
 
         openFilterButton.visibility = View.GONE
         closeFilterButton.visibility = View.VISIBLE
-
         filterRoot.visibility = View.VISIBLE
 
         isFilterOpened = true
-
         sectionTitleText.text = "Главная"
+
+        updateFilterButtons(getConfig().sortType)
     }
 
     private fun closeFilter() {
@@ -297,6 +285,7 @@ class MainActivity : AppCompatActivity() {
         filterRoot.visibility = View.GONE
 
         isFilterOpened = false
+        currentConfig = getConfig()
     }
 
     private fun openProfile() {
@@ -415,8 +404,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getVideos(count: Int) {
-        val url = "https://kepler88d.pythonanywhere.com/getVideos?count=$count"
+    private fun getVideos(count: Int, page: Int = 1) {
+        val sortTypeString: String = when (getConfig().sortType) {
+            SortType.ByPopularity -> "views"
+            SortType.ByDate -> "uploadTime"
+            SortType.ByLength -> "length"
+        }
+        val url = "https://kepler88d.pythonanywhere.com/videoList?" +
+                "limit=$count&" +
+                "sortType=$sortTypeString" +
+                "&page=$page"
 
         progressBar.visibility = View.VISIBLE
 
@@ -488,12 +485,30 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    private fun updateFilterButtons(sortType: SortType) {
+        currentConfig = currentConfig.copy(sortType = sortType)
+
+        for (entry: Map.Entry<SortType, Button> in mapOf(
+            SortType.ByPopularity to sortByPopularity,
+            SortType.ByDate to sortByDate,
+            SortType.ByLength to sortByLength
+        )) {
+            entry.value.background = applicationContext.resources.getDrawable(
+                if (entry.key == sortType) {
+                    R.drawable.ic_radiobutton_selected
+                } else {
+                    R.drawable.ic_radiobutton_notselected
+                }
+            )
+        }
+    }
+
     private fun getConfig(): AppConfig {
         val configDataFile = applicationContext.getFileStreamPath("appConfig")
 
         if (configDataFile != null && configDataFile.exists()) {
             openFileInput("appConfig").use {
-                return  AppConfig()
+                return Json.decodeFromString(it.readBytes().toString(Charsets.UTF_8))
             }
         } else {
             return AppConfig()
@@ -501,7 +516,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setConfig(config: AppConfig) {
-//        this.openFileOutput("appConfig", Context.MODE_PRIVATE)
-//            .write(config)
+        this.openFileOutput("appConfig", Context.MODE_PRIVATE)
+            .write(Json.encodeToString(config).toByteArray())
     }
 }
