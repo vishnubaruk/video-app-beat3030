@@ -95,6 +95,34 @@ class BroadcastActivity : AppCompatActivity(), SurfaceHolder.Callback {
         openCamera(CameraInfo.CAMERA_FACING_BACK)
     }
 
+    /**
+     * This is called immediately after any structural changes (format or
+     * size) have been made to the surface.  You should at this point update
+     * the imagery in the surface.  This method is always called at least
+     * once, after [.surfaceCreated].
+     *
+     * @param holder The SurfaceHolder whose surface has changed.
+     * @param format The new PixelFormat of the surface.
+     * @param width The new width of the surface.
+     * @param height The new height of the surface.
+     */
+    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
+        TODO("Not yet implemented")
+    }
+
+    /**
+     * This is called immediately before a surface is being destroyed. After
+     * returning from this call, you should no longer try to access this
+     * surface.  If you have a rendering thread that directly accesses
+     * the surface, you must ensure that thread is no longer touching the
+     * Surface before returning from this function.
+     *
+     * @param holder The SurfaceHolder whose surface is being destroyed.
+     */
+    override fun surfaceDestroyed(holder: SurfaceHolder?) {
+        TODO("Not yet implemented")
+    }
+
     private fun openCamera(id: Int): Boolean {
         var result = false
         cameraId = id
@@ -166,12 +194,6 @@ class BroadcastActivity : AppCompatActivity(), SurfaceHolder.Callback {
             camera = null
         }
     }
-
-    override fun surfaceChanged(arg0: SurfaceHolder?, arg1: Int, arg2: Int, arg3: Int) {
-        // TODO Auto-generated method stub
-    }
-
-    override fun surfaceDestroyed(p0: SurfaceHolder?) {}
 
     override fun onBackPressed() {
         if(!isBroadcastStarted) {
