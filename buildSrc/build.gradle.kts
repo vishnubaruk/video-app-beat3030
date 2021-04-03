@@ -6,10 +6,6 @@ plugins {
     kotlin("plugin.serialization") version "1.4.32"
 }
 
-dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
-}
-
 repositories {
     jcenter()
 }
