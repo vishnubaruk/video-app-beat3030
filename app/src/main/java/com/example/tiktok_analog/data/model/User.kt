@@ -19,7 +19,9 @@ data class User(
     @SerializedName("birthDate")
     var birthDate: String = "",
     @SerializedName("city")
-    var city: String = ""
+    var city: String = "",
+    @SerializedName("userId")
+    var id: String = ""
 ) {
     fun toJson(): JSONObject = JSONObject(toJsonString())
 
@@ -33,7 +35,8 @@ data class User(
                 email = jsonObject.getString("email").toString(),
                 phone = jsonObject.getString("phone").toString(),
                 birthDate = jsonObject.getString("birthDate").toString(),
-                city = jsonObject.getString("city").toString()
+                city = jsonObject.getString("city").toString(),
+                id = jsonObject.getString("userId").toString()
             )
         }
 
@@ -52,7 +55,8 @@ data class User(
                 email = getStringOrEmpty("email"),
                 phone = getStringOrEmpty("phone"),
                 birthDate = getStringOrEmpty("birthDate"),
-                city = getStringOrEmpty("city")
+                city = getStringOrEmpty("city"),
+                id = getStringOrEmpty("userId")
             )
         }
     }
