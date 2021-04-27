@@ -52,9 +52,16 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
     }
 
     private fun addComment(commentText: String, view: View) {
-        val url = "https://kepler88d.pythonanywhere.com/addComment?videoId=" +
-                "${((requireActivity() as OpenVideoActivity).getViewPager2().adapter as ViewPagerAdapter).getCurrentVideoId()}" +
-                "&commentText=${commentText.trim()}&email=${userData.email}&phone=${userData.phone}"
+        val url = resources.getString(R.string.base_url) +
+                "/addComment?videoId=" +
+                "${
+                    ((requireActivity() as OpenVideoActivity)
+                        .getViewPager2().adapter as ViewPagerAdapter
+                            ).getCurrentVideoId()
+                }" +
+                "&commentText=${commentText.trim()}" +
+                "&email=${userData.email}" +
+                "&phone=${userData.phone}"
 
         val addCommentRequest = StringRequest(Request.Method.GET, url, {
             run {
@@ -70,9 +77,14 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
     public fun updateComments() {
         rootView.findViewById<LinearLayout>(R.id.commentsContainer).removeAllViews()
 
-        val url =
-            "https://kepler88d.pythonanywhere.com/getComments?videoId=" +
-                    "${((requireActivity() as OpenVideoActivity).getViewPager2().adapter as ViewPagerAdapter).getCurrentVideoId()}"
+        val url = resources.getString(R.string.base_url) +
+                "/getComments?videoId=" +
+                "${
+                    ((requireActivity() as OpenVideoActivity)
+                        .getViewPager2()
+                        .adapter as ViewPagerAdapter)
+                        .getCurrentVideoId()
+                }"
 
         val commentRequest = StringRequest(Request.Method.GET, url, { response ->
             run {

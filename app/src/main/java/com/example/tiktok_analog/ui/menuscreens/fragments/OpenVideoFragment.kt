@@ -173,9 +173,11 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         }
 
         rootView.findViewById<Button>(R.id.likeButton).setOnClickListener {
-            val url =
-                "https://kepler88d.pythonanywhere.com/likeVideo?videoId=" +
-                        "$videoId&email=${userData.email}&phone=${userData.phone}"
+            val url = resources.getString(R.string.base_url) +
+                    "/likeVideo?" +
+                    "videoId=$videoId&" +
+                    "email=${userData.email}&" +
+                    "phone=${userData.phone}"
 
             val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
                 run {
@@ -194,9 +196,11 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             requestQueue.add(videoLikeCountRequest)
         }
 
-        val url =
-            "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=" +
-                    "$videoId&email=${userData.email}&phone=${userData.phone}"
+        val url = resources.getString(R.string.base_url) +
+                "/videoLikeCount?" +
+                "videoId=$videoId&" +
+                "email=${userData.email}&" +
+                "phone=${userData.phone}"
 
         val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
@@ -216,7 +220,9 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
         requestQueue.add(videoLikeCountRequest)
 
-        val openVideoUrl = "https://kepler88d.pythonanywhere.com/openVideo?videoId=$videoId"
+        val openVideoUrl = resources.getString(R.string.base_url) +
+                "/openVideo?" +
+                "videoId=$videoId"
 
         val openVideoRequest = StringRequest(Request.Method.GET, openVideoUrl, { response ->
             run {
@@ -236,9 +242,9 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     private fun updateComments() {
         rootView.findViewById<LinearLayout>(R.id.commentsContainerBottomSheet).removeAllViews()
 
-        val url =
-            "https://kepler88d.pythonanywhere.com/getComments?videoId=" +
-                    "${(rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter).getCurrentVideoId()}"
+        val url = resources.getString(R.string.base_url) +
+                "/getComments?videoId=" +
+                "${(rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter).getCurrentVideoId()}"
 
         val commentRequest = StringRequest(Request.Method.GET, url, { response ->
             run {

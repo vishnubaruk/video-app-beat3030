@@ -80,9 +80,11 @@ class SmsActivity : AppCompatActivity() {
         sendSms.setOnClickListener {
             val sendSmsQueue = Volley.newRequestQueue(this)
 
-            val url =
-                "https://kepler88d.pythonanywhere.com/smsConfirmation?" +
-                        "phone=${userData.phone}&email=${userData.email}&code=${et1.text}${et2.text}${et3.text}${et4.text}"
+            val url = resources.getString(R.string.base_url) +
+                    "/smsConfirmation?" +
+                    "phone=${userData.phone}&" +
+                    "email=${userData.email}&" +
+                    "code=${et1.text}${et2.text}${et3.text}${et4.text}"
 
             val registerRequest = StringRequest(Request.Method.GET, url, { response ->
                 run {

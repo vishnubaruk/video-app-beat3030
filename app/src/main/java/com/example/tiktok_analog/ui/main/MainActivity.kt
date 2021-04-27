@@ -182,8 +182,11 @@ class MainActivity : AppCompatActivity() {
                 for (i in 0 until videoViewList.size) {
                     val v = videoViewList[i]
 
-                    val url =
-                        "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=${v.second}&email=${userData.email}&phone=${userData.phone}"
+                    val url = resources.getString(R.string.base_url) +
+                            "/videoLikeCount?" +
+                            "videoId=${v.second}&" +
+                            "email=${userData.email}&" +
+                            "phone=${userData.phone}"
 
                     val videoLikeCountRequest =
                         StringRequest(Request.Method.GET, url, { response ->
@@ -332,8 +335,11 @@ class MainActivity : AppCompatActivity() {
 
         newView.findViewWithTag<TextView>("likeText").text = "$likeCount"
         newView.findViewWithTag<ConstraintLayout>("likeButton").setOnClickListener {
-            val url =
-                "https://kepler88d.pythonanywhere.com/likeVideo?videoId=$videoId&email=${userData.email}&phone=${userData.phone}"
+            val url = resources.getString(R.string.base_url) +
+                    "/likeVideo?" +
+                    "videoId=$videoId&" +
+                    "email=${userData.email}&" +
+                    "phone=${userData.phone}"
 
             val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
                 run {
@@ -357,8 +363,11 @@ class MainActivity : AppCompatActivity() {
         newView.findViewWithTag<Button>("lengthButton").text =
             "${length / 60}:${if (length % 60 < 10) "0" else ""}${length % 60}"
 
-        val url =
-            "https://kepler88d.pythonanywhere.com/videoLikeCount?videoId=${videoId}&email=${userData.email}&phone=${userData.phone}"
+        val url = resources.getString(R.string.base_url) +
+                "/videoLikeCount?" +
+                "videoId=${videoId}&" +
+                "email=${userData.email}&" +
+                "phone=${userData.phone}"
 
         val videoLikeCountRequest =
             StringRequest(Request.Method.GET, url, { response ->
@@ -381,8 +390,7 @@ class MainActivity : AppCompatActivity() {
         requestQueue.add(videoLikeCountRequest)
 
         if (videoId != 0) {
-            val urlSrc =
-                "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$videoId.jpg"
+            val urlSrc = "${resources.getString(R.string.res_url)}/$videoId.jpg"
 
             val previewImage = newView.findViewWithTag<ImageView>("previewImage")
 
@@ -410,7 +418,8 @@ class MainActivity : AppCompatActivity() {
             SortType.ByDate -> "uploadTime"
             SortType.ByLength -> "length"
         }
-        val url = "https://kepler88d.pythonanywhere.com/videoList?" +
+        val url = resources.getString(R.string.base_url) +
+                "/videoList?" +
                 "limit=$count&" +
                 "sortType=$sortTypeString" +
                 "&page=$page"
@@ -459,8 +468,11 @@ class MainActivity : AppCompatActivity() {
                 if (savedLocation == null) {
                     savedLocation = location
 
-                    val url =
-                        "https://kepler88d.pythonanywhere.com/updateCoordinates?email=${userData.email}&phone=${userData.phone}&coordinates=${location.latitude}:${location.longitude}"
+                    val url = resources.getString(R.string.base_url) +
+                            "/updateCoordinates?" +
+                            "email=${userData.email}&" +
+                            "phone=${userData.phone}&" +
+                            "coordinates=${location.latitude}:${location.longitude}"
 
                     requestQueue.add(
                         StringRequest(Request.Method.GET, url, { _ -> run {} }, {
