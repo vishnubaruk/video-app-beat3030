@@ -23,4 +23,6 @@
     <string name="birth_date">Дата рождения*</string>
     <string name="action_sign_up">Войти</string>
     <string name="e_mail_or_phone">e-mail или телефон</string>
+    <string name="base_url">https://kepler88d.pythonanywhere.com</string>
+    <string name="res_url">https://res.cloudinary.com/kepler88d/video/upload/fl_attachment</string>
 </resources>
