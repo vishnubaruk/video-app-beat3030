@@ -2,26 +2,21 @@ package com.example.tiktok_analog.data.model
 
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
 import org.json.JSONObject
 
 /*
     Data class that contains data about user.
  */
+@Serializable
 data class User(
-    @SerializedName("username")
     var username: String,
-    @SerializedName("password")
     var password: String,
-    @SerializedName("email")
     var email: String = "",
-    @SerializedName("phone")
     var phone: String = "",
-    @SerializedName("birthDate")
     var birthDate: String = "",
-    @SerializedName("city")
     var city: String = "",
-    @SerializedName("userId")
-    var id: String = ""
+    var userId: String = ""
 ) {
     fun toJson(): JSONObject = JSONObject(toJsonString())
 
@@ -36,7 +31,7 @@ data class User(
                 phone = jsonObject.getString("phone").toString(),
                 birthDate = jsonObject.getString("birthDate").toString(),
                 city = jsonObject.getString("city").toString(),
-                id = jsonObject.getString("userId").toString()
+                userId = jsonObject.getString("userId").toString()
             )
         }
 
@@ -56,7 +51,7 @@ data class User(
                 phone = getStringOrEmpty("phone"),
                 birthDate = getStringOrEmpty("birthDate"),
                 city = getStringOrEmpty("city"),
-                id = getStringOrEmpty("userId")
+                userId = getStringOrEmpty("userId")
             )
         }
     }
