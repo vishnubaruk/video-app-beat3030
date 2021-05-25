@@ -58,7 +58,8 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
         requestQueue = Volley.newRequestQueue(requireActivity().applicationContext)
 
-        videoIdList = requireActivity().intent.getIntegerArrayListExtra("id")!!.toList()
+//        videoIdList = requireActivity().intent.getIntegerArrayListExtra("id")!!.toList()
+        videoIdList = listOf(1997380, 8885413, 5485667, 8931796)
         Log.d("videoIdList", videoIdList.toString())
 
         rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter =

@@ -39,6 +39,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             requireActivity().onBackPressed()
         }
 
+        view.findViewById<ImageButton>(R.id.backArrowButton).visibility =
+            if (requireActivity() is OpenVideoActivity) View.GONE else View.VISIBLE
+
         view.findViewById<Button>(R.id.yourProfileTab).setOnClickListener {
             view.findViewById<Button>(R.id.yourProfileTab).backgroundTintList =
                 requireActivity().applicationContext.resources.getColorStateList(R.color.buttonEnabledBg)
@@ -210,7 +213,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         })
 
         viewQueue.add(viewCountRequest)
-
         view.findViewById<GridLayout>(R.id.uploadedVideosLayout).addView(newView)
     }
 
