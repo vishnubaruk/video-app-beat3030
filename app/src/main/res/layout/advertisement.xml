@@ -25,6 +25,7 @@
             android:id="@+id/constraintLayout4"
             android:layout_width="match_parent"
             android:layout_height="84dp"
+            android:clickable="true"
             android:background="#10273C"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:layout_editor_absoluteX="0dp">
