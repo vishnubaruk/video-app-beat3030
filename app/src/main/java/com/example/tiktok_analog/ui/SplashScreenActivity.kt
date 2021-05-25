@@ -56,23 +56,23 @@ class SplashScreenActivity : AppCompatActivity() {
 
             val url =
                 "https://kepler88d.pythonanywhere.com/exist?email=${userData.email}&phone=${userData.phone}"
-
-
             val userExistQueue = Volley.newRequestQueue(applicationContext)
 
             val userExistRequest =
                 StringRequest(Request.Method.GET, url, { response ->
                     run {
                         val result = JSONObject(response)
-                        startActivity(
-                            Intent(
-                                this,
-                                if (result.getBoolean("ok"))
-                                    MainActivity::class.java
-                                else
-                                    StartActivity::class.java
-                            )
+                        val intent = Intent(
+                            this,
+                            if (result.getBoolean("ok")) {
+                                OpenVideoActivity::class.java
+                            } else {
+                                StartActivity::class.java
+                            }
                         )
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(intent)
                     }
                 }, {
                     Log.e("Does user exist", "Error at sign in : " + it.message)

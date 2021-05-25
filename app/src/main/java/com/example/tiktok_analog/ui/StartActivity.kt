@@ -380,7 +380,7 @@ class StartActivity : AppCompatActivity() {
                     this.openFileOutput("userData", Context.MODE_PRIVATE)
                         .write(userData.toJsonString().toByteArray())
 
-                    openActivityWithAllPermissionsGranted(MainActivity::class.java)
+                    openActivityWithAllPermissionsGranted(OpenVideoActivity::class.java)
                 } else {
                     AlertDialog.Builder(this).setTitle("Ошибка!")
                         .setMessage("Вами был введен неверный пароль")
@@ -492,7 +492,9 @@ class StartActivity : AppCompatActivity() {
                     it
                 ) == PackageManager.PERMISSION_GRANTED
             }) {
-            startActivity(Intent(this, ActivityToOpen))
+            val intent = Intent(this, ActivityToOpen)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
         } else {
             AlertDialog.Builder(this).setTitle("Ошибка!")
                 .setMessage("Вами были выданы не все разрешения, без чего полноценная работа приложения невозможна")
