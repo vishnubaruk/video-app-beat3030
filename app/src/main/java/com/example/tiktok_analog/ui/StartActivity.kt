@@ -493,7 +493,7 @@ class StartActivity : AppCompatActivity() {
                 ) == PackageManager.PERMISSION_GRANTED
             }) {
             val intent = Intent(this, ActivityToOpen)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         } else {
             AlertDialog.Builder(this).setTitle("Ошибка!")
