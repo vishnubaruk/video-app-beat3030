@@ -2,10 +2,13 @@ package com.example.tiktok_analog.ui.menuscreens.fragments
 
 import android.app.Activity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -19,13 +22,21 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
+import com.example.tiktok_analog.ui.OpenVideoActivity
 import com.example.tiktok_analog.util.ViewPagerAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_open_video.*
+import kotlinx.android.synthetic.main.fragment_open_video.closeFilterButton
+import kotlinx.android.synthetic.main.fragment_open_video.closeMenuButton
+import kotlinx.android.synthetic.main.fragment_open_video.openFilterButton
+import kotlinx.android.synthetic.main.fragment_open_video.openMenuButton
 import org.json.JSONObject
 
 class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     lateinit var userData: User
+    private var isMenuOpened = false
+    private var isFilterOpened = false
 
     private lateinit var requestQueue: RequestQueue
     private lateinit var rootView: View
@@ -38,11 +49,14 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         return rootView.findViewById(R.id.viewPager2)
     }
 
-    fun nextPage(pageId: Int) {
+    private fun nextPage(pageId: Int) {
         rootView.findViewById<ViewPager2>(R.id.viewPager2).doOnLayout {
             rootView.findViewById<ViewPager2>(R.id.viewPager2).setCurrentItem(pageId + 1, true)
         }
     }
+
+    fun pauseVideo() =
+        (rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter).pauseVideo()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,7 +74,6 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
 //        videoIdList = requireActivity().intent.getIntegerArrayListExtra("id")!!.toList()
         videoIdList = listOf(1997380, 8885413, 5485667, 8931796)
-        Log.d("videoIdList", videoIdList.toString())
 
         rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter =
             ViewPagerAdapter(
@@ -116,6 +129,24 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             requireActivity().onBackPressed()
         }
 
+        val activity = requireActivity() as OpenVideoActivity
+
+        rootView.findViewById<ImageButton>(R.id.openMenuButton).setOnClickListener {
+            openMenu()
+        }
+
+        rootView.findViewById<ImageButton>(R.id.openFilterButton).setOnClickListener {
+            openFilter()
+        }
+
+        rootView.findViewById<ImageButton>(R.id.closeMenuButton).setOnClickListener {
+            closeMenu()
+        }
+
+        rootView.findViewById<ImageButton>(R.id.closeFilterButton).setOnClickListener {
+            closeFilter()
+        }
+
         return view
     }
 
@@ -125,10 +156,12 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
                 rootView.findViewById<ImageButton>(R.id.pauseButton)
                     .setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
                 videoView.pause()
+                pauseAnimation()
             } else {
                 rootView.findViewById<ImageButton>(R.id.pauseButton)
                     .setBackgroundResource(R.drawable.ic_baseline_pause_24)
                 videoView.start()
+                playAnimation()
             }
         }
 
@@ -137,11 +170,13 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
                 rootView.findViewById<ImageButton>(R.id.pauseButton)
                     .setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
                 videoView.pause()
+                pauseAnimation()
             } else {
                 rootView.findViewById<ImageButton>(R.id.pauseButton)
                     .setBackgroundResource(R.drawable.ic_baseline_pause_24)
                 videoView.seekTo(seekBar.progress)
                 videoView.start()
+                playAnimation()
             }
         }
 
@@ -307,5 +342,71 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
                 (if (activity.currentFocus == null) View(activity)
                 else activity.currentFocus)!!.windowToken, 0
             )
+    }
+
+    fun openMenu() {
+        closeFilter()
+
+        rootView.findViewById<ImageButton>(R.id.openMenuButton).visibility = View.GONE
+        rootView.findViewById<ImageButton>(R.id.closeMenuButton).visibility = View.VISIBLE
+
+//        menuRoot.visibility = View.VISIBLE
+
+        isMenuOpened = true
+
+//        sectionTitleText.text = "Меню"
+    }
+
+    fun closeMenu() {
+        rootView.findViewById<ImageButton>(R.id.openMenuButton).visibility = View.VISIBLE
+        rootView.findViewById<ImageButton>(R.id.closeMenuButton).visibility = View.GONE
+
+//        menuRoot.visibility = View.GONE
+
+        isMenuOpened = false
+
+//        sectionTitleText.text = "Главная"
+    }
+
+    fun openFilter() {
+        rootView.findViewById<ImageButton>(R.id.openFilterButton).visibility = View.GONE
+        rootView.findViewById<ImageButton>(R.id.closeFilterButton).visibility = View.VISIBLE
+
+//        filterRoot.visibility = View.VISIBLE
+
+        isFilterOpened = true
+//        sectionTitleText.text = "Главная"
+
+//        updateFilterButtons(getConfig().sortType)
+    }
+
+    fun closeFilter() {
+        rootView.findViewById<ImageButton>(R.id.openFilterButton).visibility = View.VISIBLE
+        rootView.findViewById<ImageButton>(R.id.closeFilterButton).visibility = View.GONE
+
+//        filterRoot.visibility = View.GONE
+
+        isFilterOpened = false
+//        currentConfig = getConfig()
+    }
+
+    fun playAnimation() {
+        rootView.findViewById<ImageButton>(R.id.bigPlayButton).alpha = 1F
+        rootView.findViewById<ImageButton>(R.id.bigPlayButton)
+            .animate()
+            .alpha(0f)
+            .setDuration(500)
+            .setInterpolator(AccelerateInterpolator())
+            .start()
+    }
+
+    fun pauseAnimation() {
+        rootView.findViewById<ImageButton>(R.id.bigPauseButton).alpha = 1F
+        rootView.findViewById<ImageButton>(R.id.bigPauseButton)
+            .animate()
+            .alpha(0f)
+            .setDuration(500)
+            .setInterpolator(AccelerateInterpolator())
+            .start()
     }
 }
