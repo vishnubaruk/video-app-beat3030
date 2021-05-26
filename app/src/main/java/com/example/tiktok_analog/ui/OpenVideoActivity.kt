@@ -2,11 +2,13 @@ package com.example.tiktok_analog.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
@@ -17,13 +19,19 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
+import com.example.tiktok_analog.ui.menuscreens.*
 import com.example.tiktok_analog.ui.menuscreens.fragments.CommentsFragment
 import com.example.tiktok_analog.ui.menuscreens.fragments.OpenVideoFragment
 import com.example.tiktok_analog.ui.menuscreens.fragments.ProfileFragment
+import com.example.tiktok_analog.util.ViewPagerAdapter
 import com.example.tiktok_analog.util.dataclasses.AppConfig
+import com.example.tiktok_analog.util.enums.SortType
 import com.example.tiktok_analog.util.viewpageradapters.TabViewPagerAdapter
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import kotlinx.android.synthetic.main.activity_open_video.*
-import kotlinx.android.synthetic.main.menu.*
+import kotlinx.android.synthetic.main.filter.*
+import kotlinx.android.synthetic.main.fragment_open_video.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -34,6 +42,7 @@ class OpenVideoActivity : AppCompatActivity() {
     private lateinit var userData: User
 
     private lateinit var requestQueue: RequestQueue
+    private lateinit var currentConfig: AppConfig
 
     private val profileFragment: ProfileFragment = ProfileFragment()
     private val openVideoFragment: OpenVideoFragment = OpenVideoFragment()
@@ -54,7 +63,7 @@ class OpenVideoActivity : AppCompatActivity() {
         try {
             commentsFragment.updateComments()
         } catch (e: Exception) {
-            // will handle this errors later (no)
+            // will handle this error later (no)
         }
     }
 
@@ -81,6 +90,27 @@ class OpenVideoActivity : AppCompatActivity() {
 
         requestQueue = Volley.newRequestQueue(applicationContext)
         setupViewPager(tabViewPager)
+
+        tabViewPager.addOnPageChangeListener(
+            object : ViewPager.OnPageChangeListener {
+                override fun onPageScrolled(
+                    position: Int,
+                    positionOffset: Float,
+                    positionOffsetPixels: Int
+                ) {
+                }
+
+                override fun onPageSelected(position: Int) {
+                    if (position != 1) {
+                        openVideoFragment.pauseVideo()
+                    } else {
+                        (viewPager2.adapter as ViewPagerAdapter).currentVideoView.requestFocus()
+                    }
+                }
+
+                override fun onPageScrollStateChanged(state: Int) {}
+            }
+        )
     }
 
     private fun setupViewPager(viewPager: ViewPager) {
@@ -146,5 +176,43 @@ class OpenVideoActivity : AppCompatActivity() {
     private fun setConfig(config: AppConfig) {
         this.openFileOutput("appConfig", Context.MODE_PRIVATE)
             .write(Json.encodeToString(config).toByteArray())
+    }
+
+    private fun openProfile() {
+        startActivity(Intent(this, ProfileActivity::class.java))
+    }
+
+    private fun openAddVideo() {
+        startActivity(Intent(this, AddVideoActivity::class.java))
+    }
+
+    private fun openFavourite() {
+        startActivity(Intent(this, FavouriteActivity::class.java))
+    }
+
+    private fun openBroadcast() {
+        startActivity(Intent(this, BroadcastActivity::class.java))
+    }
+
+    private fun openNotifications() {
+        startActivity(Intent(this, NotificationsActivity::class.java))
+    }
+
+    private fun updateFilterButtons(sortType: SortType) {
+        currentConfig = currentConfig.copy(sortType = sortType)
+
+        for (entry: Map.Entry<SortType, Button> in mapOf(
+            SortType.ByPopularity to sortByPopularity,
+            SortType.ByDate to sortByDate,
+            SortType.ByLength to sortByLength
+        )) {
+            entry.value.background = applicationContext.resources.getDrawable(
+                if (entry.key == sortType) {
+                    R.drawable.ic_radiobutton_selected
+                } else {
+                    R.drawable.ic_radiobutton_notselected
+                }
+            )
+        }
     }
 }
