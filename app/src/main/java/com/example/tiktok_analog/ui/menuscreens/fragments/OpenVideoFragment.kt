@@ -1,6 +1,8 @@
 package com.example.tiktok_analog.ui.menuscreens.fragments
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -31,6 +33,7 @@ import kotlinx.android.synthetic.main.fragment_open_video.closeFilterButton
 import kotlinx.android.synthetic.main.fragment_open_video.closeMenuButton
 import kotlinx.android.synthetic.main.fragment_open_video.openFilterButton
 import kotlinx.android.synthetic.main.fragment_open_video.openMenuButton
+import kotlinx.android.synthetic.main.menu.*
 import org.json.JSONObject
 
 class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
@@ -73,7 +76,24 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         requestQueue = Volley.newRequestQueue(requireActivity().applicationContext)
 
 //        videoIdList = requireActivity().intent.getIntegerArrayListExtra("id")!!.toList()
-        videoIdList = listOf(1997380, 8885413, 5485667, 8931796)
+        videoIdList = listOf(
+            1997380,
+            8885413,
+            5485667,
+            8931796,
+            1997380,
+            8885413,
+            5485667,
+            8931796,
+            1997380,
+            8885413,
+            5485667,
+            8931796,
+            1997380,
+            8885413,
+            5485667,
+            8931796
+        )
 
         rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter =
             ViewPagerAdapter(
@@ -128,9 +148,6 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         rootView.findViewById<ImageButton>(R.id.backArrowButton).setOnClickListener {
             requireActivity().onBackPressed()
         }
-
-        val activity = requireActivity() as OpenVideoActivity
-
         rootView.findViewById<ImageButton>(R.id.openMenuButton).setOnClickListener {
             openMenu()
         }
@@ -145,6 +162,26 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
         rootView.findViewById<ImageButton>(R.id.closeFilterButton).setOnClickListener {
             closeFilter()
+        }
+
+        rootView.findViewById<Button>(R.id.logout).setOnClickListener {
+            val alertDialog =
+                AlertDialog.Builder(requireActivity())
+                    .setTitle("Вы уверены, что хотите выйти из аккаунта?")
+                    .setMessage("Это приведет к удалению всех пользовательских данных")
+                    .setPositiveButton("Да, я уверен") { _, _ ->
+                        requireActivity().deleteFile("userData")
+                        requireActivity().finish()
+                    }.setNegativeButton("Нет, отмена") { dialog, _ ->
+                        dialog.cancel()
+                    }.create()
+            alertDialog.show()
+
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isAllCaps = false
+            alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).isAllCaps = false
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED)
+            alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
+
         }
 
         return view
@@ -300,6 +337,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         )
     }
 
+
     private fun addCommentView(jsonObject: JSONObject) {
         val newView =
             LayoutInflater.from(requireActivity().applicationContext)
@@ -345,12 +383,14 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     }
 
     fun openMenu() {
+        (rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter)
+            .pauseVideo()
         closeFilter()
 
         rootView.findViewById<ImageButton>(R.id.openMenuButton).visibility = View.GONE
         rootView.findViewById<ImageButton>(R.id.closeMenuButton).visibility = View.VISIBLE
 
-//        menuRoot.visibility = View.VISIBLE
+        rootView.findViewById<View>(R.id.menuLayout).visibility = View.VISIBLE
 
         isMenuOpened = true
 
@@ -361,7 +401,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         rootView.findViewById<ImageButton>(R.id.openMenuButton).visibility = View.VISIBLE
         rootView.findViewById<ImageButton>(R.id.closeMenuButton).visibility = View.GONE
 
-//        menuRoot.visibility = View.GONE
+        rootView.findViewById<View>(R.id.menuLayout).visibility = View.GONE
 
         isMenuOpened = false
 
@@ -369,10 +409,13 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     }
 
     fun openFilter() {
+        (rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter)
+            .pauseVideo()
+
         rootView.findViewById<ImageButton>(R.id.openFilterButton).visibility = View.GONE
         rootView.findViewById<ImageButton>(R.id.closeFilterButton).visibility = View.VISIBLE
 
-//        filterRoot.visibility = View.VISIBLE
+        rootView.findViewById<View>(R.id.filterLayout).visibility = View.VISIBLE
 
         isFilterOpened = true
 //        sectionTitleText.text = "Главная"
@@ -384,15 +427,15 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         rootView.findViewById<ImageButton>(R.id.openFilterButton).visibility = View.VISIBLE
         rootView.findViewById<ImageButton>(R.id.closeFilterButton).visibility = View.GONE
 
-//        filterRoot.visibility = View.GONE
+        rootView.findViewById<View>(R.id.filterLayout).visibility = View.GONE
 
         isFilterOpened = false
 //        currentConfig = getConfig()
     }
 
     fun playAnimation() {
-        rootView.findViewById<ImageButton>(R.id.bigPlayButton).alpha = 1F
-        rootView.findViewById<ImageButton>(R.id.bigPlayButton)
+        rootView.findViewById<ImageView>(R.id.bigPlayButton).alpha = 1F
+        rootView.findViewById<ImageView>(R.id.bigPlayButton)
             .animate()
             .alpha(0f)
             .setDuration(500)
@@ -401,8 +444,8 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     }
 
     fun pauseAnimation() {
-        rootView.findViewById<ImageButton>(R.id.bigPauseButton).alpha = 1F
-        rootView.findViewById<ImageButton>(R.id.bigPauseButton)
+        rootView.findViewById<ImageView>(R.id.bigPauseButton).alpha = 1F
+        rootView.findViewById<ImageView>(R.id.bigPauseButton)
             .animate()
             .alpha(0f)
             .setDuration(500)
