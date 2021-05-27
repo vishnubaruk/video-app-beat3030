@@ -19,14 +19,27 @@ import org.json.JSONObject
 class SplashScreenActivity : AppCompatActivity() {
     private lateinit var userData: User
 
+    private val videoIdList = arrayListOf(
+        1997380,
+        8885413,
+        5485667,
+        8931796,
+        1997380,
+        8885413,
+        5485667,
+        8931796,
+        1997380,
+        8885413,
+        5485667,
+        8931796,
+        1997380,
+        8885413,
+        5485667,
+        8931796
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.activity_splashscreen)
-    }
-
-    override fun onResume() {
-        super.onResume()
 
         val requiredPermissions = arrayOf(
             Manifest.permission.CAMERA,
@@ -70,7 +83,9 @@ class SplashScreenActivity : AppCompatActivity() {
                                 StartActivity::class.java
                             }
                         )
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        intent.putIntegerArrayListExtra("id", videoIdList)
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
                         startActivity(intent)
                     }
                 }, {
@@ -80,8 +95,15 @@ class SplashScreenActivity : AppCompatActivity() {
             userExistQueue.add(userExistRequest)
         } else {
             val intent = Intent(this, StartActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+            intent.putIntegerArrayListExtra("id", videoIdList)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
         }
+
+        setContentView(R.layout.activity_splashscreen)
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 }
