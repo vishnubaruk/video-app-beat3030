@@ -107,7 +107,7 @@ class BroadcastActivity : AppCompatActivity(), SurfaceHolder.Callback {
      * @param height The new height of the surface.
      */
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
     }
 
     /**
@@ -120,7 +120,7 @@ class BroadcastActivity : AppCompatActivity(), SurfaceHolder.Callback {
      * @param holder The SurfaceHolder whose surface is being destroyed.
      */
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
     }
 
     private fun openCamera(id: Int): Boolean {

@@ -66,7 +66,7 @@ class ViewPagerAdapter(
             currentPosition = position
         }
 
-        (activity as OpenVideoActivity)!!.updateCommentsFragment()
+        (activity as OpenVideoActivity).updateCommentsFragment()
 
         val videoId = videoIdList[position]
 
@@ -168,7 +168,7 @@ class ViewPagerAdapter(
         )
     }
 
-    fun updateSeekBar() {
+    private fun updateSeekBar() {
         updateHandler.postDelayed(updateVideoTime, 10)
     }
 
@@ -188,9 +188,7 @@ class ViewPagerAdapter(
         return@lazy object : Runnable {
             override fun run() {
                 updateTimeIndicators()
-                val currentPosition = currentVideoView.currentPosition
-                Log.d("current position", currentPosition.toString())
-                seekBar.progress = currentPosition
+                seekBar.progress = currentVideoView.currentPosition
                 updateHandler.postDelayed(this, 10)
             }
         }

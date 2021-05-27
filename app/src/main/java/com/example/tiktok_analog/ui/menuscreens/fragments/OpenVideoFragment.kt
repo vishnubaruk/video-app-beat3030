@@ -2,6 +2,7 @@ package com.example.tiktok_analog.ui.menuscreens.fragments
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
@@ -25,6 +26,8 @@ import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.OpenVideoActivity
+import com.example.tiktok_analog.ui.main.MainActivity
+import com.example.tiktok_analog.ui.menuscreens.*
 import com.example.tiktok_analog.util.ViewPagerAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_main.*
@@ -75,25 +78,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
         requestQueue = Volley.newRequestQueue(requireActivity().applicationContext)
 
-//        videoIdList = requireActivity().intent.getIntegerArrayListExtra("id")!!.toList()
-        videoIdList = listOf(
-            1997380,
-            8885413,
-            5485667,
-            8931796,
-            1997380,
-            8885413,
-            5485667,
-            8931796,
-            1997380,
-            8885413,
-            5485667,
-            8931796,
-            1997380,
-            8885413,
-            5485667,
-            8931796
-        )
+        videoIdList = requireActivity().intent.getIntegerArrayListExtra("id")!!.toList()
 
         rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter =
             ViewPagerAdapter(
@@ -164,6 +149,18 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             closeFilter()
         }
 
+        mapOf(
+            R.id.addVideoButton to AddVideoActivity::class.java,
+            R.id.broadcastButton to BroadcastActivity::class.java,
+            R.id.notificationsButton to NotificationsActivity::class.java,
+            R.id.favouriteButton to FavouriteActivity::class.java,
+            R.id.openProfileButton to ProfileActivity::class.java
+        ).forEach { (k, v) ->
+            rootView.findViewById<Button>(k).setOnClickListener {
+                requireActivity().startActivity(Intent(requireActivity(), v))
+            }
+        }
+
         rootView.findViewById<Button>(R.id.logout).setOnClickListener {
             val alertDialog =
                 AlertDialog.Builder(requireActivity())
@@ -181,8 +178,12 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).isAllCaps = false
             alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED)
             alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
-
         }
+
+        rootView.findViewById<TextView>(R.id.nameTextHeader).text =
+            (requireActivity() as OpenVideoActivity).userData.username
+        rootView.findViewById<TextView>(R.id.emailTextHeader).text =
+            (requireActivity() as OpenVideoActivity).userData.email
 
         return view
     }

@@ -93,7 +93,7 @@ class AddVideoActivity : AppCompatActivity() {
 
         try {
             MediaManager.init(this, config)
-        } catch (e: IllegalStateException) {
+        } catch (e: Exception) {
             Log.e("ERROR", e.stackTraceToString())
         }
     }

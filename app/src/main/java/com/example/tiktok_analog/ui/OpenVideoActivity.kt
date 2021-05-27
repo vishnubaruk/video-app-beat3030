@@ -39,7 +39,7 @@ import org.json.JSONObject
 
 
 class OpenVideoActivity : AppCompatActivity() {
-    private lateinit var userData: User
+    lateinit var userData: User
 
     private lateinit var requestQueue: RequestQueue
     private lateinit var currentConfig: AppConfig
