@@ -6,7 +6,6 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import java.util.ArrayList
 
 class TabViewPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
-
     private val mFragmentList = ArrayList<Fragment>()
     private val mFragmentTitleList = ArrayList<String>()
 

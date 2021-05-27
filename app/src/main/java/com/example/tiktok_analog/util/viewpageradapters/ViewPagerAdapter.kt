@@ -45,7 +45,6 @@ class ViewPagerAdapter(
         )
     }
 
-
     override fun getItemCount(): Int = videoIdList.size
 
     val currentVideoView: VideoView
