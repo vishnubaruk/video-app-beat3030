@@ -42,6 +42,7 @@ import com.example.tiktok_analog.ui.main.MainActivity
 import com.example.tiktok_analog.ui.register.RegisterViewModel
 import com.example.tiktok_analog.ui.register.RegisterViewModelFactory
 import com.example.tiktok_analog.ui.register.RegisteredUserView
+import com.example.tiktok_analog.util.GlobalDataStorage
 import kotlinx.android.synthetic.main.register.*
 import org.json.JSONObject
 import java.time.LocalDate
@@ -493,6 +494,7 @@ class StartActivity : AppCompatActivity() {
                 ) == PackageManager.PERMISSION_GRANTED
             }) {
             val intent = Intent(this, ActivityToOpen)
+            intent.putIntegerArrayListExtra("id", GlobalDataStorage.videoIdList)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
         } else {

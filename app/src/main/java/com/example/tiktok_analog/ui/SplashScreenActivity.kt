@@ -14,29 +14,11 @@ import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.main.MainActivity
+import com.example.tiktok_analog.util.GlobalDataStorage
 import org.json.JSONObject
 
 class SplashScreenActivity : AppCompatActivity() {
     private lateinit var userData: User
-
-    private val videoIdList = arrayListOf(
-        946366,
-        8885413,
-        5485667,
-        8931796,
-        946366,
-        8885413,
-        5485667,
-        8931796,
-        946366,
-        8885413,
-        5485667,
-        8931796,
-        946366,
-        8885413,
-        5485667,
-        8931796
-    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,7 +65,7 @@ class SplashScreenActivity : AppCompatActivity() {
                                 StartActivity::class.java
                             }
                         )
-                        intent.putIntegerArrayListExtra("id", videoIdList)
+                        intent.putIntegerArrayListExtra("id", GlobalDataStorage.videoIdList)
                         intent.flags =
                             Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
                         startActivity(intent)
@@ -95,7 +77,7 @@ class SplashScreenActivity : AppCompatActivity() {
             userExistQueue.add(userExistRequest)
         } else {
             val intent = Intent(this, StartActivity::class.java)
-            intent.putIntegerArrayListExtra("id", videoIdList)
+            intent.putIntegerArrayListExtra("id", GlobalDataStorage.videoIdList)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
         }
