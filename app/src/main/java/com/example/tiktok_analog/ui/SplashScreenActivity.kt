@@ -20,19 +20,19 @@ class SplashScreenActivity : AppCompatActivity() {
     private lateinit var userData: User
 
     private val videoIdList = arrayListOf(
-        1997380,
+        946366,
         8885413,
         5485667,
         8931796,
-        1997380,
+        946366,
         8885413,
         5485667,
         8931796,
-        1997380,
+        946366,
         8885413,
         5485667,
         8931796,
-        1997380,
+        946366,
         8885413,
         5485667,
         8931796

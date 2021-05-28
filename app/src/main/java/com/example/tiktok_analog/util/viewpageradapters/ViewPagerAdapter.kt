@@ -17,6 +17,7 @@ import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.ui.OpenVideoActivity
+import com.example.tiktok_analog.ui.menuscreens.fragments.OpenVideoFragment
 import kotlinx.android.synthetic.main.fragment_open_video.view.*
 import java.io.File
 
@@ -27,7 +28,8 @@ class ViewPagerAdapter(
     private val seekBar: SeekBar,
     private val progressBar: ProgressBar,
     private val timeCode: TextView,
-    private val pauseButton: ImageButton
+    private val pauseButton: ImageButton,
+    private val openVideoFragment: OpenVideoFragment
 ) :
     RecyclerView.Adapter<VideoViewHolder>() {
 
@@ -101,6 +103,11 @@ class ViewPagerAdapter(
         pauseButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
     }
 
+    fun resumeVideo() {
+        currentVideoView.start()
+        pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
+    }
+
     private fun playVideoWithPath(path: String) {
         progressBar.visibility = View.GONE
         currentVideoView.setVideoPath(path)
@@ -124,7 +131,11 @@ class ViewPagerAdapter(
         }
         currentVideoView.requestFocus()
 
-        viewHolderList[currentPosition].videoView.start()
+        if (openVideoFragment.isAdDisplayed.not()) {
+            viewHolderList[currentPosition].videoView.start()
+        } else {
+            currentVideoView.pause()
+        }
     }
 
     private fun downloadFile(videoId: Int) {
