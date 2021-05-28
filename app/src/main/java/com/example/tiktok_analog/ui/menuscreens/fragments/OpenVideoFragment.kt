@@ -1,9 +1,11 @@
 package com.example.tiktok_analog.ui.menuscreens.fragments
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -26,23 +28,20 @@ import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.OpenVideoActivity
-import com.example.tiktok_analog.ui.main.MainActivity
 import com.example.tiktok_analog.ui.menuscreens.*
+import com.example.tiktok_analog.util.GlobalDataStorage
 import com.example.tiktok_analog.util.ViewPagerAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_open_video.*
-import kotlinx.android.synthetic.main.fragment_open_video.closeFilterButton
-import kotlinx.android.synthetic.main.fragment_open_video.closeMenuButton
-import kotlinx.android.synthetic.main.fragment_open_video.openFilterButton
-import kotlinx.android.synthetic.main.fragment_open_video.openMenuButton
-import kotlinx.android.synthetic.main.menu.*
 import org.json.JSONObject
+import java.util.*
+
 
 class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     lateinit var userData: User
     private var isMenuOpened = false
     private var isFilterOpened = false
+    var isAdDisplayed = false
 
     private lateinit var requestQueue: RequestQueue
     private lateinit var rootView: View
@@ -62,7 +61,12 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     }
 
     fun pauseVideo() =
-        (rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter).pauseVideo()
+        (rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter)
+            .pauseVideo()
+
+    fun resumeVideo() =
+        (rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter)
+            .resumeVideo()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -87,7 +91,8 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
                 rootView.findViewById(R.id.seekBar),
                 rootView.findViewById(R.id.progressBar),
                 rootView.findViewById(R.id.timeCode),
-                rootView.findViewById(R.id.pauseButton)
+                rootView.findViewById(R.id.pauseButton),
+                this
             )
 
         viewPagerAdapter =
@@ -184,6 +189,10 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             (requireActivity() as OpenVideoActivity).userData.username
         rootView.findViewById<TextView>(R.id.emailTextHeader).text =
             (requireActivity() as OpenVideoActivity).userData.email
+
+        rootView.findViewById<Button>(R.id.skipButton).setOnClickListener {
+            hideAdvertisement()
+        }
 
         return view
     }
@@ -311,6 +320,82 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         })
 
         requestQueue.add(openVideoRequest)
+
+        GlobalDataStorage.viewVideo()
+
+        Log.d("TOTAL_VIEWS", "Total views: ${GlobalDataStorage.getTotalViews()}")
+        if (GlobalDataStorage.getTotalViews() % (requireActivity() as OpenVideoActivity)
+                .getConfig().adFrequency == 0
+        ) {
+            displayAdvertisement()
+        }
+    }
+
+    private fun displayAdvertisement() {
+        Handler(Looper.getMainLooper()).postDelayed({ pauseVideo() }, 300)
+        rootView.findViewById<View>(R.id.advertisement).visibility = View.VISIBLE
+        rootView.findViewById<VideoView>(R.id.advertisementVideoView).visibility = View.VISIBLE
+
+        val progressBar = rootView.findViewById<ProgressBar>(R.id.progressBar)
+        val requestUrl = resources.getString(R.string.base_url) +
+                "/openPromotionalVideo"
+        progressBar.visibility = View.VISIBLE
+
+        val openAdvertisementRequest = StringRequest(Request.Method.GET, requestUrl, { response ->
+            run {
+                val result = JSONObject(response).getJSONObject("video")
+                try {
+                    val link = resources.getString(R.string.res_url) +
+                            "/${result.getInt("videoId")}.mp4"
+                    val videoView = rootView.findViewById<VideoView>(R.id.advertisementVideoView)
+
+                    rootView.findViewById<TextView>(R.id.textView31).text =
+                        formatTime(result.getInt("length"))
+                    rootView.findViewById<ProgressBar>(R.id.adProgressBar).max =
+                        result.getInt("length")
+
+                    Timer().scheduleAtFixedRate(object : TimerTask() {
+                        override fun run() {
+                            requireActivity().runOnUiThread {
+                                rootView.findViewById<TextView>(R.id.textView29).text =
+                                    formatTime(videoView.currentPosition / 1000)
+                                rootView.findViewById<ProgressBar>(R.id.adProgressBar).progress =
+                                    videoView.currentPosition / 1000
+
+                            }
+                        }
+                    }, 0, 100)
+
+                    videoView.setMediaController(null)
+                    videoView.setVideoURI(Uri.parse(link))
+                    videoView.start()
+
+                    videoView.setOnPreparedListener { progressBar.visibility = View.GONE }
+
+                    videoView.setOnCompletionListener {
+                        hideAdvertisement()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        requireActivity(),
+                        "Error connecting", Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }, {
+            Log.e("OpenAdvertisement", "Error at sign in : " + it.message)
+        })
+
+        requestQueue.add(openAdvertisementRequest)
+    }
+
+    @SuppressLint("CutPasteId")
+    private fun hideAdvertisement() {
+        rootView.findViewById<View>(R.id.advertisement).visibility = View.GONE
+        rootView.findViewById<VideoView>(R.id.advertisementVideoView).visibility = View.GONE
+        val videoView = rootView.findViewById<VideoView>(R.id.advertisementVideoView)
+        videoView.stopPlayback()
+        resumeVideo()
     }
 
     private fun updateComments() {
@@ -453,4 +538,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             .setInterpolator(AccelerateInterpolator())
             .start()
     }
+
+    fun formatTime(seconds: Int) =
+        "${seconds / 60}:${if (seconds.toString().length > 1) "" else "0"}$seconds"
 }

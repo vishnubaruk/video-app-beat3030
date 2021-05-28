@@ -27,8 +27,6 @@ import com.example.tiktok_analog.util.ViewPagerAdapter
 import com.example.tiktok_analog.util.dataclasses.AppConfig
 import com.example.tiktok_analog.util.enums.SortType
 import com.example.tiktok_analog.util.viewpageradapters.TabViewPagerAdapter
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import kotlinx.android.synthetic.main.activity_open_video.*
 import kotlinx.android.synthetic.main.filter.*
 import kotlinx.android.synthetic.main.fragment_open_video.*
@@ -161,7 +159,7 @@ class OpenVideoActivity : AppCompatActivity() {
         )
     }
 
-    private fun getConfig(): AppConfig {
+    fun getConfig(): AppConfig {
         val configDataFile = applicationContext.getFileStreamPath("appConfig")
 
         if (configDataFile != null && configDataFile.exists()) {
