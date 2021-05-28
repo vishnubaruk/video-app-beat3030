@@ -214,6 +214,8 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
         updateFilterButtons((requireActivity() as OpenVideoActivity).getConfig().sortType)
 
+        Handler(Looper.getMainLooper()).postDelayed({displayAdvertisement()}, 500)
+
         return view
     }
 
