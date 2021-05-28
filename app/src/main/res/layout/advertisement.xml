@@ -12,10 +12,12 @@
         android:layout_marginTop="80dp"
         android:background="#000"
         android:visibility="visible"
+        android:clickable="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <VideoView
+            android:id="@+id/advertisementVideoView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
@@ -42,7 +44,7 @@
                 android:textAlignment="viewEnd"
                 android:textColor="@color/white"
                 android:textSize="18sp"
-                app:layout_constraintBottom_toTopOf="@+id/progressBar"
+                app:layout_constraintBottom_toTopOf="@+id/adProgressBar"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -101,7 +103,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ProgressBar
-                android:id="@+id/progressBar"
+                android:id="@+id/adProgressBar"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -109,7 +111,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:indeterminate="false"
-                android:progress="34"
+                android:progress="0"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="@+id/constraintLayout4"
                 app:layout_constraintEnd_toStartOf="@+id/textView31"
