@@ -31,7 +31,9 @@ import com.example.tiktok_analog.ui.OpenVideoActivity
 import com.example.tiktok_analog.ui.menuscreens.*
 import com.example.tiktok_analog.util.GlobalDataStorage
 import com.example.tiktok_analog.util.ViewPagerAdapter
+import com.example.tiktok_analog.util.enums.SortType
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.android.synthetic.main.filter.*
 import kotlinx.android.synthetic.main.fragment_open_video.*
 import org.json.JSONObject
 import java.util.*
@@ -193,6 +195,24 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         rootView.findViewById<Button>(R.id.skipButton).setOnClickListener {
             hideAdvertisement()
         }
+
+        rootView.findViewById<Button>(R.id.acceptFilter).setOnClickListener {
+            closeFilter()
+        }
+
+        rootView.findViewById<Button>(R.id.sortByPopularity).setOnClickListener {
+            updateFilterButtons(SortType.ByPopularity)
+        }
+
+        rootView.findViewById<Button>(R.id.sortByDate).setOnClickListener {
+            updateFilterButtons(SortType.ByDate)
+        }
+
+        rootView.findViewById<Button>(R.id.sortByLength).setOnClickListener {
+            updateFilterButtons(SortType.ByLength)
+        }
+
+        updateFilterButtons((requireActivity() as OpenVideoActivity).getConfig().sortType)
 
         return view
     }
@@ -541,4 +561,25 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
     fun formatTime(seconds: Int) =
         "${seconds / 60}:${if (seconds.toString().length > 1) "" else "0"}$seconds"
+
+    private fun updateFilterButtons(sortType: SortType) {
+        (requireActivity() as OpenVideoActivity).setConfig(
+            (requireActivity() as OpenVideoActivity).getConfig().copy(sortType = sortType)
+        )
+
+        for (entry: Map.Entry<SortType, Int> in mapOf(
+            SortType.ByPopularity to R.id.sortByPopularity,
+            SortType.ByDate to R.id.sortByDate,
+            SortType.ByLength to R.id.sortByLength
+        )) {
+            rootView.findViewById<Button>(entry.value).background =
+                requireActivity().applicationContext.resources.getDrawable(
+                    if (entry.key == sortType) {
+                        R.drawable.ic_radiobutton_selected
+                    } else {
+                        R.drawable.ic_radiobutton_notselected
+                    }
+                )
+        }
+    }
 }

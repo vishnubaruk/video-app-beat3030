@@ -171,7 +171,7 @@ class OpenVideoActivity : AppCompatActivity() {
         }
     }
 
-    private fun setConfig(config: AppConfig) {
+    fun setConfig(config: AppConfig) {
         this.openFileOutput("appConfig", Context.MODE_PRIVATE)
             .write(Json.encodeToString(config).toByteArray())
     }
