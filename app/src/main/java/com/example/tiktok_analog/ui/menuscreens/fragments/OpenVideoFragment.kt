@@ -214,7 +214,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
         updateFilterButtons((requireActivity() as OpenVideoActivity).getConfig().sortType)
 
-        Handler(Looper.getMainLooper()).postDelayed({displayAdvertisement()}, 500)
+        Handler(Looper.getMainLooper()).postDelayed({ displayAdvertisement() }, 500)
 
         return view
     }
@@ -350,6 +350,19 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
                 .getConfig().adFrequency == 0
         ) {
             displayAdvertisement()
+        }
+    }
+
+    fun onBackPressed(elseRunnable: Runnable) {
+        if (!isFilterOpened && !isMenuOpened) {
+            elseRunnable.run()
+        } else {
+            if (isFilterOpened) {
+                closeFilter()
+            }
+            if (isMenuOpened) {
+                closeMenu()
+            }
         }
     }
 

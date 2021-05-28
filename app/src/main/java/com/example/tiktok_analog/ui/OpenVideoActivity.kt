@@ -176,41 +176,11 @@ class OpenVideoActivity : AppCompatActivity() {
             .write(Json.encodeToString(config).toByteArray())
     }
 
-    private fun openProfile() {
-        startActivity(Intent(this, ProfileActivity::class.java))
-    }
-
-    private fun openAddVideo() {
-        startActivity(Intent(this, AddVideoActivity::class.java))
-    }
-
-    private fun openFavourite() {
-        startActivity(Intent(this, FavouriteActivity::class.java))
-    }
-
-    private fun openBroadcast() {
-        startActivity(Intent(this, BroadcastActivity::class.java))
-    }
-
-    private fun openNotifications() {
-        startActivity(Intent(this, NotificationsActivity::class.java))
-    }
-
-    private fun updateFilterButtons(sortType: SortType) {
-        currentConfig = currentConfig.copy(sortType = sortType)
-
-        for (entry: Map.Entry<SortType, Button> in mapOf(
-            SortType.ByPopularity to sortByPopularity,
-            SortType.ByDate to sortByDate,
-            SortType.ByLength to sortByLength
-        )) {
-            entry.value.background = applicationContext.resources.getDrawable(
-                if (entry.key == sortType) {
-                    R.drawable.ic_radiobutton_selected
-                } else {
-                    R.drawable.ic_radiobutton_notselected
-                }
-            )
+    override fun onBackPressed() {
+        if (tabViewPager.currentItem != 1) {
+            tabViewPager.currentItem = 1
+        } else {
+            openVideoFragment.onBackPressed { super.onBackPressed() }
         }
     }
 }
