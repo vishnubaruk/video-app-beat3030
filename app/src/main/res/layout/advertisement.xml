@@ -24,6 +24,23 @@
             android:tag="videoView" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/splashScreen"
+            android:visibility="visible"
+            android:clickable="true"
+            android:layout_width="match_parent"
+            android:backgroundTint="#000"
+            android:layout_height="match_parent">
+            <TextView
+                android:gravity="center"
+                android:fontFamily="@font/monsterrat_bold"
+                android:textSize="24sp"
+                android:textColor="@color/colorAccent"
+                android:text="Загружаем рекламу.."
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout4"
             android:layout_width="match_parent"
             android:layout_height="84dp"
@@ -98,7 +115,7 @@
                 android:textAlignment="center"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
