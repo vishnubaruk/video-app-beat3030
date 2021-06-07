@@ -1,4 +1,4 @@
-package com.example.tiktok_analog.util
+package com.example.tiktok_analog.util.viewpageradapters
 
 import android.app.Activity
 import android.app.DownloadManager
@@ -9,7 +9,6 @@ import android.content.IntentFilter
 import android.net.Uri
 import android.os.Environment
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +18,6 @@ import com.example.tiktok_analog.R
 import com.example.tiktok_analog.ui.OpenVideoActivity
 import com.example.tiktok_analog.ui.menuscreens.fragments.OpenVideoFragment
 import kotlinx.android.synthetic.main.fragment_open_video.view.*
-import java.io.File
 
 
 class ViewPagerAdapter(
@@ -72,24 +70,25 @@ class ViewPagerAdapter(
 
         val videoId = videoIdList[position]
 
-        if (File(
-                "${
-                    Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_DOWNLOADS
-                    )
-                }/$videoId.mp4"
-            ).exists()
-        ) {
-            playVideoWithPath(
-                "${
-                    Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_DOWNLOADS
-                    )
-                }/$videoId.mp4"
-            )
-        } else {
-            downloadFile(videoIdList[position])
-        }
+//        if (File(
+//                "${
+//                    Environment.getExternalStoragePublicDirectory(
+//                        Environment.DIRECTORY_DOWNLOADS
+//                    )
+//                }/$videoId.mp4"
+//            ).exists()
+//        ) {
+//            playVideoWithPath(
+//                "${
+//                    Environment.getExternalStoragePublicDirectory(
+//                        Environment.DIRECTORY_DOWNLOADS
+//                    )
+//                }/$videoId.mp4"
+//            )
+//        } else {
+//            downloadFile(videoIdList[position])
+//        }
+        playVideoWithId(videoId)
 
         activity.fillVideoData(videoId, viewHolderList[position].videoView)
     }
@@ -104,8 +103,50 @@ class ViewPagerAdapter(
     }
 
     fun resumeVideo() {
-        currentVideoView.start()
-        pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
+        if (!openVideoFragment.isAdDisplayed &&
+            !openVideoFragment.isFilterOpened &&
+            !openVideoFragment.isMenuOpened
+        ) {
+            currentVideoView.start()
+            pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
+        }
+    }
+
+    private fun playVideoWithId(id: Int) {
+        val link = activity.resources.getString(R.string.res_url) + "/$id.mp4"
+
+        progressBar.visibility = View.VISIBLE
+        currentVideoView.setVideoURI(Uri.parse(link))
+
+        currentVideoView.setOnPreparedListener { mediaPlayer ->
+            mediaPlayer.start()
+
+            val layoutParams = currentVideoView.layoutParams
+            val videoWidth = mediaPlayer.videoWidth.toFloat()
+            val videoHeight = mediaPlayer.videoHeight.toFloat()
+            val viewWidth = currentVideoView.width.toFloat()
+
+            layoutParams.height = (viewWidth * (videoHeight / videoWidth)).toInt()
+            if (layoutParams.height == 0) {
+                layoutParams.height = videoHeight.toInt()
+            }
+
+            seekBar.progress = 0
+            seekBar.max = currentVideoView.duration
+            pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
+
+            progressBar.visibility = View.GONE
+        }
+        currentVideoView.requestFocus()
+
+        if (!openVideoFragment.isAdDisplayed &&
+            !openVideoFragment.isFilterOpened &&
+            !openVideoFragment.isMenuOpened
+        ) {
+            viewHolderList[currentPosition].videoView.start()
+        } else {
+            currentVideoView.pause()
+        }
     }
 
     private fun playVideoWithPath(path: String) {
