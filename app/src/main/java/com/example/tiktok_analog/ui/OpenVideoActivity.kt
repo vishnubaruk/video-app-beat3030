@@ -8,7 +8,6 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
@@ -19,16 +18,13 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
-import com.example.tiktok_analog.ui.menuscreens.*
 import com.example.tiktok_analog.ui.menuscreens.fragments.CommentsFragment
 import com.example.tiktok_analog.ui.menuscreens.fragments.OpenVideoFragment
 import com.example.tiktok_analog.ui.menuscreens.fragments.ProfileFragment
-import com.example.tiktok_analog.util.ViewPagerAdapter
+import com.example.tiktok_analog.util.viewpageradapters.ViewPagerAdapter
 import com.example.tiktok_analog.util.dataclasses.AppConfig
-import com.example.tiktok_analog.util.enums.SortType
 import com.example.tiktok_analog.util.viewpageradapters.TabViewPagerAdapter
 import kotlinx.android.synthetic.main.activity_open_video.*
-import kotlinx.android.synthetic.main.filter.*
 import kotlinx.android.synthetic.main.fragment_open_video.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -49,6 +45,8 @@ class OpenVideoActivity : AppCompatActivity() {
     private lateinit var config: AppConfig
     private var savedLocation: Location? = null
 
+    private var isActivityStopped = false
+
     fun fillVideoData(videoId: Int, videoView: VideoView) {
         openVideoFragment.fillVideoData(videoId, videoView)
     }
@@ -67,6 +65,8 @@ class OpenVideoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Log.d("ActivityTag", "onCreate")
 
         val userDataFile = applicationContext.getFileStreamPath("userData")
         if (userDataFile != null && userDataFile.exists()) {
@@ -181,6 +181,20 @@ class OpenVideoActivity : AppCompatActivity() {
             tabViewPager.currentItem = 1
         } else {
             openVideoFragment.onBackPressed { super.onBackPressed() }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("ActivityTag", "onStop")
+        isActivityStopped = true
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("ActivityTag", "onResume")
+        if (isActivityStopped) {
+            openVideoFragment.pauseVideo()
         }
     }
 }

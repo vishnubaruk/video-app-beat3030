@@ -18,7 +18,7 @@ import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.OpenVideoActivity
-import com.example.tiktok_analog.util.ViewPagerAdapter
+import com.example.tiktok_analog.util.viewpageradapters.ViewPagerAdapter
 import org.json.JSONObject
 import java.lang.IllegalStateException
 

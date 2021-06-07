@@ -17,6 +17,7 @@ import android.view.animation.AccelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.doOnLayout
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
@@ -30,7 +31,7 @@ import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.OpenVideoActivity
 import com.example.tiktok_analog.ui.menuscreens.*
 import com.example.tiktok_analog.util.GlobalDataStorage
-import com.example.tiktok_analog.util.ViewPagerAdapter
+import com.example.tiktok_analog.util.viewpageradapters.ViewPagerAdapter
 import com.example.tiktok_analog.util.enums.SortType
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.filter.*
@@ -41,33 +42,33 @@ import java.util.*
 
 class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     lateinit var userData: User
-    private var isMenuOpened = false
-    private var isFilterOpened = false
+    var isMenuOpened = false
+    var isFilterOpened = false
     var isAdDisplayed = false
 
     private lateinit var requestQueue: RequestQueue
-    private lateinit var rootView: View
+    private var rootView: View? = null
 
     private lateinit var videoIdList: List<Int>
 
     private lateinit var viewPagerAdapter: ViewPagerAdapter
 
     fun getViewPager2(): ViewPager2 {
-        return rootView.findViewById(R.id.viewPager2)
+        return rootView!!.findViewById(R.id.viewPager2)
     }
 
     private fun nextPage(pageId: Int) {
-        rootView.findViewById<ViewPager2>(R.id.viewPager2).doOnLayout {
-            rootView.findViewById<ViewPager2>(R.id.viewPager2).setCurrentItem(pageId + 1, true)
+        rootView!!.findViewById<ViewPager2>(R.id.viewPager2).doOnLayout {
+            rootView!!.findViewById<ViewPager2>(R.id.viewPager2).setCurrentItem(pageId + 1, true)
         }
     }
 
     fun pauseVideo() =
-        (rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter)
+        (rootView!!.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter)
             .pauseVideo()
 
     fun resumeVideo() =
-        (rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter)
+        (rootView!!.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter)
             .resumeVideo()
 
     override fun onCreateView(
@@ -75,7 +76,16 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = super.onCreateView(inflater, container, savedInstanceState)!!
+        super.onCreateView(inflater, container, savedInstanceState)
+
+        if (rootView != null) {
+            Log.d("ActivityTag", "onCreateView: old fragment")
+            return rootView!!
+        }
+
+        Log.d("ActivityTag", "onCreateView: new fragment")
+
+        val view = inflater.inflate(R.layout.fragment_open_video, container, false)
         rootView = view
 
         requireActivity().openFileInput("userData").use {
@@ -86,23 +96,23 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
         videoIdList = requireActivity().intent.getIntegerArrayListExtra("id")!!.toList()
 
-        rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter =
+        rootView!!.findViewById<ViewPager2>(R.id.viewPager2).adapter =
             ViewPagerAdapter(
                 videoIdList,
                 requireActivity(),
-                rootView.findViewById(R.id.seekBar),
-                rootView.findViewById(R.id.progressBar),
-                rootView.findViewById(R.id.timeCode),
-                rootView.findViewById(R.id.pauseButton),
+                rootView!!.findViewById(R.id.seekBar),
+                rootView!!.findViewById(R.id.progressBar),
+                rootView!!.findViewById(R.id.timeCode),
+                rootView!!.findViewById(R.id.pauseButton),
                 this
             )
 
         viewPagerAdapter =
-            rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter
+            rootView!!.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter
 
-        rootView.findViewById<ViewPager2>(R.id.viewPager2).offscreenPageLimit = 10
+        rootView!!.findViewById<ViewPager2>(R.id.viewPager2).offscreenPageLimit = 10
 
-        rootView.findViewById<ViewPager2>(R.id.viewPager2)
+        rootView!!.findViewById<ViewPager2>(R.id.viewPager2)
             .registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     (view.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter).setPage(
@@ -113,7 +123,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             })
 
         val bottomSheetBehavior: BottomSheetBehavior<*> =
-            BottomSheetBehavior.from(rootView.findViewById(R.id.bottomSheet))
+            BottomSheetBehavior.from(rootView!!.findViewById(R.id.bottomSheet))
 
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
@@ -127,7 +137,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             }
         })
 
-        rootView.findViewById<Button>(R.id.openCommentsButton).setOnClickListener {
+        rootView!!.findViewById<Button>(R.id.openCommentsButton).setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
 
             if ((view.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter).isVideoPlaying()) {
@@ -137,22 +147,22 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             updateComments()
         }
 
-        rootView.findViewById<ImageButton>(R.id.backArrowButton).setOnClickListener {
+        rootView!!.findViewById<ImageButton>(R.id.backArrowButton).setOnClickListener {
             requireActivity().onBackPressed()
         }
-        rootView.findViewById<ImageButton>(R.id.openMenuButton).setOnClickListener {
+        rootView!!.findViewById<ImageButton>(R.id.openMenuButton).setOnClickListener {
             openMenu()
         }
 
-        rootView.findViewById<ImageButton>(R.id.openFilterButton).setOnClickListener {
+        rootView!!.findViewById<ImageButton>(R.id.openFilterButton).setOnClickListener {
             openFilter()
         }
 
-        rootView.findViewById<ImageButton>(R.id.closeMenuButton).setOnClickListener {
+        rootView!!.findViewById<ImageButton>(R.id.closeMenuButton).setOnClickListener {
             closeMenu()
         }
 
-        rootView.findViewById<ImageButton>(R.id.closeFilterButton).setOnClickListener {
+        rootView!!.findViewById<ImageButton>(R.id.closeFilterButton).setOnClickListener {
             closeFilter()
         }
 
@@ -163,12 +173,14 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             R.id.favouriteButton to FavouriteActivity::class.java,
             R.id.openProfileButton to ProfileActivity::class.java
         ).forEach { (k, v) ->
-            rootView.findViewById<Button>(k).setOnClickListener {
-                requireActivity().startActivity(Intent(requireActivity(), v))
+            rootView!!.findViewById<Button>(k).setOnClickListener {
+                closeFilter()
+                closeMenu()
+                requireActivity().startActivityForResult(Intent(requireActivity(), v), 228)
             }
         }
 
-        rootView.findViewById<Button>(R.id.logout).setOnClickListener {
+        rootView!!.findViewById<Button>(R.id.logout).setOnClickListener {
             val alertDialog =
                 AlertDialog.Builder(requireActivity())
                     .setTitle("Вы уверены, что хотите выйти из аккаунта?")
@@ -187,47 +199,46 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
         }
 
-        rootView.findViewById<TextView>(R.id.nameTextHeader).text =
+        rootView!!.findViewById<TextView>(R.id.nameTextHeader).text =
             (requireActivity() as OpenVideoActivity).userData.username
-        rootView.findViewById<TextView>(R.id.emailTextHeader).text =
+        rootView!!.findViewById<TextView>(R.id.emailTextHeader).text =
             (requireActivity() as OpenVideoActivity).userData.email
 
-        rootView.findViewById<Button>(R.id.skipButton).setOnClickListener {
+        rootView!!.findViewById<Button>(R.id.skipButton).setOnClickListener {
             hideAdvertisement()
         }
 
-        rootView.findViewById<Button>(R.id.acceptFilter).setOnClickListener {
+        rootView!!.findViewById<Button>(R.id.acceptFilter).setOnClickListener {
             closeFilter()
         }
 
-        rootView.findViewById<Button>(R.id.sortByPopularity).setOnClickListener {
+        rootView!!.findViewById<Button>(R.id.sortByPopularity).setOnClickListener {
             updateFilterButtons(SortType.ByPopularity)
         }
 
-        rootView.findViewById<Button>(R.id.sortByDate).setOnClickListener {
+        rootView!!.findViewById<Button>(R.id.sortByDate).setOnClickListener {
             updateFilterButtons(SortType.ByDate)
         }
 
-        rootView.findViewById<Button>(R.id.sortByLength).setOnClickListener {
+        rootView!!.findViewById<Button>(R.id.sortByLength).setOnClickListener {
             updateFilterButtons(SortType.ByLength)
         }
 
         updateFilterButtons((requireActivity() as OpenVideoActivity).getConfig().sortType)
-
         Handler(Looper.getMainLooper()).postDelayed({ displayAdvertisement() }, 500)
 
         return view
     }
 
     fun fillVideoData(videoId: Int, videoView: VideoView) {
-        rootView.findViewById<ImageButton>(R.id.pauseButton).setOnClickListener {
+        rootView!!.findViewById<ImageButton>(R.id.pauseButton).setOnClickListener {
             if (videoView.isPlaying) {
-                rootView.findViewById<ImageButton>(R.id.pauseButton)
+                rootView!!.findViewById<ImageButton>(R.id.pauseButton)
                     .setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
                 videoView.pause()
                 pauseAnimation()
             } else {
-                rootView.findViewById<ImageButton>(R.id.pauseButton)
+                rootView!!.findViewById<ImageButton>(R.id.pauseButton)
                     .setBackgroundResource(R.drawable.ic_baseline_pause_24)
                 videoView.start()
                 playAnimation()
@@ -236,12 +247,12 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
         videoView.setOnClickListener {
             if (videoView.isPlaying) {
-                rootView.findViewById<ImageButton>(R.id.pauseButton)
+                rootView!!.findViewById<ImageButton>(R.id.pauseButton)
                     .setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
                 videoView.pause()
                 pauseAnimation()
             } else {
-                rootView.findViewById<ImageButton>(R.id.pauseButton)
+                rootView!!.findViewById<ImageButton>(R.id.pauseButton)
                     .setBackgroundResource(R.drawable.ic_baseline_pause_24)
                 videoView.seekTo(seekBar.progress)
                 videoView.start()
@@ -250,12 +261,12 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         }
 
         videoView.setOnCompletionListener {
-            rootView.findViewById<ImageButton>(R.id.pauseButton)
+            rootView!!.findViewById<ImageButton>(R.id.pauseButton)
                 .setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
-            nextPage(pageId = (rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter).currentPosition)
+            nextPage(pageId = (rootView!!.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter).currentPosition)
         }
 
-        rootView.findViewById<SeekBar>(R.id.seekBar)
+        rootView!!.findViewById<SeekBar>(R.id.seekBar)
             .setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
 //                    viewPagerAdapter.removeSeekBarCallbacks()
@@ -272,12 +283,12 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
                 }
             })
 
-        rootView.findViewById<Button>(R.id.sendButtonBottomSheet).setOnClickListener {
-            addComment(rootView.findViewById<TextView>(R.id.commentTextBottomSheet).text.toString())
-            rootView.findViewById<TextView>(R.id.commentTextBottomSheet).text = ""
+        rootView!!.findViewById<Button>(R.id.sendButtonBottomSheet).setOnClickListener {
+            addComment(rootView!!.findViewById<TextView>(R.id.commentTextBottomSheet).text.toString())
+            rootView!!.findViewById<TextView>(R.id.commentTextBottomSheet).text = ""
         }
 
-        rootView.findViewById<Button>(R.id.likeButton).setOnClickListener {
+        rootView!!.findViewById<Button>(R.id.likeButton).setOnClickListener {
             val url = resources.getString(R.string.base_url) +
                     "/likeVideo?" +
                     "videoId=$videoId&" +
@@ -287,13 +298,13 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
                 run {
                     val result = JSONObject(response)
-                    rootView.findViewById<Button>(R.id.likeButton).setBackgroundResource(
+                    rootView!!.findViewById<Button>(R.id.likeButton).setBackgroundResource(
                         if (result.getBoolean("isLiked"))
                             R.drawable.ic_like
                         else
                             R.drawable.ic_baseline_favorite_border_24
                     )
-                    rootView.findViewById<TextView>(R.id.likeCount).text =
+                    rootView!!.findViewById<TextView>(R.id.likeCount).text =
                         result.getInt("likeCount").toString()
                 }
             }, { Log.e("LikeVideo", "Error at sign in : " + it.message) })
@@ -310,13 +321,13 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         val videoLikeCountRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
                 val result = JSONObject(response)
-                rootView.findViewById<Button>(R.id.likeButton).setBackgroundResource(
+                rootView!!.findViewById<Button>(R.id.likeButton).setBackgroundResource(
                     if (result.getBoolean("isLiked"))
                         R.drawable.ic_like
                     else
                         R.drawable.ic_baseline_favorite_border_24
                 )
-                rootView.findViewById<TextView>(R.id.likeCount).text =
+                rootView!!.findViewById<TextView>(R.id.likeCount).text =
                     result.getInt("likeCount").toString()
             }
         }, {
@@ -333,8 +344,8 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             run {
                 val result = JSONObject(response)
 
-                rootView.findViewById<TextView>(R.id.viewCount).text = result.getString("viewCount")
-                rootView.findViewById<TextView>(R.id.commentCount).text =
+                rootView!!.findViewById<TextView>(R.id.viewCount).text = result.getString("viewCount")
+                rootView!!.findViewById<TextView>(R.id.commentCount).text =
                     result.getString("commentCount")
             }
         }, {
@@ -368,10 +379,11 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
     private fun displayAdvertisement() {
         Handler(Looper.getMainLooper()).postDelayed({ pauseVideo() }, 300)
-        rootView.findViewById<View>(R.id.advertisement).visibility = View.VISIBLE
-        rootView.findViewById<VideoView>(R.id.advertisementVideoView).visibility = View.VISIBLE
+        rootView!!.findViewById<View>(R.id.advertisement).visibility = View.VISIBLE
+        rootView!!.findViewById<VideoView>(R.id.advertisementVideoView).visibility = View.VISIBLE
+        rootView!!.findViewById<ConstraintLayout>(R.id.splashScreen).visibility = View.VISIBLE
 
-        val progressBar = rootView.findViewById<ProgressBar>(R.id.progressBar)
+        val progressBar = rootView!!.findViewById<ProgressBar>(R.id.progressBar)
         val requestUrl = resources.getString(R.string.base_url) +
                 "/openPromotionalVideo"
         progressBar.visibility = View.VISIBLE
@@ -382,19 +394,19 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
                 try {
                     val link = resources.getString(R.string.res_url) +
                             "/${result.getInt("videoId")}.mp4"
-                    val videoView = rootView.findViewById<VideoView>(R.id.advertisementVideoView)
+                    val videoView = rootView!!.findViewById<VideoView>(R.id.advertisementVideoView)
 
-                    rootView.findViewById<TextView>(R.id.textView31).text =
+                    rootView!!.findViewById<TextView>(R.id.textView31).text =
                         formatTime(result.getInt("length"))
-                    rootView.findViewById<ProgressBar>(R.id.adProgressBar).max =
+                    rootView!!.findViewById<ProgressBar>(R.id.adProgressBar).max =
                         result.getInt("length")
 
                     Timer().scheduleAtFixedRate(object : TimerTask() {
                         override fun run() {
                             requireActivity().runOnUiThread {
-                                rootView.findViewById<TextView>(R.id.textView29).text =
+                                rootView!!.findViewById<TextView>(R.id.textView29).text =
                                     formatTime(videoView.currentPosition / 1000)
-                                rootView.findViewById<ProgressBar>(R.id.adProgressBar).progress =
+                                rootView!!.findViewById<ProgressBar>(R.id.adProgressBar).progress =
                                     videoView.currentPosition / 1000
 
                             }
@@ -405,7 +417,11 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
                     videoView.setVideoURI(Uri.parse(link))
                     videoView.start()
 
-                    videoView.setOnPreparedListener { progressBar.visibility = View.GONE }
+                    videoView.setOnPreparedListener {
+                        progressBar.visibility = View.GONE
+                        rootView!!.findViewById<ConstraintLayout>(R.id.splashScreen).visibility =
+                            View.GONE
+                    }
 
                     videoView.setOnCompletionListener {
                         hideAdvertisement()
@@ -426,19 +442,19 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
     @SuppressLint("CutPasteId")
     private fun hideAdvertisement() {
-        rootView.findViewById<View>(R.id.advertisement).visibility = View.GONE
-        rootView.findViewById<VideoView>(R.id.advertisementVideoView).visibility = View.GONE
-        val videoView = rootView.findViewById<VideoView>(R.id.advertisementVideoView)
+        rootView!!.findViewById<View>(R.id.advertisement).visibility = View.GONE
+        rootView!!.findViewById<VideoView>(R.id.advertisementVideoView).visibility = View.GONE
+        val videoView = rootView!!.findViewById<VideoView>(R.id.advertisementVideoView)
         videoView.stopPlayback()
         resumeVideo()
     }
 
     private fun updateComments() {
-        rootView.findViewById<LinearLayout>(R.id.commentsContainerBottomSheet).removeAllViews()
+        rootView!!.findViewById<LinearLayout>(R.id.commentsContainerBottomSheet).removeAllViews()
 
         val url = resources.getString(R.string.base_url) +
                 "/getComments?videoId=" +
-                "${(rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter).getCurrentVideoId()}"
+                "${(rootView!!.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter).getCurrentVideoId()}"
 
         val commentRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
@@ -453,8 +469,8 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         requestQueue.add(commentRequest)
 
         fillVideoData(
-            (rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter).getCurrentVideoId(),
-            (rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter).currentVideoView
+            (rootView!!.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter).getCurrentVideoId(),
+            (rootView!!.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter).currentVideoView
         )
     }
 
@@ -467,21 +483,21 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             jsonObject.getString("authorUsername")
         newView.findViewWithTag<TextView>("commentText").text =
             jsonObject.getString("text")
-        rootView.findViewById<LinearLayout>(R.id.commentsContainerBottomSheet).addView(newView)
+        rootView!!.findViewById<LinearLayout>(R.id.commentsContainerBottomSheet).addView(newView)
 
         newView.findViewWithTag<ImageView>("likeIcon").setOnClickListener {
             it.setBackgroundResource(R.drawable.ic_like)
         }
 
-        rootView.findViewById<NestedScrollView>(R.id.commentsScrollViewBottomSheet).post {
-            rootView.findViewById<NestedScrollView>(R.id.commentsScrollViewBottomSheet)
+        rootView!!.findViewById<NestedScrollView>(R.id.commentsScrollViewBottomSheet).post {
+            rootView!!.findViewById<NestedScrollView>(R.id.commentsScrollViewBottomSheet)
                 .fullScroll(ScrollView.FOCUS_DOWN)
         }
     }
 
     private fun addComment(commentText: String) {
         val url = "https://kepler88d.pythonanywhere.com/addComment?videoId=" +
-                "${(rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter).getCurrentVideoId()}" +
+                "${(rootView!!.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter).getCurrentVideoId()}" +
                 "&commentText=${commentText.trim()}&email=${userData.email}&phone=${userData.phone}"
 
         val addCommentRequest = StringRequest(Request.Method.GET, url, {
@@ -504,14 +520,14 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     }
 
     fun openMenu() {
-        (rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter)
+        (rootView!!.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter)
             .pauseVideo()
         closeFilter()
 
-        rootView.findViewById<ImageButton>(R.id.openMenuButton).visibility = View.GONE
-        rootView.findViewById<ImageButton>(R.id.closeMenuButton).visibility = View.VISIBLE
+        rootView!!.findViewById<ImageButton>(R.id.openMenuButton).visibility = View.GONE
+        rootView!!.findViewById<ImageButton>(R.id.closeMenuButton).visibility = View.VISIBLE
 
-        rootView.findViewById<View>(R.id.menuLayout).visibility = View.VISIBLE
+        rootView!!.findViewById<View>(R.id.menuLayout).visibility = View.VISIBLE
 
         isMenuOpened = true
 
@@ -519,10 +535,10 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     }
 
     fun closeMenu() {
-        rootView.findViewById<ImageButton>(R.id.openMenuButton).visibility = View.VISIBLE
-        rootView.findViewById<ImageButton>(R.id.closeMenuButton).visibility = View.GONE
+        rootView!!.findViewById<ImageButton>(R.id.openMenuButton).visibility = View.VISIBLE
+        rootView!!.findViewById<ImageButton>(R.id.closeMenuButton).visibility = View.GONE
 
-        rootView.findViewById<View>(R.id.menuLayout).visibility = View.GONE
+        rootView!!.findViewById<View>(R.id.menuLayout).visibility = View.GONE
 
         isMenuOpened = false
 
@@ -530,13 +546,13 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     }
 
     fun openFilter() {
-        (rootView.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter)
+        (rootView!!.findViewById<ViewPager2>(R.id.viewPager2).adapter as ViewPagerAdapter)
             .pauseVideo()
 
-        rootView.findViewById<ImageButton>(R.id.openFilterButton).visibility = View.GONE
-        rootView.findViewById<ImageButton>(R.id.closeFilterButton).visibility = View.VISIBLE
+        rootView!!.findViewById<ImageButton>(R.id.openFilterButton).visibility = View.GONE
+        rootView!!.findViewById<ImageButton>(R.id.closeFilterButton).visibility = View.VISIBLE
 
-        rootView.findViewById<View>(R.id.filterLayout).visibility = View.VISIBLE
+        rootView!!.findViewById<View>(R.id.filterLayout).visibility = View.VISIBLE
 
         isFilterOpened = true
 //        sectionTitleText.text = "Главная"
@@ -545,18 +561,18 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     }
 
     fun closeFilter() {
-        rootView.findViewById<ImageButton>(R.id.openFilterButton).visibility = View.VISIBLE
-        rootView.findViewById<ImageButton>(R.id.closeFilterButton).visibility = View.GONE
+        rootView!!.findViewById<ImageButton>(R.id.openFilterButton).visibility = View.VISIBLE
+        rootView!!.findViewById<ImageButton>(R.id.closeFilterButton).visibility = View.GONE
 
-        rootView.findViewById<View>(R.id.filterLayout).visibility = View.GONE
+        rootView!!.findViewById<View>(R.id.filterLayout).visibility = View.GONE
 
         isFilterOpened = false
 //        currentConfig = getConfig()
     }
 
     fun playAnimation() {
-        rootView.findViewById<ImageView>(R.id.bigPlayButton).alpha = 1F
-        rootView.findViewById<ImageView>(R.id.bigPlayButton)
+        rootView!!.findViewById<ImageView>(R.id.bigPlayButton).alpha = 1F
+        rootView!!.findViewById<ImageView>(R.id.bigPlayButton)
             .animate()
             .alpha(0f)
             .setDuration(500)
@@ -565,8 +581,8 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     }
 
     fun pauseAnimation() {
-        rootView.findViewById<ImageView>(R.id.bigPauseButton).alpha = 1F
-        rootView.findViewById<ImageView>(R.id.bigPauseButton)
+        rootView!!.findViewById<ImageView>(R.id.bigPauseButton).alpha = 1F
+        rootView!!.findViewById<ImageView>(R.id.bigPauseButton)
             .animate()
             .alpha(0f)
             .setDuration(500)
@@ -587,7 +603,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             SortType.ByDate to R.id.sortByDate,
             SortType.ByLength to R.id.sortByLength
         )) {
-            rootView.findViewById<Button>(entry.value).background =
+            rootView!!.findViewById<Button>(entry.value).background =
                 requireActivity().applicationContext.resources.getDrawable(
                     if (entry.key == sortType) {
                         R.drawable.ic_radiobutton_selected
