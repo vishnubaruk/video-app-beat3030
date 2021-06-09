@@ -36,15 +36,6 @@ class FavouriteActivity : AppCompatActivity() {
         }
 
         fillFavourites()
-
-//        notificationsScrollView.viewTreeObserver.addOnScrollChangedListener {
-//            if (notificationsScrollView.getChildAt(0).bottom <=
-//                notificationsScrollView.height + notificationsScrollView.scrollY
-//            ) {
-//                fillFavourites()
-//            }
-//        }
-
         favouriteSwipeRefresh.setOnRefreshListener {
             favouriteSwipeRefresh.isRefreshing = false
             Toast.makeText(applicationContext, "Favourite Updated", Toast.LENGTH_SHORT).show()
