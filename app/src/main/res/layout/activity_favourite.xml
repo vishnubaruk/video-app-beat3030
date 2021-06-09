@@ -5,7 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/mainLayoutColor">
+    android:clickable="true"
+    android:background="@color/mainLayoutColor"
+    android:focusable="true">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/favouriteSwipeRefresh"
