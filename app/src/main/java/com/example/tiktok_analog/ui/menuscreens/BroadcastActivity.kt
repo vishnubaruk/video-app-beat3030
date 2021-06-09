@@ -19,7 +19,6 @@ import java.io.IOException
 
 
 class BroadcastActivity : AppCompatActivity(), SurfaceHolder.Callback {
-
     private val REQUEST_ID_READ_WRITE_PERMISSION = 99
     private val REQUEST_ID_IMAGE_CAPTURE = 100
     private val REQUEST_ID_VIDEO_CAPTURE = 101
