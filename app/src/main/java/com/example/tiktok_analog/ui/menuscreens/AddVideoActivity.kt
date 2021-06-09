@@ -85,7 +85,6 @@ class AddVideoActivity : AppCompatActivity() {
             addVideo()
         }
 
-
         val config: MutableMap<String, String> = HashMap()
         config["cloud_name"] = "kepler88d"
         config["api_key"] = "829281113734147"
@@ -208,7 +207,6 @@ class AddVideoActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == RESULT_OK && requestCode == pickVideo && data != null) {
-            // try {
             val videoUri: Uri = data.data!!
 
             val videoPath1: String = videoUri.path!!
@@ -240,7 +238,6 @@ class AddVideoActivity : AppCompatActivity() {
             val videoWeight =
                 mediaMetadataRetriever.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_FILESIZE)
 
-            // TODO: make this safe
             if (videoTitle.text.isBlank()) {
                 videoTitle.setText(File(videoPath2).name.split(".")[0])
             }
@@ -259,20 +256,6 @@ class AddVideoActivity : AppCompatActivity() {
             videoPreview.setImageBitmap(thumbnail)
 
             checkIfCanUpload()
-
-            // } catch (e: Error) {
-//                AlertDialog.Builder(this).setTitle("Ошибка!")
-//                    .setMessage("Не получилось добавить видео")
-//                    .setPositiveButton("Хорошо, скопировать лог ошибки") { dialog, _ ->
-//                        run {
-//                            val clipboard: ClipboardManager =
-//                                getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-//                            val clip = ClipData.newPlainText("Copied text", e.stackTraceToString())
-//                            clipboard.setPrimaryClip(clip)
-//                            dialog.cancel()
-//                        }
-//                    }.create().show()
-            // }
         }
     }
 
@@ -345,7 +328,6 @@ class AddVideoActivity : AppCompatActivity() {
             else R.color.buttonEnabledBg
         )
     }
-
 
     override fun onBackPressed() {
         val alertDialog: AlertDialog = AlertDialog.Builder(this)
