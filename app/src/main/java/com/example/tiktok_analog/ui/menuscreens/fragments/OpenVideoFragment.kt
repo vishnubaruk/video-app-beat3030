@@ -167,16 +167,14 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         }
 
         mapOf(
-            R.id.addVideoButton to AddVideoActivity::class.java,
-            R.id.broadcastButton to BroadcastActivity::class.java,
-            R.id.notificationsButton to NotificationsActivity::class.java,
-            R.id.favouriteButton to FavouriteActivity::class.java,
-            R.id.openProfileButton to ProfileActivity::class.java
+            R.id.addVideoButton to AddVideoFragment::class.java,
+            R.id.broadcastButton to BroadcastFragment::class.java,
+            R.id.notificationsButton to NotificationsFragment::class.java,
+            R.id.favouriteButton to FavouriteFragment::class.java,
+            R.id.openProfileButton to ProfileFragment::class.java
         ).forEach { (k, v) ->
             rootView!!.findViewById<Button>(k).setOnClickListener {
-                closeFilter()
-                closeMenu()
-                requireActivity().startActivityForResult(Intent(requireActivity(), v), 228)
+                (requireActivity() as OpenVideoActivity).openFragment(v.newInstance())
             }
         }
 
@@ -365,16 +363,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     }
 
     fun onBackPressed(elseRunnable: Runnable) {
-        if (!isFilterOpened && !isMenuOpened) {
-            elseRunnable.run()
-        } else {
-            if (isFilterOpened) {
-                closeFilter()
-            }
-            if (isMenuOpened) {
-                closeMenu()
-            }
-        }
+        elseRunnable.run()
     }
 
     private fun displayAdvertisement() {
