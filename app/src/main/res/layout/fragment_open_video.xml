@@ -26,11 +26,13 @@
             android:layout_width="0dp"
             android:layout_height="80dp"
             android:background="@color/colorPrimary"
+            android:clickable="true"
             android:elevation="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark">
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+            android:focusable="true">
 
             <ImageButton
                 android:id="@+id/closeMenuButton"
@@ -263,40 +265,40 @@
 
     <include
         android:id="@+id/advertisement"
-        android:visibility="gone"
         layout="@layout/advertisement"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageView
         android:id="@+id/bigPauseButton"
-        android:visibility="visible"
-        android:alpha="0"
-        android:elevation="8dp"
-        android:adjustViewBounds="true"
-        android:layout_gravity="center"
         android:layout_width="128dp"
         android:layout_height="128dp"
+        android:layout_gravity="center"
+        android:adjustViewBounds="true"
+        android:alpha="0"
+        android:background="@drawable/ic_baseline_pause_24"
+        android:elevation="8dp"
         android:foregroundGravity="center"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:background="@drawable/ic_baseline_pause_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/bigPlayButton"
-        android:visibility="visible"
-        android:adjustViewBounds="true"
-        android:alpha="0"
-        android:elevation="8dp"
-        android:layout_gravity="center"
         android:layout_width="128dp"
         android:layout_height="128dp"
+        android:layout_gravity="center"
+        android:adjustViewBounds="true"
+        android:alpha="0"
+        android:background="@drawable/ic_baseline_play_arrow_24"
+        android:elevation="8dp"
         android:foregroundGravity="center"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:background="@drawable/ic_baseline_play_arrow_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

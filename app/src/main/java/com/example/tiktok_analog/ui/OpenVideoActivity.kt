@@ -10,6 +10,8 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager2.widget.ViewPager2
 import com.android.volley.Request
@@ -18,6 +20,7 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
+import com.example.tiktok_analog.ui.menuscreens.fragments.AddVideoFragment
 import com.example.tiktok_analog.ui.menuscreens.fragments.CommentsFragment
 import com.example.tiktok_analog.ui.menuscreens.fragments.OpenVideoFragment
 import com.example.tiktok_analog.ui.menuscreens.fragments.ProfileFragment
@@ -174,6 +177,17 @@ class OpenVideoActivity : AppCompatActivity() {
     fun setConfig(config: AppConfig) {
         this.openFileOutput("appConfig", Context.MODE_PRIVATE)
             .write(Json.encodeToString(config).toByteArray())
+    }
+
+    fun openFragment(fragment: Fragment) {
+        supportFragmentManager.commit {
+            setCustomAnimations(
+                R.anim.fade_in,
+                R.anim.fade_out
+            )
+            replace(R.id.fragmentContainer, fragment)
+            addToBackStack(null)
+        }
     }
 
     override fun onBackPressed() {
