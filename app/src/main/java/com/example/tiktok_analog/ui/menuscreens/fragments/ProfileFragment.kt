@@ -1,5 +1,6 @@
 package com.example.tiktok_analog.ui.menuscreens.fragments
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +11,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
@@ -18,6 +20,7 @@ import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.databinding.FragmentProfileBinding
 import com.example.tiktok_analog.ui.OpenVideoActivity
+import com.example.tiktok_analog.util.RequestWorker
 import com.squareup.picasso.Picasso
 import org.json.JSONObject
 
@@ -48,30 +51,40 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             if (requireActivity() is OpenVideoActivity) View.GONE else View.VISIBLE
 
         binding.yourProfileTab.setOnClickListener {
-            binding.yourProfileTab.backgroundTintList = requireActivity()
-                .applicationContext.resources.getColorStateList(R.color.buttonEnabledBg)
-            binding.yourProfileTab.setTextColor(resources.getColor(R.color.white))
+            binding.yourProfileTab.backgroundTintList = ContextCompat.getColorStateList(
+                requireContext(), R.color.buttonEnabledBg
+            )
+            binding.yourProfileTab.setTextColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.white
+                )
+            )
 
             binding.yourVideosTab.backgroundTintList =
-                requireActivity().applicationContext.resources.getColorStateList(R.color.groupUnselected)
-            binding.yourVideosTab.setTextColor(resources.getColor(R.color.colorPrimary))
+                ContextCompat.getColorStateList(requireContext(), R.color.groupUnselected)
+            binding.yourVideosTab.setTextColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.colorPrimary
+                )
+            )
 
             binding.yourProfileBlock.visibility = View.VISIBLE
             binding.yourVideosBlock.visibility = View.GONE
 
             binding.sectionTitleText.text = "Ваш профиль"
-
             binding.editData.visibility = View.VISIBLE
         }
 
         binding.yourVideosTab.setOnClickListener {
             binding.yourProfileTab.backgroundTintList =
-                requireActivity().applicationContext.resources.getColorStateList(R.color.groupUnselected)
+                ContextCompat.getColorStateList(requireContext(), R.color.groupUnselected)
             binding.yourProfileTab
                 .setTextColor(resources.getColor(R.color.colorPrimary))
 
             binding.yourVideosTab.backgroundTintList =
-                requireActivity().applicationContext.resources.getColorStateList(R.color.buttonEnabledBg)
+                ContextCompat.getColorStateList(requireContext(), R.color.buttonEnabledBg)
             binding.yourVideosTab.setTextColor(resources.getColor(R.color.white))
 
             binding.yourProfileBlock.visibility = View.GONE
@@ -105,14 +118,12 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     }
 
     private fun updateData() {
-        val url =
-            resources.getString(R.string.base_url) +
-                    "/getUploadedVideosStats?" +
-                    "email=${userData.email}&" +
-                    "phone=${userData.phone}"
+        val url = resources.getString(R.string.base_url) +
+                "/getUploadedVideosStats?" +
+                "email=${userData.email}&" +
+                "phone=${userData.phone}"
 
         val videoStatsQueue = Volley.newRequestQueue(requireActivity().applicationContext)
-
         val addCommentRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
                 val result = JSONObject(response)
@@ -128,7 +139,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         })
 
         videoStatsQueue.add(addCommentRequest)
-
         binding.uploadedVideosLayout.removeAllViews()
 
         val uploadedVideosUrl = "https://kepler88d.pythonanywhere.com" +
@@ -137,18 +147,15 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 "phone=${userData.phone}"
 
         val uploadedVideosQueue = Volley.newRequestQueue(requireActivity().applicationContext)
-
         val uploadedVideosRequest =
             StringRequest(Request.Method.GET, uploadedVideosUrl, { response ->
                 run {
                     val result = JSONObject(response).getJSONArray("result")
-
                     for (index in 0 until result.length()) {
                         addViewToUploadedVideos(
                             videoId = result.getInt(index)
                         )
                     }
-
                 }
             }, {
                 Log.e("UploadedVideos", "Error at sign in : " + it.message)
@@ -158,9 +165,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     }
 
     private fun addViewToUploadedVideos(videoId: Int) {
-        val newView =
-            LayoutInflater.from(requireActivity().applicationContext)
-                .inflate(R.layout.fav_video_item, null, false)
+        val newView = LayoutInflater.from(requireActivity().applicationContext)
+            .inflate(R.layout.fav_video_item, null, false)
 
         newView.setOnLongClickListener {
             Toast.makeText(
@@ -172,34 +178,24 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         }
 
         newView.setOnClickListener {
-            val openVideoIntent =
-                Intent(requireActivity().applicationContext, OpenVideoActivity::class.java)
-
-            openVideoIntent.putIntegerArrayListExtra("id", arrayListOf(videoId))
-
             if (videoId != 0) {
-                startActivity(openVideoIntent)
+                startActivity(
+                    Intent(
+                        requireActivity().applicationContext,
+                        OpenVideoActivity::class.java
+                    ).putIntegerArrayListExtra("id", arrayListOf(videoId))
+                )
             }
         }
 
-        newView.findViewWithTag<Button>("delete").setOnClickListener {
-            binding.uploadedVideosLayout.removeView(newView)
-
-            Toast.makeText(
-                requireActivity().applicationContext,
-                "Video $videoId disliked",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-
-        val urlSrc = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$videoId.jpg"
-        val previewImage = newView.findViewWithTag<ImageView>("previewImage")
+        newView.findViewWithTag<Button>("delete")
+            .setOnClickListener { deleteVideo(videoId, newView) }
 
         Picasso
             .get()
-            .load(urlSrc)
+            .load(resources.getString(R.string.res_url) + "/$videoId.jpg")
             .placeholder(R.drawable.rectangle34)
-            .into(previewImage)
+            .into(newView.findViewWithTag<ImageView>("previewImage"))
 
         val viewCountUrl = resources.getString(R.string.base_url) +
                 "/getViewCount?" +
@@ -218,6 +214,23 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         viewQueue.add(viewCountRequest)
         binding.uploadedVideosLayout.addView(newView)
+    }
+
+    private fun deleteVideo(videoId: Int, view: View) {
+        val alertDialog = AlertDialog.Builder(requireContext()).setTitle("Удаление видео")
+            .setMessage("Вы уверены, что хотите удалить данное видео?")
+            .setPositiveButton("Да") { dialog, _ ->
+                run {
+                    RequestWorker.deleteVideo(videoId)
+                    binding.uploadedVideosLayout.removeView(view)
+                    dialog.dismiss()
+                }
+            }.setNegativeButton("Нет, отмена") { dialog, _ -> dialog.cancel() }
+            .create()
+        alertDialog.show()
+
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isAllCaps = false
+        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).isAllCaps = false
     }
 
     private fun fillProfileData() {
