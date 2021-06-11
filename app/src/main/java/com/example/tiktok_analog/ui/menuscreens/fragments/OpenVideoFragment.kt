@@ -80,10 +80,6 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     ): View {
         _binding = FragmentOpenVideoBinding.inflate(inflater, container, false)
 
-        if (_binding != null) {
-            return binding.root
-        }
-
         requireActivity().openFileInput("userData").use {
             userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
         }
@@ -564,5 +560,10 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
                 else R.drawable.ic_radiobutton_notselected
             )
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

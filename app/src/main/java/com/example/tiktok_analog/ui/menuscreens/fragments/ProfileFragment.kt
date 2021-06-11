@@ -7,10 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.android.volley.Request
@@ -74,7 +71,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             binding.yourVideosBlock.visibility = View.GONE
 
             binding.sectionTitleText.text = "Ваш профиль"
-            binding.editData.visibility = View.VISIBLE
         }
 
         binding.yourVideosTab.setOnClickListener {
@@ -91,17 +87,35 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             binding.yourVideosBlock.visibility = View.VISIBLE
 
             binding.sectionTitleText.text = "Ваши видео"
-            binding.editData.visibility = View.GONE
 
             updateData()
         }
 
-        binding.editData.setOnClickListener {
-            Toast.makeText(
-                requireActivity().applicationContext,
-                "Edit data clicked",
-                Toast.LENGTH_SHORT
-            ).show()
+        binding.editUsername.setOnClickListener {
+            val alertDialog =
+                AlertDialog.Builder(requireContext()).setTitle("Введите имя пользователя")
+                    .setView(EditText(requireContext()))
+                    .setPositiveButton("Применить") { _, _ -> run {} }
+                    .setNegativeButton("Отмена") { _, _ -> run {} }.create()
+            alertDialog.show()
+        }
+
+        binding.editBirthDate.setOnClickListener {
+            val alertDialog =
+                AlertDialog.Builder(requireContext()).setTitle("Введите дату рождения")
+                    .setView(EditText(requireContext()))
+                    .setPositiveButton("Применить") { _, _ -> run {} }
+                    .setNegativeButton("Отмена") { _, _ -> run {} }.create()
+            alertDialog.show()
+        }
+
+        binding.editCity.setOnClickListener {
+            val alertDialog =
+                AlertDialog.Builder(requireContext()).setTitle("Введите город пользователя")
+                    .setView(EditText(requireContext()))
+                    .setPositiveButton("Применить") { _, _ -> run {} }
+                    .setNegativeButton("Отмена") { _, _ -> run {} }.create()
+            alertDialog.show()
         }
 
         binding.profileSwipeRefresh.setOnRefreshListener {

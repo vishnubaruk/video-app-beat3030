@@ -43,5 +43,35 @@ class RequestWorker {
                 )
             }
         }
+
+        fun editUserName(userId: Int, userName: String) {
+            GlobalScope.launch {
+                client.get<String> {
+                    url("/editUserName")
+                    parameter("userId", userId.toString())
+                    parameter("username", userName)
+                }
+            }
+        }
+
+        fun editUserBirthDate(userId: Int, birthDate: String) {
+            GlobalScope.launch {
+                client.get<String> {
+                    url("/editUserBirthDate")
+                    parameter("userId", userId.toString())
+                    parameter("birthDate", birthDate)
+                }
+            }
+        }
+
+        fun editUserCity(userId: Int, city: String) {
+            GlobalScope.launch {
+                client.get<String> {
+                    url("/editUserCity")
+                    parameter("userId", userId.toString())
+                    parameter("city", city)
+                }
+            }
+        }
     }
 }

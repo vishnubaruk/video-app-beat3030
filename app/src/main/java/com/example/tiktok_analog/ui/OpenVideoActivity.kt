@@ -69,8 +69,6 @@ class OpenVideoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Log.d("ActivityTag", "onCreate")
-
         val userDataFile = applicationContext.getFileStreamPath("userData")
         if (userDataFile != null && userDataFile.exists()) {
             openFileInput("userData").use {
