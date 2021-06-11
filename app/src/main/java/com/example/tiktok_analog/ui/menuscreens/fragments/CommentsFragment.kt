@@ -17,6 +17,8 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
+import com.example.tiktok_analog.databinding.FragmentCommentsBinding
+import com.example.tiktok_analog.databinding.FragmentOpenVideoBinding
 import com.example.tiktok_analog.ui.OpenVideoActivity
 import com.example.tiktok_analog.util.viewpageradapters.ViewPagerAdapter
 import org.json.JSONObject
@@ -24,17 +26,17 @@ import java.lang.IllegalStateException
 
 class CommentsFragment : Fragment(R.layout.fragment_comments) {
     lateinit var userData: User
-
     private lateinit var requestQueue: RequestQueue
-    private lateinit var rootView: View
+
+    private var _binding: FragmentCommentsBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = super.onCreateView(inflater, container, savedInstanceState)!!
-        rootView = view
+        _binding = FragmentCommentsBinding.inflate(inflater, container, false)
 
         requireActivity().openFileInput("userData").use {
             userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
@@ -42,16 +44,15 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
 
         requestQueue = Volley.newRequestQueue(requireActivity().applicationContext)
 
-        view.findViewById<Button>(R.id.sendButton).setOnClickListener {
-            addComment(view.findViewById<TextView>(R.id.commentText).text.toString(), view)
-            view.findViewById<TextView>(R.id.commentText).text = ""
+        binding.sendButton.setOnClickListener {
+            addComment(binding.commentText.text.toString())
+            binding.commentText.setText("")
         }
 
-        updateComments()
-        return view
+        return binding.root
     }
 
-    private fun addComment(commentText: String, view: View) {
+    private fun addComment(commentText: String) {
         val url = resources.getString(R.string.base_url) +
                 "/addComment?videoId=" +
                 "${
@@ -75,7 +76,7 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
     }
 
     public fun updateComments() {
-        rootView.findViewById<LinearLayout>(R.id.commentsContainer).removeAllViews()
+        binding.commentsContainer.removeAllViews()
 
         val url = resources.getString(R.string.base_url) +
                 "/getComments?videoId=" +
@@ -91,7 +92,7 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
                 val result = JSONObject(response).getJSONArray("result")
 
                 for (index in 0 until result.length()) {
-                    addCommentView(result.getJSONObject(index), rootView)
+                    addCommentView(result.getJSONObject(index))
                 }
             }
         }, { Log.e("Comments", "Error at sign in : " + it.message) })
@@ -99,7 +100,7 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
         requestQueue.add(commentRequest)
     }
 
-    private fun addCommentView(jsonObject: JSONObject, view: View) {
+    private fun addCommentView(jsonObject: JSONObject) {
         try {
             val newView =
                 LayoutInflater.from(requireActivity().applicationContext)
@@ -108,15 +109,14 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
                 jsonObject.getString("authorUsername")
             newView.findViewWithTag<TextView>("commentText").text =
                 jsonObject.getString("text")
-            view.findViewById<LinearLayout>(R.id.commentsContainer).addView(newView)
+            binding.commentsContainer.addView(newView)
 
             newView.findViewWithTag<ImageView>("likeIcon").setOnClickListener {
                 it.setBackgroundResource(R.drawable.ic_like)
             }
 
-            view.findViewById<NestedScrollView>(R.id.commentsScrollView).post {
-                view.findViewById<NestedScrollView>(R.id.commentsScrollView)
-                    .fullScroll(ScrollView.FOCUS_DOWN)
+            binding.commentsScrollView.post {
+                binding.commentsScrollView.fullScroll(ScrollView.FOCUS_DOWN)
             }
         } catch (e: IllegalStateException) {
             print(e.stackTrace)
@@ -129,5 +129,10 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
                 (if (activity.currentFocus == null) View(activity)
                 else activity.currentFocus)!!.windowToken, 0
             )
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
