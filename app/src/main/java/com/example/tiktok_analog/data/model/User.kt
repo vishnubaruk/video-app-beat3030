@@ -23,7 +23,7 @@ data class User(
     fun toJsonString(): String = GsonBuilder().create().toJson(this)
 
     companion object {
-        fun newUser(jsonObject: JSONObject): User {
+        fun fromJson(jsonObject: JSONObject): User {
             return User(
                 username = jsonObject.getString("username").toString(),
                 password = jsonObject.getString("password").toString(),
@@ -34,6 +34,8 @@ data class User(
                 userId = jsonObject.getString("userId").toString()
             )
         }
+
+        fun fromJsonString(jsonString: String): User = fromJson(JSONObject(jsonString))
 
         fun newFakeUser(): User {
             return newFakeUser(JSONObject())

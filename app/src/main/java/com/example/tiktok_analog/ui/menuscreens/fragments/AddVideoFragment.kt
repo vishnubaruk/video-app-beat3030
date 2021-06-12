@@ -51,7 +51,7 @@ class AddVideoFragment() : Fragment(R.layout.add_video) {
         _binding = AddVideoBinding.inflate(inflater, container, false)
 
         requireActivity().openFileInput("userData").use {
-            userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
+            userData = User.fromJson(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
         }
 
         binding.backArrowButton.setOnClickListener {

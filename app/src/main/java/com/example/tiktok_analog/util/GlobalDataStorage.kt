@@ -26,6 +26,5 @@ class GlobalDataStorage {
         fun viewVideo() = totalVideoViewsDuringSession++
 
         fun getTotalViews() = totalVideoViewsDuringSession
-
     }
 }
