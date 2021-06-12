@@ -1,7 +1,10 @@
 package com.example.tiktok_analog.ui.menuscreens.fragments
 
 import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,6 +23,7 @@ import com.example.tiktok_analog.ui.OpenVideoActivity
 import com.example.tiktok_analog.util.RequestWorker
 import com.squareup.picasso.Picasso
 import org.json.JSONObject
+import java.util.*
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
     lateinit var userData: User
@@ -94,28 +98,50 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         binding.editUsername.setOnClickListener {
             val alertDialog =
                 AlertDialog.Builder(requireContext()).setTitle("Введите имя пользователя")
-                    .setView(EditText(requireContext()))
+                    .setView(
+                        LayoutInflater.from(requireContext())
+                            .inflate(R.layout.user_input_field, null, false)
+                    )
                     .setPositiveButton("Применить") { _, _ -> run {} }
                     .setNegativeButton("Отмена") { _, _ -> run {} }.create()
             alertDialog.show()
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isAllCaps = false
+            alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).isAllCaps = false
         }
 
         binding.editBirthDate.setOnClickListener {
-            val alertDialog =
-                AlertDialog.Builder(requireContext()).setTitle("Введите дату рождения")
-                    .setView(EditText(requireContext()))
-                    .setPositiveButton("Применить") { _, _ -> run {} }
-                    .setNegativeButton("Отмена") { _, _ -> run {} }.create()
-            alertDialog.show()
+            val cal: Calendar = Calendar.getInstance();
+            val year: Int = cal.get(Calendar.YEAR);
+            val month: Int = cal.get(Calendar.MONTH);
+            val day: Int = cal.get(Calendar.DAY_OF_MONTH);
+
+            val dialog = DatePickerDialog(
+                requireContext(),
+                { _, year, month, day ->
+                    binding.birthDateText.text =
+                        "${if (day < 10) "0" else ""}$day.${if (month < 9) "0" else ""}${month + 1}.$year"
+                },
+                year, month, day
+            )
+
+            val calendar = Calendar.getInstance()
+            calendar.add(Calendar.YEAR, -18)
+            dialog.datePicker.maxDate = calendar.timeInMillis
+            dialog.show()
         }
 
         binding.editCity.setOnClickListener {
             val alertDialog =
                 AlertDialog.Builder(requireContext()).setTitle("Введите город пользователя")
-                    .setView(EditText(requireContext()))
+                    .setView(
+                        LayoutInflater.from(requireContext())
+                            .inflate(R.layout.user_input_field, null, false)
+                    )
                     .setPositiveButton("Применить") { _, _ -> run {} }
                     .setNegativeButton("Отмена") { _, _ -> run {} }.create()
             alertDialog.show()
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isAllCaps = false
+            alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).isAllCaps = false
         }
 
         binding.profileSwipeRefresh.setOnRefreshListener {

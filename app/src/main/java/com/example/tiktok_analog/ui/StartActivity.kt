@@ -19,10 +19,7 @@ import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
@@ -125,7 +122,8 @@ class StartActivity : AppCompatActivity() {
             // disable login button unless both username / password is valid
             register.isEnabled = registerState.isDataValid
 
-            register.backgroundTintList = applicationContext.resources.getColorStateList(
+            register.backgroundTintList = ContextCompat.getColorStateList(
+                this,
                 if (registerState.isDataValid)
                     R.color.buttonEnabledBg
                 else
@@ -177,7 +175,6 @@ class StartActivity : AppCompatActivity() {
             )
 
             // Instead of destroying activity in case of correct registration we open SmsActivity
-
             checkIfUserIsRegistered(userData)
         })
 
@@ -210,11 +207,6 @@ class StartActivity : AppCompatActivity() {
 
         phone.addTextChangedListener(PhoneNumberFormattingTextWatcher("RU"))
 
-        val mDateSetListener: OnDateSetListener = OnDateSetListener { _, year, month, day ->
-            birthDate.text =
-                "${if (day < 10) "0" else ""}$day.${if (month < 9) "0" else ""}${month + 1}.$year"
-        }
-
         birthDate.setOnClickListener {
             val cal: Calendar = Calendar.getInstance();
             val year: Int = cal.get(Calendar.YEAR);
@@ -223,11 +215,16 @@ class StartActivity : AppCompatActivity() {
 
             val dialog = DatePickerDialog(
                 this,
-                android.R.style.Theme_Holo_Light_Dialog_MinWidth,
-                mDateSetListener,
+                { _, year, month, day ->
+                    birthDate.text =
+                        "${if (day < 10) "0" else ""}$day.${if (month < 9) "0" else ""}${month + 1}.$year"
+                },
                 year, month, day
             )
-            dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+            val calendar = Calendar.getInstance()
+            calendar.add(Calendar.YEAR, -18)
+            dialog.datePicker.maxDate = calendar.timeInMillis
             dialog.show()
         }
 
@@ -277,23 +274,23 @@ class StartActivity : AppCompatActivity() {
             // disable login button unless both username / password is valid
             login.isEnabled = loginState.isDataValid
 
-            login.backgroundTintList = applicationContext.resources.getColorStateList(
-                if (loginState.isDataValid) R.color.buttonEnabledBg
+            login.backgroundTintList = ContextCompat.getColorStateList(
+                this, if (loginState.isDataValid) R.color.buttonEnabledBg
                 else R.color.buttonDisabledBg
             )
 
             if (loginState.usernameError != null) {
                 username.error = "Некорректное имя пользователя"
             }
+
             if (loginState.passwordError != null) {
                 password.error = "Неправильный пароль"
             }
         })
 
         loginViewModel.loginResult.observe(this@StartActivity, Observer {
-            val loginResult = it ?: return@Observer
-
             val fakeUser = User.newFakeUser()
+
             if (Patterns.EMAIL_ADDRESS.matcher(username.text).matches()) {
                 fakeUser.email = username.text.toString()
             } else {
@@ -341,9 +338,6 @@ class StartActivity : AppCompatActivity() {
             "https://kepler88d.pythonanywhere.com/exist?" +
                     "phone=${user.phone}&email=${user.email}"
 
-        Log.d("DEBUG", user.toJsonString())
-        Log.d("DEBUG", url)
-
         var userExists: Boolean
         val existenceRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
@@ -370,8 +364,8 @@ class StartActivity : AppCompatActivity() {
     private fun loginUser(user: User) {
         val loginQueue = Volley.newRequestQueue(this)
 
-        val url =
-            "https://kepler88d.pythonanywhere.com/login?phone=${user.phone}&email=${user.email}&password=${user.password}"
+        val url = resources.getString(R.string.base_url) +
+                "/login?phone=${user.phone}&email=${user.email}&password=${user.password}"
 
         val loginRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
@@ -401,8 +395,8 @@ class StartActivity : AppCompatActivity() {
     private fun checkIfUserIsRegistered(user: User) {
         val checkRegisterQueue = Volley.newRequestQueue(this)
 
-        val url =
-            "https://kepler88d.pythonanywhere.com/exist?phone=${user.phone}&email=${user.email}"
+        val url = resources.getString(R.string.base_url) +
+                "/exist?phone=${user.phone}&email=${user.email}"
 
         var userExists: Boolean
         val existenceRequest = StringRequest(Request.Method.GET, url, { response ->
@@ -429,39 +423,19 @@ class StartActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun registerUser(user: User) {
-
-        val date = user.birthDate.split(".").toList()
-        if (Period.between(
-                LocalDate.of(date[2].toInt(), date[1].toInt(), date[0].toInt()),
-                LocalDate.now()
-            ).years < 18
-        ) {
-            AlertDialog.Builder(this).setTitle("Ошибка регистрации!")
-                .setMessage("Ваш возраст должен превышать 18 лет для регистрации")
-                .setPositiveButton("Понятно") { dialog, _ ->
-                    dialog.cancel()
-                }.create().show()
-            return
-        }
-
         val registerQueue = Volley.newRequestQueue(this)
 
-        val url =
-            "https://kepler88d.pythonanywhere.com/register?username=${user.username}&" +
-                    "phone=${user.phone}&email=${user.email}&city=${user.city}&" +
-                    "birthDate=${user.birthDate}&password=${user.password}&confirmPhone=true"
+        val url = resources.getString(R.string.base_url) + "/register?username=${user.username}&" +
+                "phone=${user.phone}&email=${user.email}&city=${user.city}&" +
+                "birthDate=${user.birthDate}&password=${user.password}&confirmPhone=true"
 
         val registerRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
                 val jsonResponse = JSONObject(response)
 
                 if (jsonResponse.getBoolean("ok")) {
-                    // data serialization
                     this.openFileOutput("userData", Context.MODE_PRIVATE)
                         .write(userData.toJsonString().toByteArray())
-
-                    Log.d("DEBUG", userData.toJsonString())
-
                     openActivityWithAllPermissionsGranted(SmsActivity::class.java)
                 } else {
                     AlertDialog.Builder(this).setTitle("Произошла непредвиденная ошибка!")
