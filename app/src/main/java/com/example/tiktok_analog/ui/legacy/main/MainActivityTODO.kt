@@ -1,4 +1,4 @@
-package com.example.tiktok_analog.ui.main
+package com.example.tiktok_analog.ui.legacy.main
 
 // TODO: refactor MainActivity to this state system
 

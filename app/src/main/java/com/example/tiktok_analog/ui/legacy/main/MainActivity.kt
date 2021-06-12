@@ -1,4 +1,4 @@
-package com.example.tiktok_analog.ui.main
+package com.example.tiktok_analog.ui.legacy.main
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -24,7 +24,7 @@ import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.OpenVideoActivity
-import com.example.tiktok_analog.ui.menuscreens.*
+import com.example.tiktok_analog.ui.legacy.*
 import com.example.tiktok_analog.util.dataclasses.AppConfig
 import com.example.tiktok_analog.util.enums.SortType
 import com.squareup.picasso.Picasso
@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         val userDataFile = applicationContext.getFileStreamPath("userData")
         if (userDataFile != null && userDataFile.exists()) {
             openFileInput("userData").use {
-                userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
+                userData = User.fromJson(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
                 nameTextHeader.text = userData.username
                 emailTextHeader.text = userData.email
             }

@@ -1,4 +1,4 @@
-package com.example.tiktok_analog.ui.menuscreens
+package com.example.tiktok_analog.ui.legacy
 
 import android.app.AlertDialog
 import android.content.Intent
@@ -46,7 +46,7 @@ class AddVideoActivity : AppCompatActivity() {
         setContentView(R.layout.add_video)
 
         openFileInput("userData").use {
-            userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
+            userData = User.fromJson(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
         }
 
         backArrowButton.setOnClickListener {

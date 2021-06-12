@@ -1,4 +1,4 @@
-package com.example.tiktok_analog.ui.menuscreens
+package com.example.tiktok_analog.ui.legacy
 
 import android.content.Intent
 import android.os.Bundle
@@ -28,7 +28,7 @@ class FavouriteActivity : AppCompatActivity() {
         setContentView(R.layout.activity_favourite)
 
         openFileInput("userData").use {
-            userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
+            userData = User.fromJson(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
         }
 
         backArrowButton.setOnClickListener {
