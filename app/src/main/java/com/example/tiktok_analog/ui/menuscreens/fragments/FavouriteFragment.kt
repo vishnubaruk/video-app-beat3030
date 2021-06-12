@@ -35,7 +35,7 @@ class FavouriteFragment : Fragment(R.layout.activity_favourite) {
         _binding = ActivityFavouriteBinding.inflate(inflater, container, false)
 
         requireActivity().openFileInput("userData").use {
-            userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
+            userData = User.fromJson(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
         }
 
         binding.backArrowButton.setOnClickListener {

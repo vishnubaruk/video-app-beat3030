@@ -39,7 +39,7 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
         _binding = FragmentCommentsBinding.inflate(inflater, container, false)
 
         requireActivity().openFileInput("userData").use {
-            userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
+            userData = User.fromJson(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
         }
 
         requestQueue = Volley.newRequestQueue(requireActivity().applicationContext)

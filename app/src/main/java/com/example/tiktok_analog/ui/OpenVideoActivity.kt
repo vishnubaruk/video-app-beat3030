@@ -2,7 +2,6 @@ package com.example.tiktok_analog.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -20,13 +19,12 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
-import com.example.tiktok_analog.ui.menuscreens.fragments.AddVideoFragment
 import com.example.tiktok_analog.ui.menuscreens.fragments.CommentsFragment
 import com.example.tiktok_analog.ui.menuscreens.fragments.OpenVideoFragment
 import com.example.tiktok_analog.ui.menuscreens.fragments.ProfileFragment
-import com.example.tiktok_analog.util.viewpageradapters.ViewPagerAdapter
 import com.example.tiktok_analog.util.dataclasses.AppConfig
 import com.example.tiktok_analog.util.viewpageradapters.TabViewPagerAdapter
+import com.example.tiktok_analog.util.viewpageradapters.ViewPagerAdapter
 import kotlinx.android.synthetic.main.activity_open_video.*
 import kotlinx.android.synthetic.main.fragment_open_video.*
 import kotlinx.serialization.decodeFromString
@@ -36,10 +34,10 @@ import org.json.JSONObject
 
 
 class OpenVideoActivity : AppCompatActivity() {
-    lateinit var userData: User
+    val userData: User
+        get() = readUserData()
 
     private lateinit var requestQueue: RequestQueue
-    private lateinit var currentConfig: AppConfig
 
     private val profileFragment: ProfileFragment = ProfileFragment()
     private val openVideoFragment: OpenVideoFragment = OpenVideoFragment()
@@ -70,11 +68,7 @@ class OpenVideoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val userDataFile = applicationContext.getFileStreamPath("userData")
-        if (userDataFile != null && userDataFile.exists()) {
-            openFileInput("userData").use {
-                userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
-            }
-        } else {
+        if (userDataFile == null && userDataFile?.exists()!!.not()) {
             finish()
         }
 
@@ -82,10 +76,6 @@ class OpenVideoActivity : AppCompatActivity() {
         config = getConfig()
 
         setContentView(R.layout.activity_open_video)
-
-        openFileInput("userData").use {
-            userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
-        }
 
         requestQueue = Volley.newRequestQueue(applicationContext)
         setupViewPager(tabViewPager)
@@ -114,9 +104,11 @@ class OpenVideoActivity : AppCompatActivity() {
 
     private fun setupViewPager(viewPager: ViewPager) {
         val adapter = TabViewPagerAdapter(supportFragmentManager)
+
         adapter.addFragment(profileFragment, "Profile")
         adapter.addFragment(openVideoFragment, "Videos")
         adapter.addFragment(commentsFragment, "Comments")
+
         viewPager.adapter = adapter
         viewPager.currentItem = 1
     }
@@ -138,7 +130,7 @@ class OpenVideoActivity : AppCompatActivity() {
                             "coordinates=${location.latitude}:${location.longitude}"
 
                     requestQueue.add(
-                        StringRequest(Request.Method.GET, url, { _ -> run {} }, {
+                        StringRequest(Request.Method.GET, url, { run {} }, {
                             Log.e("Does user exist", "Error at sign in : " + it.message)
                         })
                     )
@@ -198,15 +190,25 @@ class OpenVideoActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        Log.d("ActivityTag", "onStop")
+        openVideoFragment.pauseVideo()
         isActivityStopped = true
     }
 
     override fun onResume() {
         super.onResume()
-        Log.d("ActivityTag", "onResume")
         if (isActivityStopped) {
             openVideoFragment.pauseVideo()
         }
+    }
+
+    private fun readUserData(): User {
+        openFileInput("userData").use {
+            return User.fromJson(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
+        }
+    }
+
+    private fun writeUserData(data: User): Unit {
+        openFileOutput("userData", Context.MODE_PRIVATE)
+            .write(data.toJsonString().toByteArray())
     }
 }
