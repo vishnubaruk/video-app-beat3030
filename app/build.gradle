@@ -40,18 +40,23 @@ android {
                     'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.0.0-beta07'
     }
 }
 
 dependencies {
     implementation "androidx.fragment:fragment-ktx:1.3.4"
-
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'com.google.code.gson:gson:2.8.6'
@@ -63,6 +68,7 @@ dependencies {
     implementation "io.ktor:ktor-client-serialization-jvm:1.5.4"
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.annotation:annotation:1.2.0'
+
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'com.google.android.material:material:1.3.0'
