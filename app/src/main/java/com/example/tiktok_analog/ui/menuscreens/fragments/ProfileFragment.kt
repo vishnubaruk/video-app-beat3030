@@ -2,15 +2,17 @@ package com.example.tiktok_analog.ui.menuscreens.fragments
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.Context
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.android.volley.Request
@@ -19,7 +21,9 @@ import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.databinding.FragmentProfileBinding
+import com.example.tiktok_analog.databinding.UserInputFieldBinding
 import com.example.tiktok_analog.ui.OpenVideoActivity
+import com.example.tiktok_analog.ui.afterTextChanged
 import com.example.tiktok_analog.util.RequestWorker
 import com.squareup.picasso.Picasso
 import org.json.JSONObject
@@ -38,11 +42,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
 
-        requireActivity().openFileInput("userData").use {
-            userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
-        }
-
-        fillProfileData()
+        userData = readUserData()
+        fillProfileData(userData)
+        updateData()
 
         binding.backArrowButton.setOnClickListener {
             requireActivity().onBackPressed()
@@ -91,22 +93,39 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             binding.yourVideosBlock.visibility = View.VISIBLE
 
             binding.sectionTitleText.text = "Ваши видео"
-
             updateData()
         }
 
         binding.editUsername.setOnClickListener {
+            val inputFieldBinding = UserInputFieldBinding.inflate(
+                layoutInflater, null, false
+            )
+
+            inputFieldBinding.editText.setText(userData.username)
+
             val alertDialog =
                 AlertDialog.Builder(requireContext()).setTitle("Введите имя пользователя")
                     .setView(
-                        LayoutInflater.from(requireContext())
-                            .inflate(R.layout.user_input_field, null, false)
+                        inputFieldBinding.root
                     )
-                    .setPositiveButton("Применить") { _, _ -> run {} }
+                    .setPositiveButton("Применить") { _, _ ->
+                        run {
+                            binding.nameText.text = inputFieldBinding.editText.text.toString()
+                            RequestWorker.editUserName(
+                                userData.userId.toInt(),
+                                inputFieldBinding.editText.text.toString()
+                            ) { updateData() }
+                        }
+                    }
                     .setNegativeButton("Отмена") { _, _ -> run {} }.create()
             alertDialog.show()
             alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isAllCaps = false
             alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).isAllCaps = false
+
+            inputFieldBinding.editText.afterTextChanged {
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
+                    inputFieldBinding.editText.text.toString().isNotEmpty()
+            }
         }
 
         binding.editBirthDate.setOnClickListener {
@@ -118,8 +137,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             val dialog = DatePickerDialog(
                 requireContext(),
                 { _, year, month, day ->
-                    binding.birthDateText.text =
+                    val formattedBirthDate =
                         "${if (day < 10) "0" else ""}$day.${if (month < 9) "0" else ""}${month + 1}.$year"
+                    binding.birthDateText.text = formattedBirthDate
+                    RequestWorker.editUserBirthDate(
+                        userData.userId.toInt(),
+                        formattedBirthDate
+                    ) { updateData() }
                 },
                 year, month, day
             )
@@ -131,17 +155,33 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         }
 
         binding.editCity.setOnClickListener {
+            val inputFieldBinding = UserInputFieldBinding.inflate(
+                layoutInflater, null, false
+            )
+
+            inputFieldBinding.editText.setText(userData.city)
+
             val alertDialog =
-                AlertDialog.Builder(requireContext()).setTitle("Введите город пользователя")
-                    .setView(
-                        LayoutInflater.from(requireContext())
-                            .inflate(R.layout.user_input_field, null, false)
-                    )
-                    .setPositiveButton("Применить") { _, _ -> run {} }
+                AlertDialog.Builder(requireContext()).setTitle("Название вашего города")
+                    .setView(inputFieldBinding.root)
+                    .setPositiveButton("Применить") { _, _ ->
+                        run {
+                            binding.cityText.text = inputFieldBinding.editText.text.toString()
+                            RequestWorker.editUserCity(
+                                userData.userId.toInt(),
+                                inputFieldBinding.editText.text.toString()
+                            ) { updateData() }
+                        }
+                    }
                     .setNegativeButton("Отмена") { _, _ -> run {} }.create()
             alertDialog.show()
             alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isAllCaps = false
             alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).isAllCaps = false
+
+            inputFieldBinding.editText.afterTextChanged {
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
+                    inputFieldBinding.editText.text.toString().isNotEmpty()
+            }
         }
 
         binding.profileSwipeRefresh.setOnRefreshListener {
@@ -202,6 +242,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             })
 
         uploadedVideosQueue.add(uploadedVideosRequest)
+        RequestWorker.getUser(userData.userId.toInt()) { data ->
+            requireActivity().runOnUiThread {
+                userData = data
+                writeUserData(data)
+                fillProfileData(data)
+            }
+        }
     }
 
     private fun addViewToUploadedVideos(videoId: Int) {
@@ -273,16 +320,27 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).isAllCaps = false
     }
 
-    private fun fillProfileData() {
-        binding.nameText.text = userData.username
-        binding.nameTextHeader.text = userData.username
+    private fun readUserData(): User {
+        requireActivity().openFileInput("userData").use {
+            return User.fromJson(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
+        }
+    }
 
-        binding.phoneText.text = userData.phone
-        binding.birthDateText.text = userData.birthDate
-        binding.cityText.text = userData.city
+    private fun writeUserData(data: User): Unit {
+        requireActivity().openFileOutput("userData", Context.MODE_PRIVATE)
+            .write(data.toJsonString().toByteArray())
+    }
 
-        binding.emailText.text = userData.email
-        binding.emailTextHeader.text = userData.email
+    private fun fillProfileData(user: User) {
+        binding.nameText.text = user.username
+        binding.nameTextHeader.text = user.username
+
+        binding.phoneText.text = user.phone
+        binding.birthDateText.text = user.birthDate
+        binding.cityText.text = user.city
+
+        binding.emailText.text = user.email
+        binding.emailTextHeader.text = user.email
     }
 
     override fun onDestroyView() {
