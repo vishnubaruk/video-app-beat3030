@@ -431,7 +431,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
     private fun addCommentView(jsonObject: JSONObject) {
         val newView =
-            LayoutInflater.from(requireActivity().applicationContext)
+            LayoutInflater.from(requireContext())
                 .inflate(R.layout.comment_item, null, false)
         newView.findViewWithTag<TextView>("sender").text =
             jsonObject.getString("authorUsername")
