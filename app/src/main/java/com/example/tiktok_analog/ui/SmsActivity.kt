@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.example.tiktok_analog.ui.main.MainActivity
+import com.example.tiktok_analog.ui.legacy.main.MainActivity
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.util.textwatchers.GenericTextWatcher
@@ -29,7 +29,7 @@ class SmsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_sms)
 
         openFileInput("userData").use {
-            userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
+            userData = User.fromJson(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
         }
 
         val rootView = findViewById<View>(android.R.id.content).rootView

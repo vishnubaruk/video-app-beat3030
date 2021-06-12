@@ -4,12 +4,9 @@ import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.telephony.PhoneNumberFormattingTextWatcher
@@ -35,15 +32,12 @@ import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.ui.login.LoginViewModel
 import com.example.tiktok_analog.ui.login.LoginViewModelFactory
-import com.example.tiktok_analog.ui.main.MainActivity
 import com.example.tiktok_analog.ui.register.RegisterViewModel
 import com.example.tiktok_analog.ui.register.RegisterViewModelFactory
 import com.example.tiktok_analog.ui.register.RegisteredUserView
 import com.example.tiktok_analog.util.GlobalDataStorage
 import kotlinx.android.synthetic.main.register.*
 import org.json.JSONObject
-import java.time.LocalDate
-import java.time.Period
 import java.util.*
 
 
@@ -334,9 +328,8 @@ class StartActivity : AppCompatActivity() {
     private fun checkIfUserIsLoggedIn(user: User) {
         val loginQueue = Volley.newRequestQueue(this)
 
-        val url =
-            "https://kepler88d.pythonanywhere.com/exist?" +
-                    "phone=${user.phone}&email=${user.email}"
+        val url = resources.getString(R.string.base_url) + "/exist?" +
+                "phone=${user.phone}&email=${user.email}"
 
         var userExists: Boolean
         val existenceRequest = StringRequest(Request.Method.GET, url, { response ->
@@ -371,7 +364,7 @@ class StartActivity : AppCompatActivity() {
             run {
                 val jsonResponse = JSONObject(response)
                 if (jsonResponse.getBoolean("ok")) {
-                    userData = User.newUser(jsonResponse.getJSONObject("user"))
+                    userData = User.fromJson(jsonResponse.getJSONObject("user"))
                     this.openFileOutput("userData", Context.MODE_PRIVATE)
                         .write(userData.toJsonString().toByteArray())
 

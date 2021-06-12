@@ -1,5 +1,6 @@
 package com.example.tiktok_analog.util
 
+import com.example.tiktok_analog.data.model.User
 import com.google.gson.GsonBuilder
 import io.ktor.client.*
 import io.ktor.client.features.*
@@ -44,33 +45,50 @@ class RequestWorker {
             }
         }
 
-        fun editUserName(userId: Int, userName: String) {
+        fun editUserName(userId: Int, userName: String, handler: (String) -> Unit) {
             GlobalScope.launch {
-                client.get<String> {
-                    url("/editUserName")
-                    parameter("userId", userId.toString())
-                    parameter("username", userName)
-                }
+                handler(
+                    client.get {
+                        url("/editUserName")
+                        parameter("userId", userId.toString())
+                        parameter("username", userName)
+                    }
+                )
             }
         }
 
-        fun editUserBirthDate(userId: Int, birthDate: String) {
+        fun editUserBirthDate(userId: Int, birthDate: String, handler: (String) -> Unit) {
             GlobalScope.launch {
-                client.get<String> {
-                    url("/editUserBirthDate")
-                    parameter("userId", userId.toString())
-                    parameter("birthDate", birthDate)
-                }
+                handler(
+                    client.get {
+                        url("/editUserBirthDate")
+                        parameter("userId", userId.toString())
+                        parameter("birthDate", birthDate)
+                    }
+                )
             }
         }
 
-        fun editUserCity(userId: Int, city: String) {
+        fun editUserCity(userId: Int, city: String, handler: (String) -> Unit) {
             GlobalScope.launch {
-                client.get<String> {
-                    url("/editUserCity")
-                    parameter("userId", userId.toString())
-                    parameter("city", city)
-                }
+                handler(
+                    client.get {
+                        url("/editUserCity")
+                        parameter("userId", userId.toString())
+                        parameter("city", city)
+                    }
+                )
+            }
+        }
+
+        fun getUser(userId: Int, handler: (User) -> Unit) {
+            GlobalScope.launch {
+                handler(
+                    User.fromJsonString(JSONObject(client.get<String> {
+                        url("/getUser")
+                        parameter("userId", userId.toString())
+                    }).getString("userData"))
+                )
             }
         }
     }
