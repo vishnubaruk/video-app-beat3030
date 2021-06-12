@@ -1,13 +1,7 @@
 package com.example.tiktok_analog.util.viewpageradapters
 
 import android.app.Activity
-import android.app.DownloadManager
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.net.Uri
-import android.os.Environment
 import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
@@ -32,14 +26,12 @@ class ViewPagerAdapter(
     RecyclerView.Adapter<VideoViewHolder>() {
 
     var currentPosition: Int = 0
-
     private val updateHandler = Handler()
 
     private val viewHolderList = mutableListOf<VideoViewHolder>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoViewHolder {
         updateSeekBar()
-
         return VideoViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.item_page, parent, false)
         )
@@ -69,25 +61,6 @@ class ViewPagerAdapter(
         (activity as OpenVideoActivity).updateCommentsFragment()
 
         val videoId = videoIdList[position]
-
-//        if (File(
-//                "${
-//                    Environment.getExternalStoragePublicDirectory(
-//                        Environment.DIRECTORY_DOWNLOADS
-//                    )
-//                }/$videoId.mp4"
-//            ).exists()
-//        ) {
-//            playVideoWithPath(
-//                "${
-//                    Environment.getExternalStoragePublicDirectory(
-//                        Environment.DIRECTORY_DOWNLOADS
-//                    )
-//                }/$videoId.mp4"
-//            )
-//        } else {
-//            downloadFile(videoIdList[position])
-//        }
         playVideoWithId(videoId)
 
         activity.fillVideoData(videoId, viewHolderList[position].videoView)
@@ -143,81 +116,10 @@ class ViewPagerAdapter(
             !openVideoFragment.isFilterOpened &&
             !openVideoFragment.isMenuOpened
         ) {
-            viewHolderList[currentPosition].videoView.start()
+            currentVideoView.start()
         } else {
-            currentVideoView.pause()
+            pauseVideo()
         }
-    }
-
-    private fun playVideoWithPath(path: String) {
-        progressBar.visibility = View.GONE
-        currentVideoView.setVideoPath(path)
-
-        currentVideoView.setOnPreparedListener { mediaPlayer ->
-            mediaPlayer.start()
-
-            val layoutParams = currentVideoView.layoutParams
-            val videoWidth = mediaPlayer.videoWidth.toFloat()
-            val videoHeight = mediaPlayer.videoHeight.toFloat()
-            val viewWidth = currentVideoView.width.toFloat()
-
-            layoutParams.height = (viewWidth * (videoHeight / videoWidth)).toInt()
-            if (layoutParams.height == 0) {
-                layoutParams.height = videoHeight.toInt()
-            }
-
-            seekBar.progress = 0
-            seekBar.max = currentVideoView.duration
-            pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
-        }
-        currentVideoView.requestFocus()
-
-        if (openVideoFragment.isAdDisplayed.not()) {
-            viewHolderList[currentPosition].videoView.start()
-        } else {
-            currentVideoView.pause()
-        }
-    }
-
-    private fun downloadFile(videoId: Int) {
-        val url = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$videoId.mp4"
-        val request = DownloadManager.Request(Uri.parse(url))
-        request.setDescription("")
-        request.setTitle("Загрузка видео")
-        progressBar.visibility = View.VISIBLE
-
-        request.allowScanningByMediaScanner()
-        request.setNotificationVisibility(
-            DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED
-        )
-
-        request.setDestinationInExternalPublicDir(
-            Environment.DIRECTORY_DOWNLOADS,
-            "$videoId.mp4"
-        )
-
-        val manager = activity.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        manager.enqueue(request)
-
-        val onComplete: BroadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(ctxt: Context, intent: Intent) {
-                playVideoWithPath(
-                    "${
-                        Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_DOWNLOADS
-                        )
-                    }/$videoId.mp4"
-                )
-
-                activity.unregisterReceiver(this)
-                progressBar.visibility = View.GONE
-            }
-        }
-
-        activity.registerReceiver(
-            onComplete,
-            IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
-        )
     }
 
     private fun updateSeekBar() {
@@ -242,6 +144,9 @@ class ViewPagerAdapter(
                 updateTimeIndicators()
                 seekBar.progress = currentVideoView.currentPosition
                 updateHandler.postDelayed(this, 10)
+                if (openVideoFragment.isAdDisplayed) {
+                    pauseVideo()
+                }
             }
         }
     }
