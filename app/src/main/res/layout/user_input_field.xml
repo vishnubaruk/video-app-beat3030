@@ -5,6 +5,7 @@
     android:layout_height="match_parent">
 
     <EditText
+        android:id="@+id/editText"
         android:inputType="textCapWords"
         android:backgroundTint="@color/colorPrimary"
         android:layout_width="match_parent"

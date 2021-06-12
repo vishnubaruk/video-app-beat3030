@@ -16,6 +16,7 @@
         android:fontFamily="@font/monsterrat_regular"
         android:lines="3"
         android:maxLines="5"
+        android:id="@+id/commentText"
         android:singleLine="false"
         android:tag="commentText"
         android:text="sample text"
@@ -25,10 +26,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/textView23" />
+        app:layout_constraintTop_toBottomOf="@+id/sender" />
 
     <TextView
-        android:id="@+id/textView23"
+        android:id="@+id/sender"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -63,6 +64,7 @@
     </androidx.cardview.widget.CardView>
 
     <ImageView
+        android:id="@+id/likeIcon"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_marginTop="16dp"
@@ -80,7 +82,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginBottom="8dp"
         android:fontFamily="@font/monsterrat_regular"
-        android:tag="sender"
         android:text="2 нед."
         android:textAlignment="center"
         android:textColor="#B7B7B7"
@@ -94,7 +95,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginBottom="8dp"
         android:fontFamily="@font/monsterrat_semibold"
-        android:tag="sender"
         android:text="Ответить"
         android:textAlignment="center"
         android:textColor="#B7B7B7"

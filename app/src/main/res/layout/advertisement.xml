@@ -90,7 +90,7 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
-                android:id="@+id/textView31"
+                android:id="@+id/maxTimeText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
@@ -131,7 +131,7 @@
                 android:progress="0"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="@+id/constraintLayout4"
-                app:layout_constraintEnd_toStartOf="@+id/textView31"
+                app:layout_constraintEnd_toStartOf="@+id/maxTimeText"
                 app:layout_constraintStart_toEndOf="@+id/textView29" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
