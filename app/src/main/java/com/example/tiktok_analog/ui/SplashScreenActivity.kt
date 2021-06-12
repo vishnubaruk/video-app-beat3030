@@ -13,7 +13,6 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
-import com.example.tiktok_analog.ui.main.MainActivity
 import com.example.tiktok_analog.util.GlobalDataStorage
 import org.json.JSONObject
 
@@ -46,14 +45,12 @@ class SplashScreenActivity : AppCompatActivity() {
                 ) == PackageManager.PERMISSION_GRANTED
             }) {
             openFileInput("userData").use {
-                userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
+                userData = User.fromJson(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
             }
 
-            val url =
-                "https://kepler88d.pythonanywhere.com/exist?email=${userData.email}&phone=${userData.phone}"
-            val userExistQueue = Volley.newRequestQueue(applicationContext)
-
-            val userExistRequest =
+            val url = resources.getString(R.string.base_url) +
+                    "/exist?email=${userData.email}&phone=${userData.phone}"
+            Volley.newRequestQueue(applicationContext).add(
                 StringRequest(Request.Method.GET, url, { response ->
                     run {
                         val result = JSONObject(response)
@@ -73,8 +70,7 @@ class SplashScreenActivity : AppCompatActivity() {
                 }, {
                     Log.e("Does user exist", "Error at sign in : " + it.message)
                 })
-
-            userExistQueue.add(userExistRequest)
+            )
         } else {
             val intent = Intent(this, StartActivity::class.java)
             intent.putIntegerArrayListExtra("id", GlobalDataStorage.videoIdList)
@@ -83,9 +79,5 @@ class SplashScreenActivity : AppCompatActivity() {
         }
 
         setContentView(R.layout.activity_splashscreen)
-    }
-
-    override fun onResume() {
-        super.onResume()
     }
 }
