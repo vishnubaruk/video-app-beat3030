@@ -1,9 +1,8 @@
 package com.example.tiktok_analog.ui.menuscreens.fragments
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Intent
+import android.content.Context
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -17,10 +16,9 @@ import android.view.animation.AccelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnLayout
-import androidx.core.widget.NestedScrollView
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.android.volley.Request
@@ -29,15 +27,14 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
-import com.example.tiktok_analog.databinding.AddVideoBinding
+import com.example.tiktok_analog.databinding.CommentItemBinding
 import com.example.tiktok_analog.databinding.FragmentOpenVideoBinding
 import com.example.tiktok_analog.ui.OpenVideoActivity
-import com.example.tiktok_analog.ui.menuscreens.*
 import com.example.tiktok_analog.util.GlobalDataStorage
-import com.example.tiktok_analog.util.viewpageradapters.ViewPagerAdapter
+import com.example.tiktok_analog.util.dataclasses.AppConfig
 import com.example.tiktok_analog.util.enums.SortType
+import com.example.tiktok_analog.util.viewpageradapters.ViewPagerAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.filter.*
 import kotlinx.android.synthetic.main.fragment_open_video.*
 import org.json.JSONObject
 import java.util.*
@@ -47,10 +44,11 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     lateinit var userData: User
     var isMenuOpened = false
     var isFilterOpened = false
-    var isMenuFragmentOpened = false
+    private var isMenuFragmentOpened = false
     var isAdDisplayed = false
 
     private lateinit var requestQueue: RequestQueue
+    private lateinit var currentConfig: AppConfig
 
     private lateinit var videoIdList: List<Int>
     private lateinit var viewPagerAdapter: ViewPagerAdapter
@@ -81,11 +79,10 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         _binding = FragmentOpenVideoBinding.inflate(inflater, container, false)
 
         requireActivity().openFileInput("userData").use {
-            userData = User.newUser(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
+            userData = User.fromJson(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
         }
 
         requestQueue = Volley.newRequestQueue(requireActivity().applicationContext)
-
         videoIdList = requireActivity().intent.getIntegerArrayListExtra("id")!!.toList()
 
         binding.viewPager2.adapter =
@@ -102,15 +99,14 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         viewPagerAdapter = (binding.viewPager2.adapter as ViewPagerAdapter)
         binding.viewPager2.offscreenPageLimit = 10
 
-        binding.viewPager2
-            .registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                override fun onPageSelected(position: Int) {
-                    (binding.viewPager2.adapter as ViewPagerAdapter).setPage(
-                        position
-                    )
-                    Log.d("DEBUG", position.toString())
-                }
-            })
+        binding.viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                (binding.viewPager2.adapter as ViewPagerAdapter).setPage(
+                    position
+                )
+                Log.d("DEBUG", position.toString())
+            }
+        })
 
         val bottomSheetBehavior: BottomSheetBehavior<*> =
             BottomSheetBehavior.from(binding.bottomSheet.bottomSheet)
@@ -118,7 +114,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         bottomSheetBehavior.isHideable = false
 
-        bottomSheetBehavior.setBottomSheetCallback(object :
+        bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {}
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
@@ -160,7 +156,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         binding.menuLayout.logout.setOnClickListener {
             val alertDialog =
                 AlertDialog.Builder(requireActivity())
-                    .setTitle("Вы уверены, что хотите выйти из аккаунта?")
+                    .setTitle("Вы уверены, что хотитеR100 выйти из аккаунта?")
                     .setMessage("Это приведет к удалению всех пользовательских данных")
                     .setPositiveButton("Да, я уверен") { _, _ ->
                         requireActivity().deleteFile("userData")
@@ -176,16 +172,12 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
         }
 
-        binding.menuLayout.nameTextHeader.text =
-            (requireActivity() as OpenVideoActivity).userData.username
-        binding.menuLayout.emailTextHeader.text =
-            (requireActivity() as OpenVideoActivity).userData.email
-
         binding.advertisement.skipButton.setOnClickListener {
             hideAdvertisement()
         }
 
         binding.filterLayout.acceptFilter.setOnClickListener {
+            setConfig(currentConfig)
             closeFilter()
         }
 
@@ -201,6 +193,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             updateFilterButtons(SortType.ByLength)
         }
 
+        currentConfig = getConfig()
         updateFilterButtons((requireActivity() as OpenVideoActivity).getConfig().sortType)
         Handler(Looper.getMainLooper()).postDelayed({ displayAdvertisement() }, 500)
 
@@ -226,8 +219,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
                 videoView.pause()
                 pauseAnimation()
             } else {
-                binding.pauseButton
-                    .setBackgroundResource(R.drawable.ic_baseline_pause_24)
+                binding.pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
                 videoView.seekTo(seekBar.progress)
                 videoView.start()
                 playAnimation()
@@ -297,10 +289,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         })
 
         requestQueue.add(videoLikeCountRequest)
-
-        val openVideoUrl = resources.getString(R.string.base_url) +
-                "/openVideo?" +
-                "videoId=$videoId"
+        val openVideoUrl = resources.getString(R.string.base_url) + "/openVideo?videoId=$videoId"
 
         val openVideoRequest = StringRequest(Request.Method.GET, openVideoUrl, { response ->
             run {
@@ -313,10 +302,8 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         })
 
         requestQueue.add(openVideoRequest)
-
         GlobalDataStorage.viewVideo()
 
-        Log.d("TOTAL_VIEWS", "Total views: ${GlobalDataStorage.getTotalViews()}")
         if (GlobalDataStorage.getTotalViews() % (requireActivity() as OpenVideoActivity)
                 .getConfig().adFrequency == 0
         ) {
@@ -336,26 +323,25 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     }
 
     private fun displayAdvertisement() {
-        Handler(Looper.getMainLooper()).postDelayed({ pauseVideo() }, 300)
+        isAdDisplayed = true
+        Handler(Looper.getMainLooper()).postDelayed({ pauseVideo() }, 0)
+
         binding.advertisement.root.visibility = View.VISIBLE
         binding.advertisement.advertisementVideoView.visibility = View.VISIBLE
         binding.advertisement.splashScreen.visibility = View.VISIBLE
 
         val progressBar = binding.progressBar
-        val requestUrl = resources.getString(R.string.base_url) +
-                "/openPromotionalVideo"
+        val requestUrl = resources.getString(R.string.base_url) + "/openPromotionalVideo"
         progressBar.visibility = View.VISIBLE
 
-        val openAdvertisementRequest = StringRequest(Request.Method.GET, requestUrl, { response ->
+        requestQueue.add(StringRequest(Request.Method.GET, requestUrl, { response ->
             run {
                 val result = JSONObject(response).getJSONObject("video")
                 try {
-                    val link = resources.getString(R.string.res_url) +
-                            "/${result.getInt("videoId")}.mp4"
                     val videoView = binding.advertisement.advertisementVideoView
 
-                    binding.advertisement.textView31.text = formatTime(result.getInt("length"))
-                    binding.advertisement.adProgressBar.max = result.getInt("length")
+                    binding.advertisement.maxTimeText.text = formatTime(result.getInt("length"))
+                    binding.advertisement.adProgressBar.max = result.getInt("length") * 100
 
                     Timer().scheduleAtFixedRate(object : TimerTask() {
                         override fun run() {
@@ -363,14 +349,18 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
                                 binding.advertisement.textView29.text =
                                     formatTime(videoView.currentPosition / 1000)
                                 binding.advertisement.adProgressBar.progress =
-                                    videoView.currentPosition / 1000
-
+                                    videoView.currentPosition / 10
                             }
                         }
-                    }, 0, 100)
+                    }, 0, 10)
 
                     videoView.setMediaController(null)
-                    videoView.setVideoURI(Uri.parse(link))
+                    videoView.setVideoURI(
+                        Uri.parse(
+                            resources.getString(R.string.res_url) +
+                                    "/${result.getInt("videoId")}.mp4"
+                        )
+                    )
                     videoView.start()
 
                     videoView.setOnPreparedListener {
@@ -390,13 +380,11 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             }
         }, {
             Log.e("OpenAdvertisement", "Error at sign in : " + it.message)
-        })
-
-        requestQueue.add(openAdvertisementRequest)
+        }))
     }
 
-    @SuppressLint("CutPasteId")
     private fun hideAdvertisement() {
+        isAdDisplayed = false
         binding.advertisement.root.visibility = View.GONE
         binding.advertisement.advertisementVideoView.visibility = View.GONE
         binding.advertisement.advertisementVideoView.stopPlayback()
@@ -430,16 +418,15 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
 
     private fun addCommentView(jsonObject: JSONObject) {
-        val newView =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.comment_item, null, false)
-        newView.findViewWithTag<TextView>("sender").text =
-            jsonObject.getString("authorUsername")
-        newView.findViewWithTag<TextView>("commentText").text =
-            jsonObject.getString("text")
-        binding.bottomSheet.commentsContainerBottomSheet.addView(newView)
+        val viewBinding = CommentItemBinding.inflate(
+            layoutInflater,
+            binding.bottomSheet.commentsContainerBottomSheet,
+            true
+        )
+        viewBinding.sender.text = jsonObject.getString("authorUsername")
+        viewBinding.commentText.text = jsonObject.getString("text")
 
-        newView.findViewWithTag<ImageView>("likeIcon").setOnClickListener {
+        viewBinding.likeIcon.setOnClickListener {
             it.setBackgroundResource(R.drawable.ic_like)
         }
 
@@ -449,7 +436,8 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     }
 
     private fun addComment(commentText: String) {
-        val url = "https://kepler88d.pythonanywhere.com/addComment?videoId=" +
+        val url = resources.getString(R.string.base_url) +
+                "/addComment?videoId=" +
                 "${(binding.viewPager2.adapter as ViewPagerAdapter).getCurrentVideoId()}" +
                 "&commentText=${commentText.trim()}&email=${userData.email}&phone=${userData.phone}"
 
@@ -473,6 +461,10 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     }
 
     private fun openMenu() {
+        userData = readUserData()
+        binding.menuLayout.nameTextHeader.text = userData.username
+        binding.menuLayout.emailTextHeader.text = userData.email
+
         (binding.viewPager2.adapter as ViewPagerAdapter).pauseVideo()
         closeFilter()
 
@@ -481,7 +473,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
         binding.menuLayout.root.visibility = View.VISIBLE
         isMenuOpened = true
-//        sectionTitleText.text = "Меню"
+        binding.sectionTitleText.text = "Меню"
     }
 
     private fun closeMenu() {
@@ -492,7 +484,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
         binding.menuLayout.root.visibility = View.GONE
         isMenuOpened = false
-//        sectionTitleText.text = "Главная"
+        binding.sectionTitleText.text = "Главная"
     }
 
     private fun openFilter() {
@@ -504,9 +496,9 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
         binding.filterLayout.root.visibility = View.VISIBLE
         isFilterOpened = true
-//        sectionTitleText.text = "Главная"
+        binding.sectionTitleText.text = "Фильтр"
 
-//        updateFilterButtons(getConfig().sortType)
+        updateFilterButtons(getConfig().sortType)
     }
 
     private fun closeFilter() {
@@ -518,10 +510,17 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         binding.filterLayout.root.visibility = View.GONE
 
         isFilterOpened = false
-//        currentConfig = getConfig()
+        binding.sectionTitleText.text = "Главная"
+        currentConfig = getConfig()
     }
 
-    fun playAnimation() {
+    private fun getConfig() = (requireActivity() as OpenVideoActivity).getConfig()
+
+    private fun setConfig(config: AppConfig) = (requireActivity() as OpenVideoActivity).setConfig(
+        getConfig().copy(sortType = config.sortType)
+    )
+
+    private fun playAnimation() {
         binding.bigPlayButton.alpha = 1F
         binding.bigPlayButton
             .animate()
@@ -545,10 +544,6 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         "${seconds / 60}:${if (seconds.toString().length > 1) "" else "0"}$seconds"
 
     private fun updateFilterButtons(sortType: SortType) {
-        (requireActivity() as OpenVideoActivity).setConfig(
-            (requireActivity() as OpenVideoActivity).getConfig().copy(sortType = sortType)
-        )
-
         mapOf(
             SortType.ByPopularity to binding.filterLayout.sortByPopularity,
             SortType.ByDate to binding.filterLayout.sortByDate,
@@ -559,7 +554,20 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
                 if (type == sortType) R.drawable.ic_radiobutton_selected
                 else R.drawable.ic_radiobutton_notselected
             )
+
+            currentConfig = currentConfig.copy(sortType = type)
         }
+    }
+
+    private fun readUserData(): User {
+        requireActivity().openFileInput("userData").use {
+            return User.fromJson(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
+        }
+    }
+
+    private fun writeUserData(data: User): Unit {
+        requireActivity().openFileOutput("userData", Context.MODE_PRIVATE)
+            .write(data.toJsonString().toByteArray())
     }
 
     override fun onDestroyView() {
