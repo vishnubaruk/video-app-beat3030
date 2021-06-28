@@ -63,7 +63,7 @@ class ViewPagerAdapter(
         val videoId = videoIdList[position]
         playVideoWithId(videoId)
 
-        activity.fillVideoData(videoId, viewHolderList[position].videoView)
+        openVideoFragment.fillVideoData(videoId, viewHolderList[position].videoView)
     }
 
     fun isVideoPlaying(): Boolean {
