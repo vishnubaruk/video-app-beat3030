@@ -40,17 +40,14 @@ class OpenVideoActivity : AppCompatActivity() {
     private lateinit var requestQueue: RequestQueue
 
     private val profileFragment: ProfileFragment = ProfileFragment()
-    private val openVideoFragment: OpenVideoFragment = OpenVideoFragment()
+    private lateinit var openVideoFragment: OpenVideoFragment
     private val commentsFragment: CommentsFragment = CommentsFragment()
 
     private lateinit var config: AppConfig
     private var savedLocation: Location? = null
 
     private var isActivityStopped = false
-
-    fun fillVideoData(videoId: Int, videoView: VideoView) {
-        openVideoFragment.fillVideoData(videoId, videoView)
-    }
+    private var isAnotherOpenVideoActivityOpened = false
 
     fun getViewPager2(): ViewPager2 {
         return openVideoFragment.getViewPager2()
@@ -76,6 +73,13 @@ class OpenVideoActivity : AppCompatActivity() {
         config = getConfig()
 
         setContentView(R.layout.activity_open_video)
+
+        openVideoFragment = OpenVideoFragment.newInstance(
+            videoIdList = intent.getIntegerArrayListExtra("id")!!,
+            title = "Лента",
+            showMenuButtons = true,
+            showAd = true
+        )
 
         requestQueue = Volley.newRequestQueue(applicationContext)
         setupViewPager(tabViewPager)
@@ -170,6 +174,10 @@ class OpenVideoActivity : AppCompatActivity() {
     }
 
     fun openFragment(fragment: Fragment) {
+        if (fragment is OpenVideoFragment) {
+            isAnotherOpenVideoActivityOpened = true
+        }
+
         supportFragmentManager.commit {
             setCustomAnimations(
                 R.anim.fade_in,
@@ -180,13 +188,19 @@ class OpenVideoActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        if (tabViewPager.currentItem != 1) {
-            tabViewPager.currentItem = 1
-        } else {
-            openVideoFragment.onBackPressed { super.onBackPressed() }
+    override fun onBackPressed() =
+        when {
+            isAnotherOpenVideoActivityOpened -> {
+                isAnotherOpenVideoActivityOpened = false
+                super.onBackPressed()
+            }
+            tabViewPager.currentItem != 1 -> {
+                tabViewPager.currentItem = 1
+            }
+            else -> {
+                openVideoFragment.onBackPressed { super.onBackPressed() }
+            }
         }
-    }
 
     override fun onStop() {
         super.onStop()

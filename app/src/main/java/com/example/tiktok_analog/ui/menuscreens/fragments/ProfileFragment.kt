@@ -266,12 +266,15 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         newView.setOnClickListener {
             if (videoId != 0) {
-                startActivity(
-                    Intent(
-                        requireActivity().applicationContext,
-                        OpenVideoActivity::class.java
-                    ).putIntegerArrayListExtra("id", arrayListOf(videoId))
-                )
+                (requireActivity() as OpenVideoActivity)
+                    .openFragment(
+                        OpenVideoFragment.newInstance(
+                            videoIdList = arrayListOf(videoId),
+                            title = "Видео",
+                            showMenuButtons = false,
+                            showAd = false
+                        )
+                    )
             }
         }
 
