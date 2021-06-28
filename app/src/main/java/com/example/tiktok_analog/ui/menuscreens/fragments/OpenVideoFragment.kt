@@ -18,7 +18,6 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnLayout
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.android.volley.Request
@@ -52,6 +51,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
     private lateinit var videoIdList: List<Int>
     private lateinit var viewPagerAdapter: ViewPagerAdapter
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
 
     private var _binding: FragmentOpenVideoBinding? = null
     private val binding get() = _binding!!
@@ -83,7 +83,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         }
 
         requestQueue = Volley.newRequestQueue(requireActivity().applicationContext)
-        videoIdList = requireActivity().intent.getIntegerArrayListExtra("id")!!.toList()
+        videoIdList = requireArguments().getIntegerArrayList("videoIdList")!!.toList()
 
         binding.viewPager2.adapter =
             ViewPagerAdapter(
@@ -108,7 +108,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
             }
         })
 
-        val bottomSheetBehavior: BottomSheetBehavior<*> =
+        bottomSheetBehavior =
             BottomSheetBehavior.from(binding.bottomSheet.bottomSheet)
 
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
@@ -123,13 +123,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         })
 
         binding.openCommentsButton.setOnClickListener {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-
-            if ((binding.viewPager2.adapter as ViewPagerAdapter).isVideoPlaying()) {
-                (binding.viewPager2.adapter as ViewPagerAdapter).pauseVideo()
-            }
-
-            updateComments()
+            openComments()
         }
 
         binding.backArrowButton.setOnClickListener { requireActivity().onBackPressed() }
@@ -197,6 +191,13 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         updateFilterButtons((requireActivity() as OpenVideoActivity).getConfig().sortType)
         Handler(Looper.getMainLooper()).postDelayed({ displayAdvertisement() }, 500)
 
+        // working with intent
+        if (!requireArguments().getBoolean("showMenuButtons")) {
+            binding.openMenuButton.visibility = View.GONE
+            binding.openFilterButton.visibility = View.GONE
+        }
+
+        binding.sectionTitleText.text = requireArguments().getString("title")
         return binding.root
     }
 
@@ -323,6 +324,10 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     }
 
     private fun displayAdvertisement() {
+        if (!requireArguments().getBoolean("showAd")) {
+            return
+        }
+
         isAdDisplayed = true
         Handler(Looper.getMainLooper()).postDelayed({ pauseVideo() }, 0)
 
@@ -345,11 +350,15 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
                     Timer().scheduleAtFixedRate(object : TimerTask() {
                         override fun run() {
-                            requireActivity().runOnUiThread {
-                                binding.advertisement.textView29.text =
-                                    formatTime(videoView.currentPosition / 1000)
-                                binding.advertisement.adProgressBar.progress =
-                                    videoView.currentPosition / 10
+                            try {
+                                requireActivity().runOnUiThread {
+                                    binding.advertisement.textView29.text =
+                                        formatTime(videoView.currentPosition / 1000)
+                                    binding.advertisement.adProgressBar.progress =
+                                        videoView.currentPosition / 10
+                                }
+                            } catch (e: java.lang.NullPointerException) {
+                                return
                             }
                         }
                     }, 0, 10)
@@ -389,6 +398,16 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         binding.advertisement.advertisementVideoView.visibility = View.GONE
         binding.advertisement.advertisementVideoView.stopPlayback()
         resumeVideo()
+    }
+
+    private fun openComments() {
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+        if ((binding.viewPager2.adapter as ViewPagerAdapter).isVideoPlaying()) {
+            (binding.viewPager2.adapter as ViewPagerAdapter).pauseVideo()
+        }
+
+        updateComments()
     }
 
     private fun updateComments() {
@@ -573,5 +592,25 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        fun newInstance(
+            videoIdList: ArrayList<Int>,
+            title: String,
+            showMenuButtons: Boolean = true,
+            showAd: Boolean = true
+        ): OpenVideoFragment {
+            val args = Bundle().apply {
+                putIntegerArrayList("videoIdList", videoIdList)
+                putString("title", title)
+                putBoolean("showMenuButtons", showMenuButtons)
+                putBoolean("showAd", showAd)
+            }
+
+            val fragment = OpenVideoFragment()
+            fragment.arguments = args
+            return fragment
+        }
     }
 }
