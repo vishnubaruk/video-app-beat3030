@@ -28,8 +28,13 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
             requireActivity().onBackPressed()
         }
 
+        updateNotifications()
+
         binding.notificationsSwipeRefresh.setOnRefreshListener {
             binding.notificationsSwipeRefresh.isRefreshing = false
+
+            updateNotifications()
+
             Toast.makeText(
                 requireContext(),
                 "Notifications Updated", Toast.LENGTH_SHORT
@@ -67,6 +72,10 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
         RequestWorker.getNotifications(
             (requireActivity() as OpenVideoActivity).userData.userId.toInt()
         ) {
+            binding.textNoNotifications.visibility =
+                if (it.length() == 0) View.VISIBLE
+                else View.GONE
+
             for (index in 0 until it.length()) {
                 val jsonObject = it.getJSONObject(index)
                 addNotificationView(
