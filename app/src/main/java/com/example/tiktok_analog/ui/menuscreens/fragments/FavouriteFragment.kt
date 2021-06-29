@@ -112,11 +112,15 @@ class FavouriteFragment : Fragment(R.layout.activity_favourite) {
         }
 
         viewBinding.root.setOnClickListener {
-            val openVideoIntent = Intent(requireContext(), OpenVideoActivity::class.java)
-            openVideoIntent.putIntegerArrayListExtra("id", arrayListOf(videoId))
-
             if (videoId != 0) {
-                startActivity(openVideoIntent)
+                (requireActivity() as OpenVideoActivity).openFragment(
+                    OpenVideoFragment.newInstance(
+                        videoIdList = arrayListOf(videoId),
+                        title = "Видео",
+                        showMenuButtons = false,
+                        showAd = false
+                    )
+                )
             }
         }
 
