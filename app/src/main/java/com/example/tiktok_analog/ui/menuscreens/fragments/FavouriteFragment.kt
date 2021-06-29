@@ -6,9 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.android.volley.Request
@@ -17,6 +14,7 @@ import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.databinding.ActivityFavouriteBinding
+import com.example.tiktok_analog.databinding.FavVideoItemBinding
 import com.example.tiktok_analog.ui.OpenVideoActivity
 import com.squareup.picasso.Picasso
 import org.json.JSONObject
@@ -57,11 +55,10 @@ class FavouriteFragment : Fragment(R.layout.activity_favourite) {
         binding.favouriteLayout.removeAllViews()
         val fillFavouritesQueue = Volley.newRequestQueue(requireContext())
 
-        val url =
-            resources.getString(R.string.base_url) +
-                    "/getFavourite?" +
-                    "email=${userData.email}&" +
-                    "phone=${userData.phone}"
+        val url = resources.getString(R.string.base_url) +
+                "/getFavourite?" +
+                "email=${userData.email}&" +
+                "phone=${userData.phone}"
 
         binding.progressBar.visibility = View.VISIBLE
 
@@ -83,12 +80,11 @@ class FavouriteFragment : Fragment(R.layout.activity_favourite) {
     }
 
     private fun dislikeVideo(videoId: Int) {
-        val url =
-            resources.getString(R.string.base_url) +
-                    "/likeVideo?" +
-                    "videoId=$videoId&" +
-                    "email=${userData.email}&" +
-                    "phone=${userData.phone}"
+        val url = resources.getString(R.string.base_url) +
+                "/likeVideo?" +
+                "videoId=$videoId&" +
+                "email=${userData.email}&" +
+                "phone=${userData.phone}"
 
         val likeVideoQueue = Volley.newRequestQueue(requireContext())
         val videoLikeCountRequest = StringRequest(Request.Method.GET, url, {
@@ -101,15 +97,21 @@ class FavouriteFragment : Fragment(R.layout.activity_favourite) {
     }
 
     private fun addViewToFavourite(videoId: Int) {
-        val newView =
-            LayoutInflater.from(requireContext()).inflate(R.layout.fav_video_item, null, false)
+        val viewBinding = FavVideoItemBinding.inflate(
+            layoutInflater,
+            binding.favouriteLayout,
+            true
+        )
 
-        newView.setOnLongClickListener {
-            Toast.makeText(requireContext(), "Video $videoId disliked", Toast.LENGTH_SHORT).show()
+        viewBinding.root.setOnLongClickListener {
+            Toast.makeText(
+                requireContext(),
+                "Video $videoId disliked", Toast.LENGTH_SHORT
+            ).show()
             true
         }
 
-        newView.setOnClickListener {
+        viewBinding.root.setOnClickListener {
             val openVideoIntent = Intent(requireContext(), OpenVideoActivity::class.java)
             openVideoIntent.putIntegerArrayListExtra("id", arrayListOf(videoId))
 
@@ -118,14 +120,17 @@ class FavouriteFragment : Fragment(R.layout.activity_favourite) {
             }
         }
 
-        newView.findViewWithTag<Button>("delete").setOnClickListener {
-            binding.favouriteLayout.removeView(newView)
+        viewBinding.button.setOnClickListener {
+            binding.favouriteLayout.removeView(viewBinding.root)
             dislikeVideo(videoId)
-            Toast.makeText(requireContext(), "Video $videoId disliked", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Video $videoId disliked", Toast.LENGTH_SHORT
+            ).show()
         }
 
-        val urlSrc = "https://res.cloudinary.com/kepler88d/video/upload/fl_attachment/$videoId.jpg"
-        val previewImage = newView.findViewWithTag<ImageView>("previewImage")
+        val urlSrc = resources.getString(R.string.res_url) + "/$videoId.jpg"
+        val previewImage = viewBinding.imageView10
 
         Picasso
             .get()
@@ -133,22 +138,19 @@ class FavouriteFragment : Fragment(R.layout.activity_favourite) {
             .placeholder(R.drawable.rectangle34)
             .into(previewImage)
 
-        val viewCountUrl = "https://kepler88d.pythonanywhere.com/getViewCount?videoId=$videoId"
+        val viewCountUrl = resources.getString(R.string.base_url) + "/getViewCount?videoId=$videoId"
         val viewQueue = Volley.newRequestQueue(requireContext())
 
         val viewCountRequest = StringRequest(Request.Method.GET, viewCountUrl, { response ->
             run {
-                val result = JSONObject(response)
-                newView.findViewWithTag<TextView>("viewCount").text =
-                    result.getInt("viewCount").toString()
+                viewBinding.viewCount.text =
+                    JSONObject(response).getInt("viewCount").toString()
             }
         }, {
             Log.e("ViewCount", "Error at sign in : " + it.message)
         })
 
         viewQueue.add(viewCountRequest)
-
-        binding.favouriteLayout.addView(newView)
     }
 
     override fun onDestroyView() {
