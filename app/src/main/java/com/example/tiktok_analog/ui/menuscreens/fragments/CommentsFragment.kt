@@ -7,9 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.ScrollView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -17,12 +16,11 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
+import com.example.tiktok_analog.databinding.CommentItemBinding
 import com.example.tiktok_analog.databinding.FragmentCommentsBinding
-import com.example.tiktok_analog.databinding.FragmentOpenVideoBinding
 import com.example.tiktok_analog.ui.OpenVideoActivity
 import com.example.tiktok_analog.util.viewpageradapters.ViewPagerAdapter
 import org.json.JSONObject
-import java.lang.IllegalStateException
 
 class CommentsFragment : Fragment(R.layout.fragment_comments) {
     lateinit var userData: User
@@ -102,16 +100,15 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
 
     private fun addCommentView(jsonObject: JSONObject) {
         try {
-            val newView =
-                LayoutInflater.from(requireActivity().applicationContext)
-                    .inflate(R.layout.comment_item, null, false)
-            newView.findViewWithTag<TextView>("sender").text =
-                jsonObject.getString("authorUsername")
-            newView.findViewWithTag<TextView>("commentText").text =
-                jsonObject.getString("text")
-            binding.commentsContainer.addView(newView)
+            val viewBinding = CommentItemBinding.inflate(
+                layoutInflater,
+                binding.commentsContainer,
+                true
+            )
+            viewBinding.sender.text = jsonObject.getString("authorUsername")
+            viewBinding.commentText.text = jsonObject.getString("text")
 
-            newView.findViewWithTag<ImageView>("likeIcon").setOnClickListener {
+            viewBinding.likeIcon.setOnClickListener {
                 it.setBackgroundResource(R.drawable.ic_like)
             }
 
