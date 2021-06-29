@@ -8,6 +8,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 import org.json.JSONObject
 
 class RequestWorker {
@@ -88,6 +89,17 @@ class RequestWorker {
                         url("/getUser")
                         parameter("userId", userId.toString())
                     }).getString("userData"))
+                )
+            }
+        }
+
+        fun getNotifications(userId: Int, handler: (JSONArray) -> Unit) {
+            GlobalScope.launch {
+                handler(
+                    JSONObject(client.get<String> {
+                        url("/getNotifications")
+                        parameter("userId", userId.toString())
+                    }).getJSONArray("data")
                 )
             }
         }
