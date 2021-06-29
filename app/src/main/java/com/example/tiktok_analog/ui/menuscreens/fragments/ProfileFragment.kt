@@ -3,15 +3,11 @@ package com.example.tiktok_analog.ui.menuscreens.fragments
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -20,6 +16,7 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
+import com.example.tiktok_analog.databinding.FavVideoItemBinding
 import com.example.tiktok_analog.databinding.FragmentProfileBinding
 import com.example.tiktok_analog.databinding.UserInputFieldBinding
 import com.example.tiktok_analog.ui.OpenVideoActivity
@@ -252,10 +249,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     }
 
     private fun addViewToUploadedVideos(videoId: Int) {
-        val newView = LayoutInflater.from(requireActivity().applicationContext)
-            .inflate(R.layout.fav_video_item, null, false)
+        val viewBinding = FavVideoItemBinding.inflate(
+            layoutInflater,
+            binding.uploadedVideosLayout,
+            true
+        )
 
-        newView.setOnLongClickListener {
+        viewBinding.root.setOnLongClickListener {
             Toast.makeText(
                 requireActivity().applicationContext,
                 "Video $videoId disliked",
@@ -264,46 +264,41 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             true
         }
 
-        newView.setOnClickListener {
+        viewBinding.root.setOnClickListener {
             if (videoId != 0) {
-                (requireActivity() as OpenVideoActivity)
-                    .openFragment(
-                        OpenVideoFragment.newInstance(
-                            videoIdList = arrayListOf(videoId),
-                            title = "Видео",
-                            showMenuButtons = false,
-                            showAd = false
-                        )
+                (requireActivity() as OpenVideoActivity).openFragment(
+                    OpenVideoFragment.newInstance(
+                        videoIdList = arrayListOf(videoId),
+                        title = "Видео",
+                        showMenuButtons = false,
+                        showAd = false
                     )
+                )
             }
         }
 
-        newView.findViewWithTag<Button>("delete")
-            .setOnClickListener { deleteVideo(videoId, newView) }
+        viewBinding.button.setOnClickListener { deleteVideo(videoId, viewBinding.root) }
 
         Picasso
             .get()
             .load(resources.getString(R.string.res_url) + "/$videoId.jpg")
             .placeholder(R.drawable.rectangle34)
-            .into(newView.findViewWithTag<ImageView>("previewImage"))
+            .into(viewBinding.imageView10)
 
         val viewCountUrl = resources.getString(R.string.base_url) +
                 "/getViewCount?" +
                 "videoId=$videoId"
-        val viewQueue = Volley.newRequestQueue(requireActivity().applicationContext)
 
-        val viewCountRequest = StringRequest(Request.Method.GET, viewCountUrl, { response ->
-            run {
-                val result = JSONObject(response)
-                newView.findViewWithTag<TextView>("viewCount").text =
-                    result.getInt("viewCount").toString()
-            }
-        }, {
-            Log.e("ViewCount", "Error at sign in : " + it.message)
-        })
-
-        viewQueue.add(viewCountRequest)
-        binding.uploadedVideosLayout.addView(newView)
+        Volley.newRequestQueue(requireActivity().applicationContext).add(
+            StringRequest(Request.Method.GET, viewCountUrl, { response ->
+                run {
+                    val result = JSONObject(response)
+                    viewBinding.viewCount.text = result.getInt("viewCount").toString()
+                }
+            }, {
+                Log.e("ViewCount", "Error at sign in : " + it.message)
+            })
+        )
     }
 
     private fun deleteVideo(videoId: Int, view: View) {
