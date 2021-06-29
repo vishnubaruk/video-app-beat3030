@@ -1,7 +1,6 @@
 package com.example.tiktok_analog.data.model
 
 import com.google.gson.GsonBuilder
-import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 import org.json.JSONObject
 

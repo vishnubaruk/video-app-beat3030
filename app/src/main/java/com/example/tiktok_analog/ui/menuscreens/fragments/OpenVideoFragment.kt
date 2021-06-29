@@ -3,6 +3,7 @@ package com.example.tiktok_analog.ui.menuscreens.fragments
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -123,7 +124,23 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         })
 
         binding.openCommentsButton.setOnClickListener {
+            pauseVideo()
             openComments()
+        }
+
+        binding.shareButton.setOnClickListener {
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(
+                    Intent.EXTRA_TEXT,
+                    "https://open.videosharingapp.com" +
+                            "/videoId=${viewPagerAdapter.getCurrentVideoId()}"
+                )
+                type = "text/plain"
+            }
+
+            val shareIntent = Intent.createChooser(sendIntent, null)
+            startActivity(shareIntent)
         }
 
         binding.backArrowButton.setOnClickListener { requireActivity().onBackPressed() }

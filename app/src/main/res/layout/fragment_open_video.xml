@@ -171,6 +171,16 @@
                 app:layout_constraintBottom_toBottomOf="@+id/constraintLayout6"
                 app:layout_constraintStart_toStartOf="parent" />
 
+            <Button
+                android:id="@+id/shareButton"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/ic_baseline_share_24"
+                app:layout_constraintBottom_toBottomOf="@+id/constraintLayout6"
+                app:layout_constraintStart_toEndOf="@+id/openCommentsButton" />
+
             <TextView
                 android:id="@+id/likeCount"
                 android:layout_width="wrap_content"
@@ -304,7 +314,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_anchor="@+id/bigPauseButton"
+        app:layout_anchorGravity="bottom|center">
 
         <ProgressBar
             android:id="@+id/progressBar"
