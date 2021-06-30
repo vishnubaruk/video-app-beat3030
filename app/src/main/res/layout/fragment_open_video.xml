@@ -28,11 +28,11 @@
             android:background="@color/colorPrimary"
             android:clickable="true"
             android:elevation="4dp"
+            android:focusable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
-            android:focusable="true">
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark">
 
             <ImageButton
                 android:id="@+id/closeMenuButton"

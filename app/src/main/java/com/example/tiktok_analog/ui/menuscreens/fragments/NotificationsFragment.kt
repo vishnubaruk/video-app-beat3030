@@ -57,7 +57,7 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
             ContextCompat.getDrawable(
                 requireActivity(),
                 when (type) {
-                    NotificationType.RateVideo -> R.drawable.ic_like
+                    NotificationType.RateVideo -> R.drawable.ic_profile
                     NotificationType.Subscribe -> R.drawable.ic_favorite
                     NotificationType.Broadcast -> R.drawable.ic_starttranslation
                     NotificationType.RateComment -> R.drawable.ic_comment
@@ -72,22 +72,24 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
         RequestWorker.getNotifications(
             (requireActivity() as OpenVideoActivity).userData.userId.toInt()
         ) {
-            binding.textNoNotifications.visibility =
-                if (it.length() == 0) View.VISIBLE
-                else View.GONE
+            requireActivity().runOnUiThread {
+                binding.textNoNotifications.visibility =
+                    if (it.length() == 0) View.VISIBLE
+                    else View.GONE
 
-            for (index in 0 until it.length()) {
-                val jsonObject = it.getJSONObject(index)
-                addNotificationView(
-                    text = jsonObject.getString("text"),
-                    type = when (jsonObject.getInt("notificationType")) {
-                        0 -> NotificationType.RateVideo
-                        1 -> NotificationType.Subscribe
-                        2 -> NotificationType.Broadcast
-                        else -> NotificationType.RateComment
-                    },
-                    creationTime = jsonObject.getDouble("creationTime").toFloat()
-                )
+                for (index in 0 until it.length()) {
+                    val jsonObject = it.getJSONObject(index)
+                    addNotificationView(
+                        text = jsonObject.getString("text"),
+                        type = when (jsonObject.getInt("notificationType")) {
+                            0 -> NotificationType.RateVideo
+                            1 -> NotificationType.Subscribe
+                            2 -> NotificationType.Broadcast
+                            else -> NotificationType.RateComment
+                        },
+                        creationTime = jsonObject.getDouble("creationTime").toFloat()
+                    )
+                }
             }
         }
     }
