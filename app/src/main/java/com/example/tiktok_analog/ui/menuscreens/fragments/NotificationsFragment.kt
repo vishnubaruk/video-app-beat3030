@@ -1,5 +1,6 @@
 package com.example.tiktok_analog.ui.menuscreens.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -72,7 +73,7 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
         RequestWorker.getNotifications(
             (requireActivity() as OpenVideoActivity).userData.userId.toInt()
         ) {
-            requireActivity().runOnUiThread {
+            activity?.runOnUiThread {
                 binding.textNoNotifications.visibility =
                     if (it.length() == 0) View.VISIBLE
                     else View.GONE
