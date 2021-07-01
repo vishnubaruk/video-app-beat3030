@@ -94,7 +94,8 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
                 binding.progressBar,
                 binding.timeCode,
                 binding.pauseButton,
-                this
+                this,
+                binding.loadScreen
             )
 
         viewPagerAdapter = (binding.viewPager2.adapter as ViewPagerAdapter)
@@ -149,7 +150,10 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         binding.openFilterButton.setOnClickListener { openFilter() }
         binding.closeMenuButton.setOnClickListener { closeMenu() }
 
-        binding.closeFilterButton.setOnClickListener { closeFilter() }
+        binding.closeFilterButton.setOnClickListener {
+            setConfig(currentConfig)
+            closeFilter()
+        }
 
         mapOf(
             binding.menuLayout.addVideoButton to AddVideoFragment::class.java,
@@ -212,6 +216,11 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         if (!requireArguments().getBoolean("showMenuButtons")) {
             binding.openMenuButton.visibility = View.GONE
             binding.openFilterButton.visibility = View.GONE
+
+            binding.backArrowButton.visibility = View.VISIBLE
+            binding.backArrowButton.setOnClickListener {
+                activity?.onBackPressed()
+            }
         }
 
         binding.sectionTitleText.text = requireArguments().getString("title")
@@ -498,6 +507,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
     private fun openMenu() {
         userData = readUserData()
+
         binding.menuLayout.nameTextHeader.text = userData.username
         binding.menuLayout.emailTextHeader.text = userData.email
 
@@ -580,6 +590,8 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         "${seconds / 60}:${if (seconds.toString().length > 1) "" else "0"}$seconds"
 
     private fun updateFilterButtons(sortType: SortType) {
+        currentConfig = currentConfig.copy(sortType = sortType)
+
         mapOf(
             SortType.ByPopularity to binding.filterLayout.sortByPopularity,
             SortType.ByDate to binding.filterLayout.sortByDate,
@@ -587,11 +599,13 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         ).forEach { (type, button) ->
             button.background = ContextCompat.getDrawable(
                 requireActivity(),
-                if (type == sortType) R.drawable.ic_radiobutton_selected
+                if (type == currentConfig.sortType) R.drawable.ic_radiobutton_selected
                 else R.drawable.ic_radiobutton_notselected
             )
 
-            currentConfig = currentConfig.copy(sortType = type)
+            button.setOnClickListener {
+                updateFilterButtons(type)
+            }
         }
     }
 
