@@ -3,6 +3,7 @@ package com.example.tiktok_analog.util.viewpageradapters
 import android.app.Activity
 import android.net.Uri
 import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,16 +13,17 @@ import com.example.tiktok_analog.R
 import com.example.tiktok_analog.ui.OpenVideoActivity
 import com.example.tiktok_analog.ui.menuscreens.fragments.OpenVideoFragment
 import kotlinx.android.synthetic.main.fragment_open_video.view.*
+import java.security.PrivateKey
 
 
 class ViewPagerAdapter(
     private val videoIdList: List<Int>,
     private val activity: Activity,
     private val seekBar: SeekBar,
-    private val progressBar: ProgressBar,
     private val timeCode: TextView,
     private val pauseButton: ImageButton,
-    private val openVideoFragment: OpenVideoFragment
+    private val openVideoFragment: OpenVideoFragment,
+    private val loadScreen: View
 ) :
     RecyclerView.Adapter<VideoViewHolder>() {
 
@@ -88,7 +90,7 @@ class ViewPagerAdapter(
     private fun playVideoWithId(id: Int) {
         val link = activity.resources.getString(R.string.res_url) + "/$id.mp4"
 
-        progressBar.visibility = View.VISIBLE
+        loadScreen.visibility = View.VISIBLE
         currentVideoView.setVideoURI(Uri.parse(link))
 
         currentVideoView.setOnPreparedListener { mediaPlayer ->
@@ -108,7 +110,9 @@ class ViewPagerAdapter(
             seekBar.max = currentVideoView.duration
             pauseButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
 
-            progressBar.visibility = View.GONE
+            Handler(Looper.getMainLooper()).postDelayed({
+                loadScreen.visibility = View.GONE
+            }, 200)
         }
         currentVideoView.requestFocus()
 

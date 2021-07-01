@@ -91,7 +91,6 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
                 videoIdList,
                 requireActivity(),
                 binding.seekBar,
-                binding.progressBar,
                 binding.timeCode,
                 binding.pauseButton,
                 this,
