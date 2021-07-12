@@ -362,7 +362,7 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
 
         val progressBar = binding.progressBar
         val requestUrl = resources.getString(R.string.base_url) + "/openPromotionalVideo"
-        progressBar.visibility = View.VISIBLE
+        progressBar.visibility = View.GONE
 
         requestQueue.add(StringRequest(Request.Method.GET, requestUrl, { response ->
             run {

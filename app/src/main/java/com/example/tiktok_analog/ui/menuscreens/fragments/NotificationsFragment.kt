@@ -1,6 +1,5 @@
 package com.example.tiktok_analog.ui.menuscreens.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,8 +8,8 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.tiktok_analog.R
-import com.example.tiktok_analog.databinding.ItemNotificationBinding
 import com.example.tiktok_analog.databinding.FragmentNotificationsBinding
+import com.example.tiktok_analog.databinding.ItemNotificationBinding
 import com.example.tiktok_analog.ui.OpenVideoActivity
 import com.example.tiktok_analog.util.RequestWorker
 
@@ -35,7 +34,6 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
             binding.notificationsSwipeRefresh.isRefreshing = false
 
             updateNotifications()
-
             Toast.makeText(
                 requireContext(),
                 "Notifications Updated", Toast.LENGTH_SHORT
