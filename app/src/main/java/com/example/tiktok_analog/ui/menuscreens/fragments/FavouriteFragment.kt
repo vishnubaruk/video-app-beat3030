@@ -61,13 +61,12 @@ class FavouriteFragment : Fragment(R.layout.activity_favourite) {
 
         binding.progressBar.visibility = View.VISIBLE
 
+        val favouriteVideoList = arrayListOf<Int>()
         val getFavouritesRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
                 val result = JSONObject(response).getJSONArray("result")
                 for (index in 0 until result.length()) {
-                    addViewToFavourite(
-                        videoId = result.getInt(index)
-                    )
+                    favouriteVideoList.add(result.getInt(index))
                 }
                 binding.progressBar.visibility = View.GONE
             }
@@ -75,6 +74,18 @@ class FavouriteFragment : Fragment(R.layout.activity_favourite) {
             Log.e("GetFavourites", "Error at sign in : " + it.message)
         })
 
+        favouriteVideoList.forEach { videoId ->
+            val shuffledArrayList: ArrayList<Int> = arrayListOf(videoId)
+            shuffledArrayList.addAll(favouriteVideoList.filter {
+                it != videoId
+            }.shuffled())
+
+            addViewToFavourite(
+                videoId = videoId,
+                shuffledArrayList
+            )
+        }
+        
         fillFavouritesQueue.add(getFavouritesRequest)
     }
 
@@ -95,7 +106,7 @@ class FavouriteFragment : Fragment(R.layout.activity_favourite) {
         likeVideoQueue.add(videoLikeCountRequest)
     }
 
-    private fun addViewToFavourite(videoId: Int) {
+    private fun addViewToFavourite(videoId: Int, favouriteVideoList: ArrayList<Int>) {
         val viewBinding = FavVideoItemBinding.inflate(
             layoutInflater,
             binding.favouriteLayout,
@@ -114,7 +125,7 @@ class FavouriteFragment : Fragment(R.layout.activity_favourite) {
             if (videoId != 0) {
                 (requireActivity() as OpenVideoActivity).openFragment(
                     OpenVideoFragment.newInstance(
-                        videoIdList = arrayListOf(videoId),
+                        videoIdList = favouriteVideoList,
                         title = "Видео",
                         showMenuButtons = false,
                         showAd = false

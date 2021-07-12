@@ -224,19 +224,33 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 "phone=${userData.phone}"
 
         val uploadedVideosQueue = Volley.newRequestQueue(requireActivity().applicationContext)
+
+        val uploadedVideoList = arrayListOf<Int>()
         val uploadedVideosRequest =
             StringRequest(Request.Method.GET, uploadedVideosUrl, { response ->
                 run {
                     val result = JSONObject(response).getJSONArray("result")
                     for (index in 0 until result.length()) {
-                        addViewToUploadedVideos(
-                            videoId = result.getInt(index)
-                        )
+                        uploadedVideoList.add(result.getInt(index))
                     }
                 }
             }, {
                 Log.e("UploadedVideos", "Error at sign in : " + it.message)
             })
+
+        uploadedVideoList.forEach { videoId ->
+            val shuffledArrayList: ArrayList<Int> = arrayListOf<Int>()
+            shuffledArrayList.addAll(
+                uploadedVideoList.filter {
+                    it != videoId
+                }.shuffled()
+            )
+
+            addViewToUploadedVideos(
+                videoId = videoId,
+                shuffledArrayList
+            )
+        }
 
         uploadedVideosQueue.add(uploadedVideosRequest)
         RequestWorker.getUser(userData.userId.toInt()) { data ->
@@ -248,7 +262,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         }
     }
 
-    private fun addViewToUploadedVideos(videoId: Int) {
+    private fun addViewToUploadedVideos(videoId: Int, uploadedVideoList: ArrayList<Int>) {
         val viewBinding = FavVideoItemBinding.inflate(
             layoutInflater,
             binding.uploadedVideosLayout,
@@ -268,7 +282,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             if (videoId != 0) {
                 (requireActivity() as OpenVideoActivity).openFragment(
                     OpenVideoFragment.newInstance(
-                        videoIdList = arrayListOf(videoId),
+                        videoIdList = uploadedVideoList,
                         title = "Видео",
                         showMenuButtons = false,
                         showAd = false
