@@ -65,26 +65,6 @@ class AddVideoActivity : AppCompatActivity() {
             checkIfCanUpload()
         }
 
-        videoTags.afterTextChanged {
-            checkIfCanUpload()
-        }
-
-        uploadVideoButton.setOnClickListener {
-            uploadVideoButton.text = "Загрузка видео..."
-
-            uploadVideoButton.isEnabled = false
-            pickFileButton.isEnabled = false
-
-            uploadVideoButton.backgroundTintList =
-                applicationContext.resources.getColorStateList(R.color.buttonDisabledBg)
-            pickFileButton.backgroundTintList =
-                applicationContext.resources.getColorStateList(R.color.buttonDisabledBg)
-
-            progressBar.visibility = View.VISIBLE
-
-            addVideo()
-        }
-
         val config: MutableMap<String, String> = HashMap()
         config["cloud_name"] = "kepler88d"
         config["api_key"] = "829281113734147"
@@ -152,7 +132,7 @@ class AddVideoActivity : AppCompatActivity() {
             "https://kepler88d.pythonanywhere.com/addVideo?" +
                     "email=${userData.email}&phone=${userData.phone}&" +
                     "title=${videoTitle.text}&description=${videoDescription.text}&" +
-                    "tags=${videoTags.text}&size=${selectedVideoSize}&" +
+                    "tags=${""}&size=${selectedVideoSize}&" +
                     "length=${selectedVideoLength / 1000}&" +
                     "videoId=$videoId"
 
