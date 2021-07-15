@@ -21,6 +21,14 @@ class GlobalDataStorage {
             8931796
         )
 
+        val tagList = arrayListOf<String>(
+            "Еда",
+            "Путешествия",
+            "Юмор",
+            "Наука и техника",
+            "Игры"
+        )
+
         private var totalVideoViewsDuringSession = 0
 
         fun viewVideo() = totalVideoViewsDuringSession++
