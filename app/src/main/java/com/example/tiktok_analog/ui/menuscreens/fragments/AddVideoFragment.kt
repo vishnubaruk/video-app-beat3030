@@ -11,6 +11,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
+import android.widget.Space
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -24,10 +26,10 @@ import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
 import com.example.tiktok_analog.databinding.AddVideoBinding
 import com.example.tiktok_analog.ui.afterTextChanged
+import com.example.tiktok_analog.util.GlobalDataStorage
 import org.json.JSONObject
 import wseemann.media.FFmpegMediaMetadataRetriever
 import java.io.File
-import java.lang.Exception
 import kotlin.math.pow
 import kotlin.random.Random
 
@@ -42,6 +44,8 @@ class AddVideoFragment() : Fragment(R.layout.add_video) {
 
     private var _binding: AddVideoBinding? = null
     private val binding get() = _binding!!
+
+    private val selectedTagList = arrayListOf<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,10 +74,6 @@ class AddVideoFragment() : Fragment(R.layout.add_video) {
             checkIfCanUpload()
         }
 
-        binding.videoTags.afterTextChanged {
-            checkIfCanUpload()
-        }
-
         binding.uploadVideoButton.setOnClickListener {
             binding.uploadVideoButton.text = "Загрузка видео..."
 
@@ -90,6 +90,11 @@ class AddVideoFragment() : Fragment(R.layout.add_video) {
             addVideo()
         }
 
+        binding.addTagButton.setOnClickListener {
+            binding.tagListLayout.root.visibility = View.VISIBLE
+            fillTags()
+        }
+
 
         val config: MutableMap<String, String> = HashMap()
         config["cloud_name"] = "kepler88d"
@@ -103,6 +108,33 @@ class AddVideoFragment() : Fragment(R.layout.add_video) {
         }
 
         return binding.root
+    }
+
+    private fun fillTags() {
+        binding.tagListLayout.liearLayout.removeAllViews()
+
+        GlobalDataStorage.tagList.forEach { tag ->
+            val checkBox = CheckBox(requireContext())
+            checkBox.text = tag
+            checkBox.isChecked = selectedTagList.contains(tag)
+            checkBox.setOnClickListener {
+                if (selectedTagList.contains(tag)) {
+                    selectedTagList.remove(tag)
+                } else {
+                    selectedTagList.add(tag)
+                }
+            }
+
+            binding.tagListLayout.liearLayout.addView(checkBox)
+
+            val space = Space(requireContext())
+            space.layoutParams = ViewGroup.LayoutParams(-1, 20)
+            binding.tagListLayout.liearLayout.addView(space)
+        }
+        binding.tagListLayout.accept.setOnClickListener {
+            binding.tagListLayout.root.visibility = View.GONE
+            binding.videoTags.text = selectedTagList.joinToString(separator = ", ")
+        }
     }
 
     private fun addVideo() {
