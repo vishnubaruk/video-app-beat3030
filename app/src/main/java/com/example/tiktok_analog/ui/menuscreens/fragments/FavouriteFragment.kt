@@ -69,22 +69,22 @@ class FavouriteFragment : Fragment(R.layout.activity_favourite) {
                     favouriteVideoList.add(result.getInt(index))
                 }
                 binding.progressBar.visibility = View.GONE
+
+                favouriteVideoList.forEach { videoId ->
+                    val shuffledArrayList: ArrayList<Int> = arrayListOf(videoId)
+                    shuffledArrayList.addAll(favouriteVideoList.filter {
+                        it != videoId
+                    }.shuffled())
+
+                    addViewToFavourite(
+                        videoId = videoId,
+                        shuffledArrayList
+                    )
+                }
             }
         }, {
             Log.e("GetFavourites", "Error at sign in : " + it.message)
         })
-
-        favouriteVideoList.forEach { videoId ->
-            val shuffledArrayList: ArrayList<Int> = arrayListOf(videoId)
-            shuffledArrayList.addAll(favouriteVideoList.filter {
-                it != videoId
-            }.shuffled())
-
-            addViewToFavourite(
-                videoId = videoId,
-                shuffledArrayList
-            )
-        }
         
         fillFavouritesQueue.add(getFavouritesRequest)
     }

@@ -233,24 +233,23 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                     for (index in 0 until result.length()) {
                         uploadedVideoList.add(result.getInt(index))
                     }
+                    uploadedVideoList.forEach { videoId ->
+                        val shuffledArrayList: ArrayList<Int> = arrayListOf<Int>()
+                        shuffledArrayList.addAll(
+                            uploadedVideoList.filter {
+                                it != videoId
+                            }.shuffled()
+                        )
+
+                        addViewToUploadedVideos(
+                            videoId = videoId,
+                            shuffledArrayList
+                        )
+                    }
                 }
             }, {
                 Log.e("UploadedVideos", "Error at sign in : " + it.message)
             })
-
-        uploadedVideoList.forEach { videoId ->
-            val shuffledArrayList: ArrayList<Int> = arrayListOf<Int>()
-            shuffledArrayList.addAll(
-                uploadedVideoList.filter {
-                    it != videoId
-                }.shuffled()
-            )
-
-            addViewToUploadedVideos(
-                videoId = videoId,
-                shuffledArrayList
-            )
-        }
 
         uploadedVideosQueue.add(uploadedVideosRequest)
         RequestWorker.getUser(userData.userId.toInt()) { data ->
