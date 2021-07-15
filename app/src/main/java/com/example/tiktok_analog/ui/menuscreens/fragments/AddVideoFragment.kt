@@ -15,6 +15,7 @@ import android.widget.CheckBox
 import android.widget.Space
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
@@ -81,9 +82,9 @@ class AddVideoFragment() : Fragment(R.layout.add_video) {
             binding.pickFileButton.isEnabled = false
 
             binding.uploadVideoButton.backgroundTintList =
-                requireContext().resources.getColorStateList(R.color.buttonDisabledBg)
+                ContextCompat.getColorStateList(requireContext(), R.color.buttonDisabledBg)
             binding.pickFileButton.backgroundTintList =
-                requireContext().resources.getColorStateList(R.color.buttonDisabledBg)
+                ContextCompat.getColorStateList(requireContext(), R.color.buttonDisabledBg)
 
             binding.progressBar.visibility = View.VISIBLE
 
@@ -247,16 +248,16 @@ class AddVideoFragment() : Fragment(R.layout.add_video) {
                 selectedVideoPath = videoPath1
                 mediaMetadataRetriever.setDataSource(videoPath1)
             } catch (e: Exception) {
-                e.printStackTrace();
-                Toast.makeText(requireContext(), e.message, Toast.LENGTH_LONG).show();
+                e.printStackTrace()
+                Toast.makeText(requireContext(), e.message, Toast.LENGTH_LONG).show()
             }
 
             try {
                 selectedVideoPath = videoPath2
                 mediaMetadataRetriever.setDataSource(videoPath2)
             } catch (e: Exception) {
-                e.printStackTrace();
-                Toast.makeText(requireContext(), e.message, Toast.LENGTH_LONG).show();
+                e.printStackTrace()
+                Toast.makeText(requireContext(), e.message, Toast.LENGTH_LONG).show()
             }
 
             val videoDuration =
@@ -357,10 +358,11 @@ class AddVideoFragment() : Fragment(R.layout.add_video) {
         }
 
         binding.uploadVideoButton.isEnabled = !dataContainsErrors
-        binding.uploadVideoButton.backgroundTintList = requireContext().resources.getColorStateList(
-            if (dataContainsErrors) R.color.buttonDisabledBg
-            else R.color.buttonEnabledBg
-        )
+        binding.uploadVideoButton.backgroundTintList =
+            ContextCompat.getColorStateList(
+                requireContext(), if (dataContainsErrors) R.color.buttonDisabledBg
+                else R.color.buttonEnabledBg
+            )
     }
 
     override fun onDestroyView() {
