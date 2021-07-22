@@ -88,6 +88,10 @@ class ViewPagerAdapter(
     }
 
     private fun playVideoWithId(id: Int) {
+        if (openVideoFragment.isFilterOpened || openVideoFragment.isMenuOpened) {
+            return
+        }
+
         val link = activity.resources.getString(R.string.res_url) + "/$id.mp4"
 
         loadScreen.visibility = View.VISIBLE
@@ -145,6 +149,9 @@ class ViewPagerAdapter(
     private val updateVideoTime: Runnable by lazy {
         return@lazy object : Runnable {
             override fun run() {
+                if(openVideoFragment.isMenuOpened || openVideoFragment.isFilterOpened) {
+                    pauseVideo()
+                }
                 updateTimeIndicators()
                 seekBar.progress = currentVideoView.currentPosition
                 updateHandler.postDelayed(this, 10)
