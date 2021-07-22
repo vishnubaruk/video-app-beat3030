@@ -96,6 +96,10 @@ class AddVideoFragment() : Fragment(R.layout.add_video) {
             fillTags()
         }
 
+        binding.videoEditor.continueButton.setOnClickListener {
+            binding.videoEditor.root.visibility = View.GONE
+        }
+
 
         val config: MutableMap<String, String> = HashMap()
         config["cloud_name"] = "kepler88d"
@@ -288,6 +292,7 @@ class AddVideoFragment() : Fragment(R.layout.add_video) {
 
             binding.videoPreview.setImageBitmap(thumbnail)
             checkIfCanUpload()
+            binding.videoEditor.root.visibility = View.VISIBLE
         }
     }
 

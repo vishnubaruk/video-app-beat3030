@@ -261,6 +261,14 @@
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="80dp"
+        android:visibility="gone"
+        android:id="@+id/videoEditor"
+        layout="@layout/video_editor" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar2"
         android:layout_width="0dp"
