@@ -608,6 +608,15 @@ class OpenVideoFragment : Fragment(R.layout.fragment_open_video) {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        try {
+            pauseVideo()
+        } catch(e: Exception) {
+            // pass
+        }
+    }
+
     private fun readUserData(): User {
         requireActivity().openFileInput("userData").use {
             return User.fromJson(JSONObject(it.readBytes().toString(Charsets.UTF_8)))
