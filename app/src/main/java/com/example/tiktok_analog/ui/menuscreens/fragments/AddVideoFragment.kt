@@ -25,6 +25,7 @@ import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
 import com.example.tiktok_analog.R
 import com.example.tiktok_analog.data.model.User
+import com.example.tiktok_analog.databinding.AddTextColorDialogBinding
 import com.example.tiktok_analog.databinding.AddVideoBinding
 import com.example.tiktok_analog.ui.afterTextChanged
 import com.example.tiktok_analog.util.GlobalDataStorage
@@ -96,11 +97,6 @@ class AddVideoFragment() : Fragment(R.layout.add_video) {
             fillTags()
         }
 
-        binding.videoEditor.continueButton.setOnClickListener {
-            binding.videoEditor.root.visibility = View.GONE
-        }
-
-
         val config: MutableMap<String, String> = HashMap()
         config["cloud_name"] = "kepler88d"
         config["api_key"] = "829281113734147"
@@ -113,6 +109,61 @@ class AddVideoFragment() : Fragment(R.layout.add_video) {
         }
 
         return binding.root
+    }
+
+    private fun fillVideoEditor() {
+        binding.videoEditor.musicButton.setOnClickListener {
+
+        }
+
+        binding.videoEditor.cropButton.setOnClickListener {
+
+        }
+
+        binding.videoEditor.addTextButton.setOnClickListener {
+            binding.videoEditor.addTextLayout.visibility = View.VISIBLE
+            binding.videoEditor.mainNavigation.visibility = View.GONE
+            binding.videoEditor.addTextNavigation.visibility = View.VISIBLE
+
+            binding.videoEditor.addTextBack.setOnClickListener {
+                binding.videoEditor.addTextLayout.visibility = View.GONE
+                binding.videoEditor.mainNavigation.visibility = View.VISIBLE
+                binding.videoEditor.addTextNavigation.visibility = View.GONE
+            }
+
+            binding.videoEditor.addTextDone.setOnClickListener {
+                binding.videoEditor.addTextLayout.visibility = View.GONE
+                binding.videoEditor.mainNavigation.visibility = View.VISIBLE
+                binding.videoEditor.addTextNavigation.visibility = View.GONE
+            }
+
+            binding.videoEditor.addTextButtonRound.setOnClickListener {
+                val inputFieldBinding = AddTextColorDialogBinding.inflate(
+                    layoutInflater, null, false
+                )
+
+                inputFieldBinding.editText.setText("")
+
+                val alertDialog =
+                    AlertDialog.Builder(requireContext()).setTitle("Добавление текста")
+                        .setView(
+                            inputFieldBinding.root
+                        )
+                        .setPositiveButton("Применить") { _, _ ->
+                            run {
+
+                            }
+                        }
+                        .setNegativeButton("Отмена") { _, _ -> run {} }.create()
+                alertDialog.show()
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isAllCaps = false
+                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).isAllCaps = false
+            }
+        }
+
+        binding.videoEditor.continueButton.setOnClickListener {
+            binding.videoEditor.root.visibility = View.GONE
+        }
     }
 
     private fun fillTags() {
@@ -189,12 +240,8 @@ class AddVideoFragment() : Fragment(R.layout.add_video) {
                     "length=${selectedVideoLength / 1000}&" +
                     "videoId=$videoId"
 
-        Log.d("DEBUG", url)
-
         val addVideoRequest = StringRequest(Request.Method.GET, url, { response ->
             run {
-                Log.d("DEBUG", response)
-
                 if (JSONObject(response).getBoolean("ok")) {
                     binding.progressBar.visibility = View.GONE
                     val builder = AlertDialog.Builder(requireContext())
@@ -293,6 +340,7 @@ class AddVideoFragment() : Fragment(R.layout.add_video) {
             binding.videoPreview.setImageBitmap(thumbnail)
             checkIfCanUpload()
             binding.videoEditor.root.visibility = View.VISIBLE
+            fillVideoEditor()
         }
     }
 
